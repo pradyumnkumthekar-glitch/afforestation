@@ -552,6 +552,7 @@ const TREE_DATA = [{
   rank: 1,
   name: "Indian siris tree",
   hindi: "Siris (सिरिस)",
+  img: './images/indian-siris.jpeg',
   c: 1029.56,
   o: 2744.81,
   height: '15-25 m',
@@ -564,6 +565,7 @@ const TREE_DATA = [{
   rank: 2,
   name: "Tamarind",
   hindi: "Imli (इमली)",
+  img: './images/tamarind.jpeg',
   c: 808.79,
   o: 2156.23,
   height: '20-25 m',
@@ -576,6 +578,7 @@ const TREE_DATA = [{
   rank: 3,
   name: "May flower tree",
   hindi: "Gulmohar (गुलमोहर)",
+  img: './images/gulmohar.jpeg',
   c: 385.26,
   o: 1027.11,
   height: '10-15 m',
@@ -588,6 +591,7 @@ const TREE_DATA = [{
   rank: 4,
   name: "Yellow flame tree",
   hindi: "Peela Gulmohar (पीला गुलमोहर)",
+  img: './images/yellow-flame.jpeg',
   c: 377.16,
   o: 1005.52,
   height: '15-20 m',
@@ -600,6 +604,7 @@ const TREE_DATA = [{
   rank: 5,
   name: "Sacred fig",
   hindi: "Peepal (पीपल)",
+  img: './images/peepal.jpeg',
   c: 339.82,
   o: 905.96,
   height: '20-30 m',
@@ -612,6 +617,7 @@ const TREE_DATA = [{
   rank: 6,
   name: "River tamarind",
   hindi: "Subabul (सुबबूल)",
+  img: './images/subabul.jpeg',
   c: 313.76,
   o: 836.47,
   height: '10-15 m',
@@ -624,6 +630,7 @@ const TREE_DATA = [{
   rank: 7,
   name: "Kanak Champa",
   hindi: "Kanak Champa (कनक चम्पा)",
+  img: './images/kanak-champa.jpeg',
   c: 310.08,
   o: 826.67,
   height: '15-20 m',
@@ -636,6 +643,7 @@ const TREE_DATA = [{
   rank: 8,
   name: "Neem",
   hindi: "Neem (नीम)",
+  img: './images/neem.jpeg',
   c: 301.67,
   o: 804.25,
   height: '15-20 m',
@@ -1099,7 +1107,7 @@ const TreeCard = React.memo(function TreeCard({
   const gs = getGrowthStyle(tree.growth);
   const co2Pct = hasCO2 ? Math.max(4, tree.c / MAX_CO2 * 100) : 0;
   const o2Pct = hasCO2 ? Math.max(4, tree.o / MAX_O2 * 100) : 0;
-  const imageUrl = "https://images.unsplash.com/photo-1542273917363-3b1817f69a5d?q=80&w=400&h=300&fit=crop";
+  const imageUrl = tree.img || "https://images.unsplash.com/photo-1542273917363-3b1817f69a5d?q=80&w=400&h=300&fit=crop";
   const hindiStr = tree.hindi || "";
   const hasSci = hindiStr.includes("(");
   const mainHindi = hasSci ? hindiStr.split("(")[1].replace(")", "").trim() : hindiStr;

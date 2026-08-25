@@ -2125,9 +2125,9 @@ function Footer() {
 function GreenAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const greetings = [
-    'Hello! ðŸŒ± I\'m the Green Assistant. I can dynamically read this website to answer your questions simply and briefly. How can I help you today?',
-    'Welcome! ðŸŒ¿ I am your AI-powered (but API-free!) Green Assistant. Ask me anything about tree species, afforestation, or our services.',
-    'Namaste! ðŸ™ I\'m here to help you design with nature. What would you like to know about our Miyawaki forests?'
+    'Hello! 🌱 I\'m the Green Assistant. I can dynamically read this website to answer your questions simply and briefly. How can I help you today?',
+    'Welcome! 🌿 I am your AI-powered (but API-free!) Green Assistant. Ask me anything about tree species, afforestation, or our services.',
+    'Namaste! 🙏 I\'m here to help you design with nature. What would you like to know about our Miyawaki forests?'
   ];
   const [messages, setMessages] = useState([{
     role: 'assistant',
@@ -2171,74 +2171,74 @@ function GreenAssistant() {
 
     if (/^(hi|hello|hey|namaste|good\s*(morning|afternoon|evening))\b/i.test(q)) {
       const responses = [
-        'Hello! ðŸŒ± How can I assist you with your green journey today?',
-        'Hey there! ðŸŒ¿ Ready to learn about afforestation?',
-        'Namaste! ðŸ™ I can help you with tree data, services, or the Miyawaki method.'
+        'Hello! 🌱 How can I assist you with your green journey today?',
+        'Hey there! 🌿 Ready to learn about afforestation?',
+        'Namaste! 🙏 I can help you with tree data, services, or the Miyawaki method.'
       ];
-      return responses[Math.floor(Math.random() * responses.length)] + '\n\nTry asking me:\n* "Which tree absorbs the most COâ‚‚?"\n* "What is the Miyawaki Method?"';
+      return responses[Math.floor(Math.random() * responses.length)] + '\n\nTry asking me:\n* "Which tree absorbs the most CO₂?"\n* "What is the Miyawaki Method?"';
     }
 
     if (/\b(thanks|thank\s*you|thx|dhanyavaad|awesome|great)\b/i.test(q)) {
-      return 'You\'re very welcome! ðŸŒ± Every tree planted makes a difference! Let me know if you need anything else.';
+      return 'You\'re very welcome! 🌱 Every tree planted makes a difference! Let me know if you need anything else.';
     }
 
     if (/\b(bad|wrong|stupid|useless|frustrating)\b/i.test(q)) {
-      return 'I apologize if I haven\'t been helpful! ðŸ˜” I am a local assistant constantly learning. Could you rephrase your question about trees, services, or our methodology?';
+      return 'I apologize if I haven\'t been helpful! 😔 I am a local assistant constantly learning. Could you rephrase your question about trees, services, or our methodology?';
     }
 
     if (/\b(help|what can you|what do you do|features)\b/i.test(q)) {
-      return 'I can help you with:\n* ðŸ† **Insights** â€” "Which tree absorbs the most COâ‚‚?"\n* ðŸŒ³ **Species info** â€” "Tell me about Neem"\n* ðŸ’§ **Requirements** â€” "Which trees need low water?"\n* âš–ï¸ **Comparisons** â€” "Compare Neem and Tamarind"\n* ðŸ”¬ **Services** â€” "What services do you offer?"\n* â±ï¸ **Cost/Time** â€” "How long does a forest take to grow?"';
+      return 'I can help you with:\n* 🏆 **Insights** — "Which tree absorbs the most CO₂?"\n* 🌳 **Species info** — "Tell me about Neem"\n* 💧 **Requirements** — "Which trees need low water?"\n* ⚖️ **Comparisons** — "Compare Neem and Tamarind"\n* 🔬 **Services** — "What services do you offer?"\n* ⏱️ **Cost/Time** — "How long does a forest take to grow?"';
     }
 
     if (/\b(cost|price|expensive|cheap|budget|money)\b/i.test(q)) {
-      return 'ðŸ’° **Cost & Investment:**\n\nThe cost of an afforestation project depends on the area and specific requirements. However, the **Miyawaki Method** becomes entirely self-sustaining and maintenance-free after just 3 years, making it a highly cost-effective long-term investment!\n\nFor a detailed quote, please reach out via our **Contact** section.';
+      return '💰 **Cost & Investment:**\n\nThe cost of an afforestation project depends on the area and specific requirements. However, the **Miyawaki Method** becomes entirely self-sustaining and maintenance-free after just 3 years, making it a highly cost-effective long-term investment!\n\nFor a detailed quote, please reach out via our **Contact** section.';
     }
     
     if (/\b(time|how long|duration|years|months)\b/i.test(q)) {
-      return 'â±ï¸ **Timeframe:**\n\nUsing the Miyawaki Method, a forest grows **10x faster** than a conventional forest. It becomes completely self-sustaining in just **3 years** and mimics a 100-year-old forest in just **10 years**!';
+      return '⏱️ **Timeframe:**\n\nUsing the Miyawaki Method, a forest grows **10x faster** than a conventional forest. It becomes completely self-sustaining in just **3 years** and mimics a 100-year-old forest in just **10 years**!';
     }
     
     if (/\b(space|area|size|acres|square meters|sqm)\b/i.test(q)) {
-      return 'ðŸ“ **Space Requirements:**\n\nThe Miyawaki Method is incredibly space-efficient! We plant **3 to 5 saplings per square meter**. You can start a mini-forest in an area as small as a backyard (around 100 sq meters or 1000 sq ft).';
+      return '📏 **Space Requirements:**\n\nThe Miyawaki Method is incredibly space-efficient! We plant **3 to 5 saplings per square meter**. You can start a mini-forest in an area as small as a backyard (around 100 sq meters or 1000 sq ft).';
     }
 
     if (/\b(miyawaki|afforestation|layers|method)\b/i.test(q)) {
       if (/\b(layer|layers|4-layer|four-layer)\b/i.test(q)) {
-        return 'ðŸŒ³ **The Miyawaki 4-Layer System:**\n1. **Shrubs** (up to 6 feet)\n2. **Sub-trees** (up to 25 feet)\n3. **Trees** (up to 40 feet)\n4. **Canopy layer** (above 40 feet)\n\nThis ensures sunlight is received only from the top, promoting rapid upward growth.';
+        return '🌳 **The Miyawaki 4-Layer System:**\n1. **Shrubs** (up to 6 feet)\n2. **Sub-trees** (up to 25 feet)\n3. **Trees** (up to 40 feet)\n4. **Canopy layer** (above 40 feet)\n\nThis ensures sunlight is received only from the top, promoting rapid upward growth.';
       }
-      return 'ðŸŒ± **The Miyawaki Method** is an advanced afforestation technique that uses native species to create dense, multilayered forests.\n\n**Core Principles:**\n* **30x denser**, grows **10x faster**\n* **Maintenance-free** after 3 years\n* Uses **4 layers** (shrubs, sub-trees, trees, canopy)\n* Requires **3-5 saplings per square meter**';
+      return '🌱 **The Miyawaki Method** is an advanced afforestation technique that uses native species to create dense, multilayered forests.\n\n**Core Principles:**\n* **30x denser**, grows **10x faster**\n* **Maintenance-free** after 3 years\n* Uses **4 layers** (shrubs, sub-trees, trees, canopy)\n* Requires **3-5 saplings per square meter**';
     }
 
     if (/\b(fast|fastest|quick|rapid)\b/i.test(q) && /\b(grow|growth)\b/i.test(q)) {
       var fastTrees = TREE_DATA.filter(t => t.growth && (t.growth.includes('Fast') || t.growth.includes('Very Fast')));
-      return 'ðŸš€ **Fastest Growing Trees:**\n\n' + fastTrees.slice(0, 5).map(t => '* **' + t.name + '** (' + t.growth + ')').join('\n') + '\n\nThese are excellent for rapid canopy establishment!';
+      return '🚀 **Fastest Growing Trees:**\n\n' + fastTrees.slice(0, 5).map(t => '* **' + t.name + '** (' + t.growth + ')').join('\n') + '\n\nThese are excellent for rapid canopy establishment!';
     }
     if (/\b(slow|slowest)\b/i.test(q) && /\b(grow|growth)\b/i.test(q)) {
       var slowTrees = TREE_DATA.filter(t => t.growth && t.growth.includes('Slow'));
-      return 'ðŸ¢ **Slowest Growing Trees:**\n\n' + slowTrees.slice(0, 5).map(t => '* **' + t.name + '** (' + t.growth + ')').join('\n');
+      return '🐢 **Slowest Growing Trees:**\n\n' + slowTrees.slice(0, 5).map(t => '* **' + t.name + '** (' + t.growth + ')').join('\n');
     }
 
     if (/\b(water|irrigation)\b/i.test(q) && /\b(low|less|little|dry)\b/i.test(q)) {
       var lowWater = TREE_DATA.filter(t => t.water && t.water.includes('Low'));
-      return 'ðŸŒµ **Low Water Requirement Trees:**\n\n' + lowWater.slice(0, 5).map(t => '* **' + t.name + '**').join('\n') + '\n\nGreat for dry or drought-prone areas.';
+      return '🌵 **Low Water Requirement Trees:**\n\n' + lowWater.slice(0, 5).map(t => '* **' + t.name + '**').join('\n') + '\n\nGreat for dry or drought-prone areas.';
     }
     if (/\b(water|irrigation)\b/i.test(q) && /\b(high|more|a lot|wet)\b/i.test(q)) {
       var highWater = TREE_DATA.filter(t => t.water && t.water.includes('High'));
-      return 'ðŸ’§ **High Water Requirement Trees:**\n\n' + highWater.map(t => '* **' + t.name + '**').join('\n');
+      return '💧 **High Water Requirement Trees:**\n\n' + highWater.map(t => '* **' + t.name + '**').join('\n');
     }
 
     if (/\b(most|best|highest|top|maximum|greatest|rank\s*1)\b/i.test(q) && /co2|carbon|absorb/i.test(q)) {
       var sorted = TREE_DATA.slice().sort(function (a, b) {
         return b.c - a.c;
       });
-      return 'ðŸ† **Top COâ‚‚ Absorbers (kg/year):**\n\n' + sorted.slice(0, 5).map(t => '* **' + t.name + '** â€” ' + t.c.toLocaleString() + ' kg/yr').join('\n');
+      return '🏆 **Top CO₂ Absorbers (kg/year):**\n\n' + sorted.slice(0, 5).map(t => '* **' + t.name + '** — ' + t.c.toLocaleString() + ' kg/yr').join('\n');
     }
 
     if (/\b(most|best|highest|top|maximum|greatest)\b/i.test(q) && /o2|oxygen|release|produce|breath/i.test(q)) {
       var sorted = TREE_DATA.slice().sort(function (a, b) {
         return b.o - a.o;
       });
-      return 'ðŸŒ¬ï¸ **Top Oâ‚‚ Producers (kg/year):**\n\n' + sorted.slice(0, 5).map(t => '* **' + t.name + '** â€” ' + t.o.toLocaleString() + ' kg/yr').join('\n');
+      return '🌬️ **Top O₂ Producers (kg/year):**\n\n' + sorted.slice(0, 5).map(t => '* **' + t.name + '** — ' + t.o.toLocaleString() + ' kg/yr').join('\n');
     }
 
     if (currentContext && mentionedTrees.length === 0) {
@@ -2265,11 +2265,11 @@ function GreenAssistant() {
         hasAnswered = true;
       }
       if (/co2|carbon/i.test(q)) {
-        response += '* COâ‚‚ Absorbed: ' + currentContext.c.toLocaleString() + ' kg/yr';
+        response += '* CO₂ Absorbed: ' + currentContext.c.toLocaleString() + ' kg/yr';
         hasAnswered = true;
       }
       if (/o2|oxygen/i.test(q)) {
-        response += '* Oâ‚‚ Released: ' + currentContext.o.toLocaleString() + ' kg/yr';
+        response += '* O₂ Released: ' + currentContext.o.toLocaleString() + ' kg/yr';
         hasAnswered = true;
       }
       if (hasAnswered) return response;
@@ -2278,17 +2278,17 @@ function GreenAssistant() {
     if (mentionedTrees.length === 1) {
       var t = mentionedTrees[0];
       let extra = '';
-      if (q.includes('safe') || q.includes('distance')) extra += '\n* ðŸ“ **Safe Distance:** Building ' + t.safeBldg + ', Road ' + t.safeRoad;
-      if (q.includes('water')) extra += '\n* ðŸ’§ **Water:** ' + t.water;
-      if (q.includes('grow')) extra += '\n* ðŸ“ˆ **Growth:** ' + t.growth;
-      return 'ðŸŒ³ **' + t.name + '** (' + t.hindi + ')\n\n* ðŸŒ¿ **COâ‚‚ Absorbed:** ' + t.c.toLocaleString() + ' kg/year\n* ðŸŒ¬ï¸ **Oâ‚‚ Released:** ' + t.o.toLocaleString() + ' kg/year' + extra + '\n* ðŸš— Offsets ' + getCarEquivalent(t.c) + ' days of car driving/year\n* ðŸ‘¥ Provides Oâ‚‚ for ' + getPeopleO2(t.o) + ' people/year\n\n*(You can now ask follow-up questions like "what is its water requirement?" or "how tall does it grow?")*';
+      if (q.includes('safe') || q.includes('distance')) extra += '\n* 📏 **Safe Distance:** Building ' + t.safeBldg + ', Road ' + t.safeRoad;
+      if (q.includes('water')) extra += '\n* 💧 **Water:** ' + t.water;
+      if (q.includes('grow')) extra += '\n* 📈 **Growth:** ' + t.growth;
+      return '🌳 **' + t.name + '** (' + t.hindi + ')\n\n* 🌿 **CO₂ Absorbed:** ' + t.c.toLocaleString() + ' kg/year\n* 🌬️ **O₂ Released:** ' + t.o.toLocaleString() + ' kg/year' + extra + '\n* 🚗 Offsets ' + getCarEquivalent(t.c) + ' days of car driving/year\n* 👥 Provides O₂ for ' + getPeopleO2(t.o) + ' people/year\n\n*(You can now ask follow-up questions like "what is its water requirement?" or "how tall does it grow?")*';
     }
 
     if (mentionedTrees.length >= 2) {
       var trees = mentionedTrees.slice(0, 4);
-      var response = 'âš–ï¸ **Comparison:**\n\n';
+      var response = '⚖️ **Comparison:**\n\n';
       trees.forEach(function (t) {
-        response += '* **' + t.name + ':** ' + t.c.toLocaleString() + ' kg COâ‚‚ | ' + (t.water || 'N/A') + ' Water | ' + (t.growth || 'N/A') + ' Growth\n';
+        response += '* **' + t.name + ':** ' + t.c.toLocaleString() + ' kg CO₂ | ' + (t.water || 'N/A') + ' Water | ' + (t.growth || 'N/A') + ' Growth\n';
       });
       var best = trees.reduce(function (a, b) {
         return a.c > b.c ? a : b;
@@ -2298,13 +2298,13 @@ function GreenAssistant() {
       });
       if (best.rank !== worst.rank) {
         var diff = ((best.c - worst.c) / worst.c * 100).toFixed(0);
-        response += '\nðŸ’¡ **' + best.name + '** absorbs ' + diff + '% more COâ‚‚ than **' + worst.name + '**.';
+        response += '\n💡 **' + best.name + '** absorbs ' + diff + '% more CO₂ than **' + worst.name + '**.';
       }
       return response;
     }
 
     if (/\b(service|offer|what.*(do|does)|root\s*analysis|canopy|thermal|planning)\b/i.test(q)) {
-      return 'ðŸ”¬ **Our Core Services:**\n\n1. **Root & Plot Analysis:** We map root zones against your site boundaries and utilities.\n2. **Canopy Projection:** Visualize future canopy coverage at 5, 10, and 25-year intervals.\n3. **Thermal Impact Assessment:** Quantify the cooling effect of strategic tree placement.';
+      return '🔬 **Our Core Services:**\n\n1. **Root & Plot Analysis:** We map root zones against your site boundaries and utilities.\n2. **Canopy Projection:** Visualize future canopy coverage at 5, 10, and 25-year intervals.\n3. **Thermal Impact Assessment:** Quantify the cooling effect of strategic tree placement.';
     }
 
     if (/\b(total|how many|database|all trees|overall|sum|statistic)\b/i.test(q)) {
@@ -2314,22 +2314,22 @@ function GreenAssistant() {
       var totalO2 = TREE_DATA.reduce(function (s, t) {
         return s + t.o;
       }, 0);
-      return 'ðŸ“Š **Database Overview:**\n\n* **Total species:** ' + TREE_DATA.length + '\n* **Combined COâ‚‚ absorption:** ' + totalCO2.toLocaleString(undefined, {
+      return '📊 **Database Overview:**\n\n* **Total species:** ' + TREE_DATA.length + '\n* **Combined CO₂ absorption:** ' + totalCO2.toLocaleString(undefined, {
         maximumFractionDigits: 0
-      }) + ' kg/year\n* **Combined Oâ‚‚ release:** ' + totalO2.toLocaleString(undefined, {
+      }) + ' kg/year\n* **Combined O₂ release:** ' + totalO2.toLocaleString(undefined, {
         maximumFractionDigits: 0
-      }) + ' kg/year\n* **Top absorber:** ' + TREE_DATA[0].name + ' (' + TREE_DATA[0].c + ' kg COâ‚‚/yr)';
+      }) + ' kg/year\n* **Top absorber:** ' + TREE_DATA[0].name + ' (' + TREE_DATA[0].c + ' kg CO₂/yr)';
     }
 
     if (/\b(plant|planting|impact|environment|green|sustainable|benefit|ecology)\b/i.test(q)) {
-      return 'ðŸŒ± **Environmental Impact of Tree Planting:**\n\nPlanting just 10 ' + TREE_DATA[0].name + ' trees would absorb ' + (TREE_DATA[0].c * 10).toLocaleString() + ' kg of COâ‚‚ per year!\n\nUse our Planting Impact Calculator in the Tree Database section to explore different species and quantities.';
+      return '🌱 **Environmental Impact of Tree Planting:**\n\nPlanting just 10 ' + TREE_DATA[0].name + ' trees would absorb ' + (TREE_DATA[0].c * 10).toLocaleString() + ' kg of CO₂ per year!\n\nUse our Planting Impact Calculator in the Tree Database section to explore different species and quantities.';
     }
 
     if (/\bcompare\b/i.test(q)) {
-      return 'I\'d love to help you compare trees! Try asking:\n* "Compare Neem and Tamarind"\n* "Compare Mango and Guava"\n\nYou can also use the Compare mode in the Tree Database section! ðŸ‘†';
+      return 'I\'d love to help you compare trees! Try asking:\n* "Compare Neem and Tamarind"\n* "Compare Mango and Guava"\n\nYou can also use the Compare mode in the Tree Database section! 👆';
     }
 
-    return 'I\'m not completely sure about that! ðŸ¤” But I can help you with:\n* **Tree species data** (e.g., "Tell me about Neem")\n* **Properties** (e.g., "Which trees need low water?")\n* **Our services** (Root Analysis, Canopy, Thermal)\n* **Miyawaki Method**\n\nTry asking "Which tree absorbs the most COâ‚‚?" ðŸŒ¿';
+    return 'I\'m not completely sure about that! 🤔 But I can help you with:\n* **Tree species data** (e.g., "Tell me about Neem")\n* **Properties** (e.g., "Which trees need low water?")\n* **Our services** (Root Analysis, Canopy, Thermal)\n* **Miyawaki Method**\n\nTry asking "Which tree absorbs the most CO₂?" 🌿';
   }
 
   function handleSend(forcedQuery) {
@@ -2368,22 +2368,22 @@ function GreenAssistant() {
   }
 
   var allQuickActions = [{
-    label: 'ðŸ† Top COâ‚‚ trees',
+    label: '🏆 Top CO₂ trees',
     query: 'Which trees absorb the most CO2?'
   }, {
-    label: 'ðŸŒ³ About Neem',
+    label: '🌳 About Neem',
     query: 'Tell me about Neem'
   }, {
-    label: 'ðŸ’§ Low Water',
+    label: '💧 Low Water',
     query: 'Which trees need low water?'
   }, {
-    label: 'ðŸš€ Fast Growers',
+    label: '🚀 Fast Growers',
     query: 'What are the fastest growing trees?'
   }, {
-    label: 'ðŸŒ± Miyawaki Method',
+    label: '🌱 Miyawaki Method',
     query: 'What is the Miyawaki Method?'
   }, {
-    label: 'ðŸ’° Cost & Time',
+    label: '💰 Cost & Time',
     query: 'How much does it cost and how long does it take?'
   }];
   
@@ -2437,7 +2437,7 @@ function GreenAssistant() {
                 className: "flex items-center gap-1.5 mt-1",
                 children: [/*#__PURE__*/_jsxDEV("span", {
                   className: "text-[12px] text-cream-100/60 font-medium tracking-wide",
-                  children: "AI-Powered â€¢ Context Aware"
+                  children: "AI-Powered • Context Aware"
                 }, void 0, false)]
               }, void 0, true)]
             }, void 0, true)]
@@ -2447,7 +2447,7 @@ function GreenAssistant() {
               onClick: function () {
                 setMessages([{
                   role: 'assistant',
-                  content: 'Chat history cleared. How can I help you today? ðŸŒ±'
+                  content: 'Chat history cleared. How can I help you today? 🌱'
                 }]);
                 setContextTree(null);
               },
@@ -2498,7 +2498,7 @@ function GreenAssistant() {
                 }, void 0, false) : /*#__PURE__*/_jsxDEV("div", {
                   className: "rounded-[20px] px-6 py-4 text-[14.5px] leading-relaxed bg-forest-800/70 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
                   dangerouslySetInnerHTML: {
-                    __html: window.marked ? marked.parse(msg.content.replace(/Ã°Å¸[^\\s]+/g, 'âœ¨').replace(/Ã¢â‚¬Â¢/g, 'â€¢').replace(/Ã¢â‚¬â€/g, 'â€”').replace(/COÃ¢â€šâ€š/g, 'COâ‚‚').replace(/OÃ¢â€šâ€š/g, 'Oâ‚‚')) : msg.content
+                    __html: window.marked ? marked.parse(msg.content.replace(/ðŸ[^\\s]+/g, '✨').replace(/â€¢/g, '•').replace(/â€”/g, '—').replace(/COâ‚‚/g, 'CO₂').replace(/Oâ‚‚/g, 'O₂')) : msg.content
                   }
                 }, void 0, false)]
               }, void 0, true)
@@ -2607,6 +2607,7 @@ function GreenAssistant() {
     }, void 0, true)]
   }, void 0, true);
 }
+
 
 function MiyawakiMethod() {
   return /*#__PURE__*/_jsxDEV("section", {

@@ -1126,7 +1126,7 @@ const TreeCard = React.memo(function TreeCard({
       transitionDelay: `${index % 12 * 0.06}s`
     },
     children: /*#__PURE__*/_jsxDEV("div", {
-      className: `bg-white/70 backdrop-blur-xl rounded-xl overflow-hidden shadow-sm border border-white/40 transition-all duration-300 hover:shadow-xl hover:bg-white/80 hover:border-white/60 flex flex-col group ${isSelected ? 'ring-2 ring-forest-600' : ''}`,
+      className: `bg-white rounded-xl overflow-hidden shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-xl flex flex-col group ${isSelected ? 'ring-2 ring-forest-600' : ''}`,
       children: [/*#__PURE__*/_jsxDEV("div", {
         className: "relative h-48 w-full bg-gray-100 overflow-hidden cursor-pointer",
         onClick: function () {
@@ -1152,7 +1152,7 @@ const TreeCard = React.memo(function TreeCard({
           }, void 0, false)
         }, void 0, false)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-        className: "px-4 pt-4 pb-3 cursor-pointer bg-transparent",
+        className: "px-4 pt-4 pb-3 cursor-pointer bg-white",
         onClick: function () {
           setOpen(!open);
         },
@@ -1167,7 +1167,7 @@ const TreeCard = React.memo(function TreeCard({
           children: scientificName
         }, void 0, false)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-        className: "overflow-hidden transition-all duration-500 ease-in-out bg-transparent",
+        className: "overflow-hidden transition-all duration-500 ease-in-out bg-white",
         style: {
           maxHeight: open ? '800px' : '0px',
           opacity: open ? 1 : 0

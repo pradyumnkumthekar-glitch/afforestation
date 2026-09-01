@@ -755,6 +755,7 @@ const TREE_DATA = [{
 }, {
   rank: 16,
   name: "Teak",
+  img: 'images/teak.jpg',
   hindi: "Sagwan (सागवान)",
   c: 149.42,
   o: 398.36,
@@ -767,6 +768,7 @@ const TREE_DATA = [{
 }, {
   rank: 17,
   name: "Pungam tree",
+  img: 'images/pungam.jpg',
   hindi: "Karanj (करंज)",
   c: 140.59,
   o: 374.81,
@@ -779,6 +781,7 @@ const TREE_DATA = [{
 }, {
   rank: 18,
   name: "Spanish Cherry",
+  img: 'images/spanish-cherry.jpg',
   hindi: "Maulsari (मौलसिरी)",
   c: 125.43,
   o: 334.38,
@@ -791,6 +794,7 @@ const TREE_DATA = [{
 }, {
   rank: 19,
   name: "Paradise tree",
+  img: 'images/paradise.jpg',
   hindi: "Lakshmi Taru (लक्ष्मी तरु)",
   c: 119.71,
   o: 319.15,
@@ -803,6 +807,7 @@ const TREE_DATA = [{
 }, {
   rank: 20,
   name: "Wild almond tree",
+  img: 'images/wild-almond.jpg',
   hindi: "Jangli Badam (जंगली बादाम)",
   c: 116.82,
   o: 311.44,
@@ -815,6 +820,7 @@ const TREE_DATA = [{
 }, {
   rank: 21,
   name: "Wood apple",
+  img: 'images/wood-apple.jpg',
   hindi: "Kaitha (कैथा)",
   c: 106.71,
   o: 284.49,
@@ -827,6 +833,7 @@ const TREE_DATA = [{
 }, {
   rank: 22,
   name: "Mulberry tree",
+  img: 'images/mulberry.jpg',
   hindi: "Shahtoot (शहतूत)",
   c: 94.15,
   o: 251.00,
@@ -839,6 +846,7 @@ const TREE_DATA = [{
 }, {
   rank: 23,
   name: "Guava tree",
+  img: 'images/guava.jpg',
   hindi: "Amrud (अमरूद)",
   c: 85.34,
   o: 227.53,
@@ -851,6 +859,7 @@ const TREE_DATA = [{
 }, {
   rank: 24,
   name: "Casuarina",
+  img: 'images/casuarina.jpg',
   hindi: "Jhau (झाऊ)",
   c: 80.53,
   o: 214.70,
@@ -863,6 +872,7 @@ const TREE_DATA = [{
 }, {
   rank: 25,
   name: "Bibhitaki tree",
+  img: 'images/bibhitaki.jpg',
   hindi: "Baheda (बहेड़ा)",
   c: 76.60,
   o: 204.21,
@@ -875,6 +885,7 @@ const TREE_DATA = [{
 }, {
   rank: 26,
   name: "Purple bauhinia",
+  img: 'images/purple-bauhinia.jpg',
   hindi: "Kachnar (कचनार)",
   c: 70.08,
   o: 186.83,
@@ -887,6 +898,7 @@ const TREE_DATA = [{
 }, {
   rank: 27,
   name: "Butter tree",
+  img: 'images/butter-tree.jpg',
   hindi: "Mahua (महुआ)",
   c: 69.43,
   o: 185.11,
@@ -899,6 +911,7 @@ const TREE_DATA = [{
 }, {
   rank: 28,
   name: "Indian mulberry",
+  img: 'images/indian-mulberry.jpg',
   hindi: "Aal (आल)",
   c: 68.81,
   o: 183.44,
@@ -911,6 +924,7 @@ const TREE_DATA = [{
 }, {
   rank: 29,
   name: "Geranium tree",
+  img: 'images/geranium-tree.jpg',
   hindi: "Lal Lasora (लाल लसोड़ा)",
   c: 57.53,
   o: 153.38,
@@ -923,6 +937,7 @@ const TREE_DATA = [{
 }, {
   rank: 30,
   name: "Yellow bells",
+  img: 'images/yellow-bells.jpg',
   hindi: "Pili Chameli (पीली चमेली)",
   c: 50.19,
   o: 133.80,

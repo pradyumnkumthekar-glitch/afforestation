@@ -253,7 +253,7 @@ function Navbar() {
   }];
   return /*#__PURE__*/_jsxDEV("nav", {
     id: "navbar",
-    className: ixed top-0 inset-x-0 z-50 transition-all duration-300 ,
+    className: `fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-forest-950/60 backdrop-blur-md border-b border-white/10 shadow-lg py-3' : 'bg-transparent py-5'}`,
     children: [/*#__PURE__*/_jsxDEV("div", {
       className: "max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between",
       children: [/*#__PURE__*/_jsxDEV("a", {
@@ -2330,7 +2330,7 @@ function TreeDatabase() {
             /*#__PURE__*/_jsxDEV("div", {
               className: "p-6 sm:p-8",
               children: /*#__PURE__*/_jsxDEV("div", {
-                className: "grid grid-cols-2 gap-4 sm:gap-6",
+                className: "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6",
                 children: [
                   /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50 hover:border-earth-500/30 transition-colors", children: [
                     /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "CO\u2082 Absorption" }, void 0, false),
@@ -2373,68 +2373,7 @@ function TreeDatabase() {
   }, void 0, true);
 }
 
-function Team() {
-  const teamMembers = [
-    { name: 'Pradyumn Kumthekar', initials: 'PK' },
-    { name: 'Vaibhav Chalakh', initials: 'VC' },
-    { name: 'Aaryan Lengure', initials: 'AL' },
-    { name: 'Aarush Rathod', initials: 'AR' },
-    { name: 'Parth Ambartani', initials: 'PA' }
-  ];
 
-  return /*#__PURE__*/_jsxDEV("section", {
-    className: "py-24 bg-forest-950 border-t border-forest-900/50 relative overflow-hidden",
-    children: [/*#__PURE__*/_jsxDEV("div", {
-      className: "absolute inset-0 overflow-hidden pointer-events-none",
-      children: [/*#__PURE__*/_jsxDEV("div", {
-        className: "absolute top-0 right-0 w-[600px] h-[600px] bg-earth-900/10 rounded-full blur-[120px] mix-blend-screen translate-x-1/3 -translate-y-1/3"
-      }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-        className: "absolute bottom-0 left-0 w-[500px] h-[500px] bg-forest-800/15 rounded-full blur-[100px] mix-blend-screen -translate-x-1/3 translate-y-1/3"
-      }, void 0, false)]
-    }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-      className: "max-w-7xl mx-auto px-6 lg:px-8 relative z-10",
-      children: [/*#__PURE__*/_jsxDEV("div", {
-        className: "text-center mb-16",
-        children: [/*#__PURE__*/_jsxDEV("div", {
-          className: "inline-flex items-center justify-center gap-2 mb-6 px-6 py-2.5 rounded-full bg-forest-900/50 border border-forest-800/60 shadow-lg backdrop-blur-sm",
-          children: [/*#__PURE__*/_jsxDEV(LucideIcon, {
-            name: "users",
-            size: 18,
-            className: "text-earth-400"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-earth-400 font-semibold tracking-[0.25em] uppercase text-sm",
-            children: "Our Team"
-          }, void 0, false)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("h2", {
-          className: "text-4xl md:text-5xl font-serif font-bold text-cream-50 mb-6",
-          children: "Meet the Minds Behind the Vision"
-        }, void 0, false), /*#__PURE__*/_jsxDEV("p", {
-          className: "text-lg text-cream-100/70 max-w-2xl mx-auto",
-          children: "A dedicated group of visionaries working together to create a sustainable and greener future."
-        }, void 0, false)]
-      }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-        className: "flex flex-wrap justify-center gap-8",
-        children: teamMembers.map((member, i) => /*#__PURE__*/_jsxDEV("div", {
-          className: "group relative w-72 p-8 rounded-3xl bg-forest-900/20 border border-forest-800/50 hover:bg-forest-900/40 hover:border-earth-800/50 transition-all duration-500 overflow-hidden text-center backdrop-blur-sm hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(220,160,80,0.15)]",
-          children: [/*#__PURE__*/_jsxDEV("div", {
-            className: "absolute inset-0 bg-gradient-to-br from-earth-400/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            className: "w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-forest-800 to-forest-900 border border-forest-700/50 flex items-center justify-center mb-6 shadow-inner group-hover:shadow-[0_0_20px_rgba(230,189,126,0.2)] transition-all duration-500",
-            children: /*#__PURE__*/_jsxDEV("span", {
-              className: "text-3xl font-serif font-bold text-earth-300 group-hover:text-earth-400 transition-colors duration-300",
-              children: member.initials
-            }, void 0, false)
-          }, void 0, false), /*#__PURE__*/_jsxDEV("h3", {
-            className: "text-xl font-bold text-cream-50 mb-2 font-sans tracking-wide group-hover:text-cream-100 transition-colors",
-            children: member.name
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            className: "w-12 h-1 bg-earth-900/50 mx-auto rounded-full group-hover:bg-earth-500 group-hover:w-20 transition-all duration-500"
-          }, void 0, false)]
-        }, i, true))
-      }, void 0, false)]
-    }, void 0, true)]
-  }, void 0, true);
-}
 function App() {
   return /*#__PURE__*/_jsxDEV(_Fragment, {
     children: [/*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(TreeDatabase, {}, void 0, false),  /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]

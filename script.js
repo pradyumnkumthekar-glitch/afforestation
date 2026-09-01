@@ -253,7 +253,7 @@ function Navbar() {
   }];
   return /*#__PURE__*/_jsxDEV("nav", {
     id: "navbar",
-    className: `fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${scrolled ? 'bg-forest-950/90 backdrop-blur-xl shadow-lg shadow-black/20 py-3' : 'bg-transparent py-5'}`,
+    className: ixed top-0 inset-x-0 z-50 transition-all duration-300 ,
     children: [/*#__PURE__*/_jsxDEV("div", {
       className: "max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between",
       children: [/*#__PURE__*/_jsxDEV("a", {
@@ -1463,7 +1463,7 @@ function Contact() {
 ────────────────────────────────────────────── */
 function Footer() {
   return /*#__PURE__*/_jsxDEV("footer", {
-    className: "border-t border-forest-800/30 py-12 lg:py-16",
+    className: "bg-forest-950/70 backdrop-blur-lg border-t border-white/10 py-12 lg:py-16 relative z-10",
     children: /*#__PURE__*/_jsxDEV("div", {
       className: "max-w-7xl mx-auto px-6 lg:px-8",
       children: [/*#__PURE__*/_jsxDEV("div", {
@@ -2268,7 +2268,7 @@ function TreeDatabase() {
             children: filteredTrees.map(function(tree) {
               return /*#__PURE__*/_jsxDEV("div", {
                 key: tree.rank,
-                className: "group bg-forest-900/30 rounded-2xl overflow-hidden cursor-pointer hover:-translate-y-2 transition-all duration-300 border border-forest-800/50 hover:border-earth-500/50 hover:shadow-[0_15px_30px_-10px_rgba(220,160,80,0.2)]",
+                className: "group bg-forest-900/40 backdrop-blur-lg border border-white/10 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden cursor-pointer hover:-translate-y-2 hover:shadow-[0_8px_40px_rgb(0,0,0,0.2)] transition-all duration-300",
                 onClick: function() { setSelectedTree(tree); },
                 children: [
                   /*#__PURE__*/_jsxDEV("div", {
@@ -2302,7 +2302,7 @@ function TreeDatabase() {
         className: "fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-forest-950/90 backdrop-blur-xl animate-fade-in",
         onClick: function() { setSelectedTree(null); },
         children: /*#__PURE__*/_jsxDEV("div", {
-          className: "bg-gradient-to-br from-forest-900 to-forest-950 rounded-3xl overflow-hidden max-w-3xl w-full max-h-[90vh] overflow-y-auto border border-forest-800/60 shadow-[0_30px_60px_rgba(0,0,0,0.6)] animate-fade-in-up",
+          className: "bg-forest-900/75 backdrop-blur-xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-up",
           onClick: function(e) { e.stopPropagation(); },
           children: [
             /*#__PURE__*/_jsxDEV("div", {

@@ -2437,7 +2437,7 @@ function Team() {
 }
 function App() {
   return /*#__PURE__*/_jsxDEV(_Fragment, {
-    children: [/*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(TreeDatabase, {}, void 0, false), /*#__PURE__*/_jsxDEV(Team, {}, void 0, false), /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]
+    children: [/*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(TreeDatabase, {}, void 0, false),  /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]
   }, void 0, true);
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/_jsxDEV(App, {}, void 0, false));

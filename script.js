@@ -364,7 +364,7 @@ function Hero() {
           children: "Sustainable Site Planning"
         }, void 0, false)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("h1", {
-        className: "animate-fade-in-up opacity-0 delay-100 font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight sm:leading-[0.95] tracking-tight mb-6 break-words",
+        className: "animate-fade-in-up opacity-0 delay-100 font-serif text-4xl sm:text-5xl md:text-6xl lg:text-6xl xl:text-7xl font-semibold leading-tight sm:leading-tight tracking-tight mb-6 break-words",
         children: [/*#__PURE__*/_jsxDEV("span", {
           className: "text-cream-50",
           children: "Design with "
@@ -379,7 +379,7 @@ function Hero() {
           children: "Future"
         }, void 0, false)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("p", {
-        className: "animate-fade-in-up opacity-0 delay-300 max-w-2xl mx-auto text-base sm:text-lg text-cream-200/60 leading-relaxed mb-10 font-light",
+        className: "animate-fade-in-up opacity-0 delay-300 max-w-2xl mx-auto text-base sm:text-lg lg:text-xl text-cream-200/80 leading-relaxed mb-10 font-normal",
         children: ["We help land developers and construction planners quantify how specific tree species affect their sites — from canopy coverage and root spread to measurable temperature reduction — so every build works ", /*#__PURE__*/_jsxDEV("em", {
           className: "text-cream-200/80 not-italic font-medium",
           children: "with"
@@ -1551,6 +1551,15 @@ function Footer() {
             children: "Parth Ambartani"
           }, void 0, false)]
         }, void 0, true)]
+      }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
+        className: "mt-12 pt-8 border-t border-forest-800/30 text-center animate-fade-in-up delay-200",
+        children: [/*#__PURE__*/_jsxDEV("p", {
+          className: "font-serif italic text-earth-300/60 mb-3 text-sm tracking-widest uppercase",
+          children: "Special Thanks To"
+        }, void 0, false), /*#__PURE__*/_jsxDEV("h3", {
+          className: "font-sans font-bold text-2xl md:text-3xl bg-clip-text text-transparent bg-gradient-to-r from-earth-400 via-cream-200 to-earth-500 animate-pulse-slow drop-shadow-lg",
+          children: "Lokesh Dilip Toshniwal"
+        }, void 0, false)]
       }, void 0, true)]
     }, void 0, true)
   }, void 0, false);
@@ -1745,6 +1754,14 @@ function GreenAssistant() {
 
     if (/\b(service|offer|what.*(do|does)|root\s*analysis|canopy|thermal|planning)\b/i.test(q)) {
       return '🔬 **Our Core Services:**\n\n1. **Root & Plot Analysis:** We map root zones against your site boundaries and utilities.\n2. **Canopy Projection:** Visualize future canopy coverage at 5, 10, and 25-year intervals.\n3. **Thermal Impact Assessment:** Quantify the cooling effect of strategic tree placement.';
+    }
+
+    if (/\b(lokesh|toshniwal|dilip|special thanks)\b/i.test(q)) {
+      return '✨ **Special Thanks:**\n\nA massive shoutout to **Lokesh Dilip Toshniwal**! The afforestation platform is especially thankful for their vision and support. 🌿';
+    }
+
+    if (/\b(develop|developer|created|creator|made|who made)\b/i.test(q)) {
+      return '👨‍💻 **Development Team:**\n\nThis platform was brought to life by an amazing team:\n* **Pradyumn Kumthekar**\n* **Vaibhav Chalakh**\n* **Aaryan Lengure**\n* **Aarush Rathod**\n* **Parth Ambartani**';
     }
 
     if (/\b(total|how many|database|all trees|overall|sum|statistic)\b/i.test(q)) {
@@ -2244,11 +2261,11 @@ function TreeDatabase() {
                 ]
               }, void 0, true),
               /*#__PURE__*/_jsxDEV("h2", {
-                className: "text-4xl md:text-5xl font-serif font-bold text-cream-50 mb-6",
+                className: "text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-cream-50 mb-6 tracking-tight",
                 children: "Native Tree Species"
               }, void 0, false),
               /*#__PURE__*/_jsxDEV("p", {
-                className: "text-lg text-cream-100/70 max-w-2xl mx-auto mb-8",
+                className: "text-base md:text-lg text-cream-100/90 max-w-2xl mx-auto mb-8 font-light",
                 children: "Explore our curated database of native tree species ideal for the Miyawaki method."
               }, void 0, false),
               /*#__PURE__*/_jsxDEV("div", {
@@ -2264,7 +2281,7 @@ function TreeDatabase() {
             ]
           }, void 0, true),
           /*#__PURE__*/_jsxDEV("div", {
-            className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6",
+            className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8",
             children: filteredTrees.map(function(tree) {
               return /*#__PURE__*/_jsxDEV("div", {
                 key: tree.rank,
@@ -2275,16 +2292,16 @@ function TreeDatabase() {
                     className: "h-48 overflow-hidden relative",
                     children: [
                       /*#__PURE__*/_jsxDEV("img", { src: tree.img, alt: tree.name, className: "w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" }, void 0, false),
-                      /*#__PURE__*/_jsxDEV("div", { className: "absolute top-3 right-3 bg-forest-950/80 backdrop-blur-md text-earth-300 text-xs font-bold px-3 py-1.5 rounded-full border border-earth-500/30", children: "Rank #" + tree.rank }, void 0, false)
+                      /*#__PURE__*/_jsxDEV("div", { className: "absolute top-3 right-3 bg-forest-950/80 backdrop-blur-md text-earth-300 text-xs font-medium px-3 py-1.5 rounded-full border border-earth-500/30", children: "Rank #" + tree.rank }, void 0, false)
                     ]
                   }, void 0, true),
                   /*#__PURE__*/_jsxDEV("div", {
                     className: "p-6",
                     children: [
-                      /*#__PURE__*/_jsxDEV("h3", { className: "text-lg font-bold text-cream-50 mb-1 line-clamp-1", children: tree.name }, void 0, false),
-                      /*#__PURE__*/_jsxDEV("p", { className: "text-earth-400 text-sm mb-4 line-clamp-1", children: tree.hindi }, void 0, false),
+                      /*#__PURE__*/_jsxDEV("h3", { className: "text-xl font-serif font-medium text-cream-50 mb-1 line-clamp-1", children: tree.name }, void 0, false),
+                      /*#__PURE__*/_jsxDEV("p", { className: "text-earth-400/90 text-sm font-normal mb-4 line-clamp-1", children: tree.hindi }, void 0, false),
                       /*#__PURE__*/_jsxDEV("div", {
-                        className: "flex justify-between text-sm text-cream-100/60 border-t border-forest-800/50 pt-4",
+                        className: "flex justify-between text-sm text-cream-100/60 font-medium tracking-wide border-t border-forest-800/50 pt-4",
                         children: [
                           /*#__PURE__*/_jsxDEV("span", { children: ["CO\u2082: ", tree.c, " kg/yr"] }, void 0, true),
                           /*#__PURE__*/_jsxDEV("span", { children: ["O\u2082: ", tree.o, " kg/yr"] }, void 0, true)
@@ -2306,10 +2323,10 @@ function TreeDatabase() {
           onClick: function(e) { e.stopPropagation(); },
           children: [
             /*#__PURE__*/_jsxDEV("div", {
-              className: "relative h-72 sm:h-80",
+              className: "relative h-64 sm:h-80 md:h-96",
               children: [
                 /*#__PURE__*/_jsxDEV("img", { src: selectedTree.img, alt: selectedTree.name, className: "w-full h-full object-cover" }, void 0, false),
-                /*#__PURE__*/_jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-t from-forest-950 via-forest-950/20 to-transparent" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-t from-forest-950 via-forest-950/30 to-transparent" }, void 0, false),
                 /*#__PURE__*/_jsxDEV("button", {
                   className: "absolute top-6 right-6 w-10 h-10 bg-black/40 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-earth-500 hover:scale-110 transition-all border border-white/10",
                   onClick: function() { setSelectedTree(null); },
@@ -2319,10 +2336,10 @@ function TreeDatabase() {
                   className: "absolute bottom-6 left-6 right-6",
                   children: [
                     /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-3 mb-2", children: [
-                      /*#__PURE__*/_jsxDEV("h2", { className: "text-3xl sm:text-4xl font-serif font-bold text-white shadow-sm", children: selectedTree.name }, void 0, false),
-                      /*#__PURE__*/_jsxDEV("span", { className: "bg-earth-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg", children: "Rank #" + selectedTree.rank }, void 0, false)
+                      /*#__PURE__*/_jsxDEV("h2", { className: "text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-white shadow-sm", children: selectedTree.name }, void 0, false),
+                      /*#__PURE__*/_jsxDEV("span", { className: "bg-earth-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg", children: "Rank #" + selectedTree.rank }, void 0, false)
                     ] }, void 0, true),
-                    /*#__PURE__*/_jsxDEV("p", { className: "text-earth-300 text-xl font-medium", children: selectedTree.hindi }, void 0, false)
+                    /*#__PURE__*/_jsxDEV("p", { className: "text-earth-300/90 text-lg sm:text-xl font-normal", children: selectedTree.hindi }, void 0, false)
                   ]
                 }, void 0, true)
               ]
@@ -2356,7 +2373,7 @@ function TreeDatabase() {
                     /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Canopy Spread" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.canopy }, void 0, false)
                   ] }, void 0, true),
-                  (selectedTree.safeBldg || selectedTree.safeRoad) && /*#__PURE__*/_jsxDEV("div", { className: "col-span-2 bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
+                  (selectedTree.safeBldg || selectedTree.safeRoad) && /*#__PURE__*/_jsxDEV("div", { className: "sm:col-span-2 bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
                     /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-3 uppercase tracking-wider font-semibold", children: "Safe Distance" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "flex flex-wrap gap-8", children: [
                       selectedTree.safeBldg && /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2", children: [/*#__PURE__*/_jsxDEV("span", { className: "w-2 h-2 rounded-full bg-earth-500" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/70", children: "Building:" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-50 font-semibold", children: selectedTree.safeBldg }, void 0, false)] }, void 0, true),

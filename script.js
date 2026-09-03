@@ -1,3 +1,10 @@
+const _Fragment = React.Fragment;
+const _jsxDEV = function(type, props, key) {
+  if (key !== undefined) props.key = key;
+  return React.createElement(type, props);
+};
+const { useState, useEffect, useRef, useCallback, useMemo, useContext, useReducer } = React;
+
 const ICON_PATHS = {
   'tree-pine': [{
     d: 'M17 14l3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h10z'
@@ -663,11 +670,7 @@ const _jsxDEV = function(type, props, key) {
   if (key !== undefined) props.key = key;
   return React.createElement(type, props);
 };
-const {
-  useState,
-  useEffect,
-  useRef
-} = React;
+const { useState, useEffect, useRef, useCallback, useMemo, useContext, useReducer } = React;
 
 /* ──────────────────────────────────────────────
    Inline SVG Icon Component

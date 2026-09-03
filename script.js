@@ -1,10 +1,3 @@
-const _Fragment = React.Fragment;
-const _jsxDEV = function(type, props, key) {
-  if (key !== undefined) props.key = key;
-  return React.createElement(type, props);
-};
-const { useState, useEffect, useRef, useCallback, useMemo, useContext, useReducer } = React;
-
 const ICON_PATHS = {
   'tree-pine': [{
     d: 'M17 14l3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h10z'
@@ -716,7 +709,7 @@ function Navbar() {
   return /*#__PURE__*/_jsxDEV("nav", {
     id: "navbar",
     className: `fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-forest-950/60 backdrop-blur-md border-b border-white/10 shadow-lg py-3' : 'bg-transparent py-5'}`,
-    children: [React.createElement(MicroclimateImpactTicker, { plantationList: plantationList }), /*#__PURE__*/_jsxDEV("div", {
+    children: [React.createElement(MicroclimateImpactTicker, { plantationList: window.plantationList || [] }), /*#__PURE__*/_jsxDEV("div", {
       className: "max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between",
       children: [/*#__PURE__*/_jsxDEV("a", {
         href: "#",

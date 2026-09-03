@@ -413,10 +413,65 @@
     .typing-dot:nth-child(2) { animation-delay: -0.16s; }
     .typing-dot:nth-child(3) { animation-delay: 0s; }
 
+    /* Chat widget — glass-card integration */
+    .chat-widget-glass {
+      position: relative;
+      background: linear-gradient(135deg,
+          rgba(30, 63, 37, 0.45) 0%,
+          rgba(12, 30, 17, 0.60) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(90, 154, 99, 0.12);
+    }
+    .chat-widget-glass::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image:
+        linear-gradient(rgba(90, 154, 99, 0.5) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(90, 154, 99, 0.5) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+      border-radius: inherit;
+    }
+    .chat-widget-glass > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Chat messages — refined scrollbar */
     .chat-messages::-webkit-scrollbar { width: 4px; }
-    .chat-messages::-webkit-scrollbar-track { background: transparent; }
-    .chat-messages::-webkit-scrollbar-thumb { background: rgba(61, 125, 71, 0.3); border-radius: 2px; }
-    .chat-messages { scrollbar-width: thin; scrollbar-color: rgba(61,125,71,0.3) transparent; }
+    .chat-messages::-webkit-scrollbar-track { background: rgba(12, 30, 17, 0.4); }
+    .chat-messages::-webkit-scrollbar-thumb { background: #3d7d47; border-radius: 2px; }
+    .chat-messages::-webkit-scrollbar-thumb:hover { background: #5a9a63; }
+    .chat-messages { scrollbar-width: thin; scrollbar-color: #3d7d47 rgba(12,30,17,0.4); }
+
+    /* Quick prompts — horizontal scroll row */
+    .chat-quick-prompts-row {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 10px 20px 6px;
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    .chat-quick-prompts-row::-webkit-scrollbar { display: none; }
+    .chat-quick-prompts-row button {
+      flex-shrink: 0;
+      white-space: nowrap;
+    }
+
+    /* Export specs button */
+    .chat-export-btn {
+      transition: all 0.3s ease;
+    }
+    .chat-export-btn:hover {
+      color: rgba(255,255,255,0.9);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 12px rgba(212, 138, 53, 0.15);
+    }
   
     ::-webkit-scrollbar:horizontal { height: 8px; }
     ::-webkit-scrollbar-thumb:horizontal { background: #3d7d47; border-radius: 4px; }
@@ -426,3 +481,11 @@
       to { opacity: 1; transform: translateY(0); }
     }
     .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+/* Strict Glassmorphism Implementation */
+.glass-strict {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(240, 235, 225, 0.15);
+  background: rgba(12, 30, 17, 0.60);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}

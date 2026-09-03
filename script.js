@@ -1,4 +1,4 @@
-const _Fragment = React.Fragment;
+﻿const _Fragment = React.Fragment;
 const _jsxDEV = function(type, props, key) {
   if (key !== undefined) props.key = key;
   return React.createElement(type, props);
@@ -341,11 +341,11 @@ function Hero() {
     children: [/*#__PURE__*/_jsxDEV("div", {
       className: "absolute inset-0",
       children: [/*#__PURE__*/_jsxDEV("img", {
-        src: "data:image/png;base64,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",
-        alt: "Dense forest canopy",
+        src: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=2560&auto=format&fit=crop",
+        alt: "Sunlit forest canopy with expansive sky and winding trail",
         className: "w-full h-full object-cover"
       }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-        className: "hero-overlay absolute inset-0"
+        className: "hero-overlay blueprint-overlay absolute inset-0"
       }, void 0, false)]
     }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
       className: "absolute inset-0 overflow-hidden pointer-events-none",
@@ -396,8 +396,8 @@ function Hero() {
         className: "animate-fade-in-up opacity-0 delay-300 max-w-2xl mx-auto text-base sm:text-lg lg:text-xl text-cream-200/80 leading-relaxed mb-10 font-normal",
         children: ["We help land developers and construction planners quantify how specific tree species affect their sites — from canopy coverage and root spread to measurable temperature reduction — so every build works ", /*#__PURE__*/_jsxDEV("em", {
           className: "text-cream-200/80 not-italic font-medium",
-          children: "with"
-        }, void 0, false), " the landscape, not against it."]
+          children: "legacy"
+        }, void 0, false), " that breathes alongside the landscape."]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
         className: "animate-fade-in-up opacity-0 delay-500 flex flex-col sm:flex-row items-center justify-center gap-4",
         children: [/*#__PURE__*/_jsxDEV("a", {
@@ -424,9 +424,17 @@ function Hero() {
           }, void 0, false), "Book a Site Consultation"]
         }, void 0, true)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-        className: "animate-fade-in opacity-0 delay-700 mt-16 flex flex-col items-center gap-2",
+        className: "animate-fade-in opacity-0 delay-700 mt-12 w-full max-w-lg mx-auto",
+        children: /*#__PURE__*/_jsxDEV("a", {
+          href: "#tree-database",
+          onClick: function() { setTimeout(function() { var el = document.getElementById('main-search'); if (el) el.focus(); }, 100); },
+          className: "hero-search-bar group flex items-center justify-between w-full px-8 py-5 rounded-full bg-forest-900/60 border border-earth-500/30 text-cream-100/80 hover:border-earth-400 hover:text-white transition-all cursor-pointer backdrop-blur-md shadow-2xl",
+          children: [/*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-3", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "search", size: 20, className: "text-earth-400" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-base", children: "Search native tree species..." }, void 0, false)] }, void 0, true), /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 text-xs text-cream-200/75 bg-forest-800/60 px-3 py-1.5 rounded-full border border-forest-700/40", children: "Explore" }, void 0, false)]
+        }, void 0, true)
+      }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
+        className: "animate-fade-in opacity-0 delay-700 mt-12 flex flex-col items-center gap-2",
         children: [/*#__PURE__*/_jsxDEV("span", {
-          className: "text-[11px] uppercase tracking-[0.2em] text-cream-200/30 font-medium",
+          className: "text-[11px] uppercase tracking-[0.2em] text-cream-200/70 font-medium",
           children: "Scroll"
         }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
           className: "w-5 h-8 rounded-full border border-cream-200/15 flex items-start justify-center p-1.5",
@@ -501,7 +509,7 @@ function ServiceCard({
         className: "text-xl font-bold text-cream-50 mb-3 tracking-tight",
         children: service.title
       }, void 0, false), /*#__PURE__*/_jsxDEV("p", {
-        className: "text-sm text-cream-200/50 leading-relaxed mb-6 flex-grow",
+        className: "text-sm text-cream-200/75 leading-relaxed mb-6 flex-grow",
         children: service.description
       }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
         className: "flex flex-wrap gap-2 mb-6",
@@ -554,8 +562,8 @@ function Services() {
             children: "Smarter Development"
           }, void 0, false)]
         }, void 0, true), /*#__PURE__*/_jsxDEV("p", {
-          className: "text-base text-cream-200/50 leading-relaxed",
-          children: "Every project is unique. Our analytical tools quantify the real-world effects of tree placement so you can make decisions grounded in science, not guesswork."
+          className: "text-base text-cream-200/75 leading-relaxed",
+          children: "Each site tells a different story. Our tools translate the silent language of root systems and canopy rhythms into precise, actionable data \u2014 bridging intuition with engineering certainty."
         }, void 0, false)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
         className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8",
@@ -1098,7 +1106,7 @@ function getRankStyle(rank) {
   return {
     bg: 'bg-gradient-to-br from-forest-800/20 to-forest-900/10',
     border: 'border-forest-700/15',
-    text: 'text-cream-200/50',
+    text: 'text-cream-200/75',
     medal: null
   };
 }
@@ -1134,7 +1142,7 @@ function ComparePanel({
         }, void 0, false), "Comparing ", trees.length, " Tree", trees.length > 1 ? 's' : '']
       }, void 0, true), /*#__PURE__*/_jsxDEV("button", {
         onClick: onClear,
-        className: "text-xs text-cream-200/40 hover:text-cream-200/70 transition-colors px-2 py-1 rounded-md hover:bg-forest-800/40",
+        className: "text-xs text-cream-200/75 hover:text-cream-200/70 transition-colors px-2 py-1 rounded-md hover:bg-forest-800/40",
         children: "Clear All"
       }, void 0, false)]
     }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
@@ -1148,7 +1156,7 @@ function ComparePanel({
           children: /*#__PURE__*/_jsxDEV("tr", {
             className: "border-b border-forest-700/20",
             children: [/*#__PURE__*/_jsxDEV("th", {
-              className: "text-left text-[11px] font-semibold text-cream-200/40 uppercase tracking-wider py-2 pr-3",
+              className: "text-left text-[11px] font-semibold text-cream-200/75 uppercase tracking-wider py-2 pr-3",
               children: "Species"
             }, void 0, false), trees.map(function (t) {
               return /*#__PURE__*/_jsxDEV("th", {
@@ -1213,7 +1221,7 @@ function ComparePanel({
           }, void 0, true), /*#__PURE__*/_jsxDEV("tr", {
             className: "border-b border-forest-800/20",
             children: [/*#__PURE__*/_jsxDEV("td", {
-              className: "py-2.5 pr-3 text-[11px] text-cream-200/50 font-semibold uppercase tracking-wider",
+              className: "py-2.5 pr-3 text-[11px] text-cream-200/75 font-semibold uppercase tracking-wider",
               children: "Mature Height"
             }, void 0, false), trees.map(function (t) {
               return /*#__PURE__*/_jsxDEV("td", {
@@ -1224,7 +1232,7 @@ function ComparePanel({
           }, void 0, true), /*#__PURE__*/_jsxDEV("tr", {
             className: "border-b border-forest-800/20",
             children: [/*#__PURE__*/_jsxDEV("td", {
-              className: "py-2.5 pr-3 text-[11px] text-cream-200/50 font-semibold uppercase tracking-wider",
+              className: "py-2.5 pr-3 text-[11px] text-cream-200/75 font-semibold uppercase tracking-wider",
               children: "Safe Distance"
             }, void 0, false), trees.map(function (t) {
               return /*#__PURE__*/_jsxDEV("td", {
@@ -1235,7 +1243,7 @@ function ComparePanel({
           }, void 0, true), /*#__PURE__*/_jsxDEV("tr", {
             className: "border-b border-forest-800/20",
             children: [/*#__PURE__*/_jsxDEV("td", {
-              className: "py-2.5 pr-3 text-[11px] text-cream-200/50 font-semibold uppercase tracking-wider",
+              className: "py-2.5 pr-3 text-[11px] text-cream-200/75 font-semibold uppercase tracking-wider",
               children: "Growth Rate"
             }, void 0, false), trees.map(function (t) {
               return /*#__PURE__*/_jsxDEV("td", {
@@ -1249,7 +1257,7 @@ function ComparePanel({
           }, void 0, true), /*#__PURE__*/_jsxDEV("tr", {
             className: "border-b border-forest-800/20",
             children: [/*#__PURE__*/_jsxDEV("td", {
-              className: "py-2.5 pr-3 text-[11px] text-cream-200/50 font-semibold uppercase tracking-wider",
+              className: "py-2.5 pr-3 text-[11px] text-cream-200/75 font-semibold uppercase tracking-wider",
               children: "Water Req."
             }, void 0, false), trees.map(function (t) {
               return /*#__PURE__*/_jsxDEV("td", {
@@ -1265,7 +1273,7 @@ function ComparePanel({
           }, void 0, true), /*#__PURE__*/_jsxDEV("tr", {
             className: "border-b border-forest-800/20",
             children: [/*#__PURE__*/_jsxDEV("td", {
-              className: "py-2.5 pr-3 text-[11px] text-cream-200/50 font-semibold uppercase tracking-wider",
+              className: "py-2.5 pr-3 text-[11px] text-cream-200/75 font-semibold uppercase tracking-wider",
               children: "Driving Offset"
             }, void 0, false), trees.map(function (t) {
               return /*#__PURE__*/_jsxDEV("td", {
@@ -1275,7 +1283,7 @@ function ComparePanel({
             })]
           }, void 0, true), /*#__PURE__*/_jsxDEV("tr", {
             children: [/*#__PURE__*/_jsxDEV("td", {
-              className: "py-2.5 pr-3 text-[11px] text-cream-200/50 font-semibold uppercase tracking-wider",
+              className: "py-2.5 pr-3 text-[11px] text-cream-200/75 font-semibold uppercase tracking-wider",
               children: "O₂ for People"
             }, void 0, false), trees.map(function (t) {
               return /*#__PURE__*/_jsxDEV("td", {
@@ -1289,7 +1297,7 @@ function ComparePanel({
     }, void 0, false), trees.length >= 2 && /*#__PURE__*/_jsxDEV("div", {
       className: "mt-4 pt-3 border-t border-forest-700/15",
       children: /*#__PURE__*/_jsxDEV("p", {
-        className: "text-[11px] text-cream-200/30 text-center",
+        className: "text-[11px] text-cream-200/75 text-center",
         children: trees.length >= 2 && function () {
           var best = trees.reduce(function (a, b) {
             return a.c > b.c ? a : b;
@@ -1331,12 +1339,12 @@ function Toast({
           className: "text-sm font-semibold text-cream-50",
           children: message
         }, void 0, false), /*#__PURE__*/_jsxDEV("p", {
-          className: "text-xs text-cream-200/50 truncate",
+          className: "text-xs text-cream-200/75 truncate",
           children: detail
         }, void 0, false)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("button", {
         onClick: onClose,
-        className: "text-cream-200/30 hover:text-cream-200/60 transition-colors p-1",
+        className: "text-cream-200/75 hover:text-cream-200/60 transition-colors p-1",
         children: /*#__PURE__*/_jsxDEV(LucideIcon, {
           name: "x",
           size: 16
@@ -1427,7 +1435,7 @@ function Contact() {
               children: "Sustainably?"
             }, void 0, false)]
           }, void 0, true), /*#__PURE__*/_jsxDEV("p", {
-            className: "max-w-xl mx-auto text-base text-cream-200/50 leading-relaxed mb-10",
+            className: "max-w-xl mx-auto text-base text-cream-200/75 leading-relaxed mb-10",
             children: "Share your site details and we'll prepare a complimentary preliminary report showing how strategic tree placement can transform your development."
           }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
             className: "flex flex-col sm:flex-row items-center justify-center gap-4",
@@ -1906,7 +1914,7 @@ function GreenAssistant() {
               }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
                 className: "flex items-center gap-1.5 mt-1",
                 children: [/*#__PURE__*/_jsxDEV("span", {
-                  className: "text-[12px] text-cream-100/60 font-medium tracking-wide",
+                  className: "text-[12px] text-cream-100/80 font-medium tracking-wide",
                   children: "AI-Powered • Context Aware"
                 }, void 0, false)]
               }, void 0, true)]
@@ -2319,7 +2327,7 @@ function CarbonCalculatorHub() {
               }, void 0, false),
               /*#__PURE__*/_jsxDEV("p", {
                 className: "text-lg text-cream-100/70 max-w-2xl mx-auto mb-8",
-                children: "Explore native tree species, filter by eco-benefits, and calculate the environmental impact of your plantation."
+                children: "Explore the living data behind each species and measure the quiet, compounding legacy your green choices leave behind."
               }, void 0, false)
             ]
           }, void 0, true),
@@ -2398,7 +2406,7 @@ function CarbonCalculatorHub() {
                           /*#__PURE__*/_jsxDEV("h3", { className: "text-lg font-bold text-cream-50 mb-1 line-clamp-1", children: tree.name }, void 0, false),
                           /*#__PURE__*/_jsxDEV("p", { className: "text-earth-400 text-sm mb-4 line-clamp-1", children: tree.hindi }, void 0, false),
                           /*#__PURE__*/_jsxDEV("div", {
-                            className: "flex justify-between text-sm text-cream-100/60 border-t border-forest-800/50 pt-4",
+                            className: "flex justify-between text-sm text-cream-100/80 border-t border-forest-800/50 pt-4",
                             children: [
                               /*#__PURE__*/_jsxDEV("span", { children: ["CO\u2082: ", tree.c, " kg/yr"] }, void 0, true),
                               /*#__PURE__*/_jsxDEV("span", { children: ["O\u2082: ", tree.o, " kg/yr"] }, void 0, true)
@@ -2490,7 +2498,7 @@ function CarbonCalculatorHub() {
                       /*#__PURE__*/_jsxDEV("div", {
                         className: "flex-1 overflow-y-auto pr-2 custom-scrollbar space-y-4 mb-6 max-h-[300px] lg:max-h-[none]",
                         children: plantationList.length === 0 ? 
-                          /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-center py-10", children: "No trees added yet. Add trees to see the environmental impact." }, void 0, false)
+                          /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-center py-10", children: "No trees added yet. Add trees to see the environmental impact." }, void 0, false)
                           : plantationList.map(item => /*#__PURE__*/_jsxDEV("div", {
                             key: item.tree.rank,
                             className: "flex items-center justify-between bg-forest-900/60 p-3 rounded-xl border border-forest-800 shadow-sm",
@@ -2498,7 +2506,7 @@ function CarbonCalculatorHub() {
                               /*#__PURE__*/_jsxDEV("div", {
                                 children: [
                                   /*#__PURE__*/_jsxDEV("h5", { className: "text-cream-50 text-sm font-semibold", children: item.tree.name }, void 0, false),
-                                  /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/60 text-xs", children: ["Qty: ", item.quantity, " | CO\u2082: ", (item.tree.c * item.quantity).toFixed(1)] }, void 0, true)
+                                  /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/80 text-xs", children: ["Qty: ", item.quantity, " | CO\u2082: ", (item.tree.c * item.quantity).toFixed(1)] }, void 0, true)
                                 ]
                               }, void 0, true),
                               /*#__PURE__*/_jsxDEV("button", {
@@ -2521,7 +2529,7 @@ function CarbonCalculatorHub() {
                               /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/70 text-sm font-medium", children: "CO\u2082 Absorbed" }, void 0, false),
                               /*#__PURE__*/_jsxDEV("div", { className: "text-right", children: [
                                 /*#__PURE__*/_jsxDEV("span", { className: "text-2xl font-bold text-earth-400 block leading-none", children: totalCO2.toFixed(1) }, void 0, false),
-                                /*#__PURE__*/_jsxDEV("span", { className: "text-xs text-cream-100/50", children: "kg/yr" }, void 0, false)
+                                /*#__PURE__*/_jsxDEV("span", { className: "text-xs text-cream-100/75", children: "kg/yr" }, void 0, false)
                               ] }, void 0, true)
                             ]
                           }, void 0, true),
@@ -2531,7 +2539,7 @@ function CarbonCalculatorHub() {
                               /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/70 text-sm font-medium", children: "O\u2082 Released" }, void 0, false),
                               /*#__PURE__*/_jsxDEV("div", { className: "text-right", children: [
                                 /*#__PURE__*/_jsxDEV("span", { className: "text-2xl font-bold text-green-400 block leading-none", children: totalO2.toFixed(1) }, void 0, false),
-                                /*#__PURE__*/_jsxDEV("span", { className: "text-xs text-cream-100/50", children: "kg/yr" }, void 0, false)
+                                /*#__PURE__*/_jsxDEV("span", { className: "text-xs text-cream-100/75", children: "kg/yr" }, void 0, false)
                               ] }, void 0, true)
                             ]
                           }, void 0, true)
@@ -2582,31 +2590,31 @@ function CarbonCalculatorHub() {
                 className: "grid grid-cols-2 gap-4 sm:gap-6",
                 children: [
                   /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50 hover:border-earth-500/30 transition-colors", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "CO\u2082 Absorption" }, void 0, false),
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-earth-400", children: [selectedTree.c, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/50 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "CO\u2082 Absorption" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-earth-400", children: [selectedTree.c, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/75 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
                   ] }, void 0, true),
                   /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50 hover:border-earth-500/30 transition-colors", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "O\u2082 Release" }, void 0, false),
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-green-400", children: [selectedTree.o, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/50 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "O\u2082 Release" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-green-400", children: [selectedTree.o, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/75 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
                   ] }, void 0, true),
                   selectedTree.water && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Water Req." }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Water Req." }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.water }, void 0, false)
                   ] }, void 0, true),
                   selectedTree.growth && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Growth Rate" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Growth Rate" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.growth }, void 0, false)
                   ] }, void 0, true),
                   selectedTree.height && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Mature Height" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Mature Height" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.height }, void 0, false)
                   ] }, void 0, true),
                   selectedTree.canopy && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Canopy Spread" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Canopy Spread" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.canopy }, void 0, false)
                   ] }, void 0, true),
                   (selectedTree.safeBldg || selectedTree.safeRoad) && /*#__PURE__*/_jsxDEV("div", { className: "col-span-2 bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-3 uppercase tracking-wider font-semibold", children: "Safe Distance" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-3 uppercase tracking-wider font-semibold", children: "Safe Distance" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "flex flex-wrap gap-8", children: [
                       selectedTree.safeBldg && /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2", children: [/*#__PURE__*/_jsxDEV("span", { className: "w-2 h-2 rounded-full bg-earth-500" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/70", children: "Building:" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-50 font-semibold", children: selectedTree.safeBldg }, void 0, false)] }, void 0, true),
                       selectedTree.safeRoad && /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2", children: [/*#__PURE__*/_jsxDEV("span", { className: "w-2 h-2 rounded-full bg-earth-500" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/70", children: "Road:" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-50 font-semibold", children: selectedTree.safeRoad }, void 0, false)] }, void 0, true)
@@ -2653,7 +2661,7 @@ function TreeDatabase() {
               }, void 0, false),
               /*#__PURE__*/_jsxDEV("p", {
                 className: "text-base md:text-lg text-cream-100/90 max-w-2xl mx-auto mb-8 font-light",
-                children: "Explore our curated database of native tree species ideal for the Miyawaki method."
+                children: "A living archive of native species \u2014 each one a quiet partner in the dialogue between landscape and the built environment."
               }, void 0, false),
               /*#__PURE__*/_jsxDEV("div", {
                 className: "max-w-md mx-auto relative",
@@ -2688,7 +2696,7 @@ function TreeDatabase() {
                       /*#__PURE__*/_jsxDEV("h3", { className: "text-xl font-serif font-medium text-cream-50 mb-1 line-clamp-1", children: tree.name }, void 0, false),
                       /*#__PURE__*/_jsxDEV("p", { className: "text-earth-400/90 text-sm font-normal mb-4 line-clamp-1", children: tree.hindi }, void 0, false),
                       /*#__PURE__*/_jsxDEV("div", {
-                        className: "flex justify-between text-sm text-cream-100/60 font-medium tracking-wide border-t border-forest-800/50 pt-4",
+                        className: "flex justify-between text-sm text-cream-100/80 font-medium tracking-wide border-t border-forest-800/50 pt-4",
                         children: [
                           /*#__PURE__*/_jsxDEV("span", { children: ["CO\u2082: ", tree.c, " kg/yr"] }, void 0, true),
                           /*#__PURE__*/_jsxDEV("span", { children: ["O\u2082: ", tree.o, " kg/yr"] }, void 0, true)
@@ -2737,31 +2745,31 @@ function TreeDatabase() {
                 className: "grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6",
                 children: [
                   /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50 hover:border-earth-500/30 transition-colors", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "CO\u2082 Absorption" }, void 0, false),
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-earth-400", children: [selectedTree.c, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/50 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "CO\u2082 Absorption" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-earth-400", children: [selectedTree.c, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/75 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
                   ] }, void 0, true),
                   /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50 hover:border-earth-500/30 transition-colors", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "O\u2082 Release" }, void 0, false),
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-green-400", children: [selectedTree.o, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/50 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "O\u2082 Release" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-2xl font-bold text-green-400", children: [selectedTree.o, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/75 font-normal", children: "kg/yr" }, void 0, false)] }, void 0, true)
                   ] }, void 0, true),
                   selectedTree.water && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Water Req." }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Water Req." }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.water }, void 0, false)
                   ] }, void 0, true),
                   selectedTree.growth && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Growth Rate" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Growth Rate" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.growth }, void 0, false)
                   ] }, void 0, true),
                   selectedTree.height && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Mature Height" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Mature Height" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.height }, void 0, false)
                   ] }, void 0, true),
                   selectedTree.canopy && /*#__PURE__*/_jsxDEV("div", { className: "bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Canopy Spread" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-1.5 uppercase tracking-wider font-semibold", children: "Canopy Spread" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "text-lg font-semibold text-cream-50", children: selectedTree.canopy }, void 0, false)
                   ] }, void 0, true),
                   (selectedTree.safeBldg || selectedTree.safeRoad) && /*#__PURE__*/_jsxDEV("div", { className: "sm:col-span-2 bg-forest-900/50 p-5 rounded-2xl border border-forest-800/50", children: [
-                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/50 text-sm mb-3 uppercase tracking-wider font-semibold", children: "Safe Distance" }, void 0, false),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm mb-3 uppercase tracking-wider font-semibold", children: "Safe Distance" }, void 0, false),
                     /*#__PURE__*/_jsxDEV("div", { className: "flex flex-wrap gap-8", children: [
                       selectedTree.safeBldg && /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2", children: [/*#__PURE__*/_jsxDEV("span", { className: "w-2 h-2 rounded-full bg-earth-500" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/70", children: "Building:" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-50 font-semibold", children: selectedTree.safeBldg }, void 0, false)] }, void 0, true),
                       selectedTree.safeRoad && /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2", children: [/*#__PURE__*/_jsxDEV("span", { className: "w-2 h-2 rounded-full bg-earth-500" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/70", children: "Road:" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-50 font-semibold", children: selectedTree.safeRoad }, void 0, false)] }, void 0, true)

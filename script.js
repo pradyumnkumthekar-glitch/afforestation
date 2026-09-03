@@ -2619,7 +2619,7 @@ function CarbonCalculatorHub() {
     ]
   }, void 0, true);
 }
-\nfunction TreeDatabase() {
+function TreeDatabase() {
   const [selectedTree, setSelectedTree] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 

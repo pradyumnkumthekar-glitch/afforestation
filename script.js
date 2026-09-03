@@ -785,7 +785,7 @@ function Navbar() {
 function Hero() {
   return /*#__PURE__*/_jsxDEV("section", {
     id: "hero",
-    className: "relative min-h-screen flex items-center justify-center overflow-hidden",
+    className: "relative min-h-[100dvh] flex items-center justify-center overflow-hidden",
     children: [/*#__PURE__*/_jsxDEV("div", {
       className: "absolute inset-0",
       children: [/*#__PURE__*/_jsxDEV("img", {
@@ -1586,10 +1586,21 @@ var SYSTEM_PROMPT = 'You are a Senior Environmental Engineer with 25+ years of e
 ────────────────────────────────────────────── */
 function GreenAssistant() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([{
-    role: 'assistant',
-    content: 'Ready to anchor your project\'s future. I\'m your Senior Environmental Engineer \u2014 grounded in structural mechanics, numerical methods, and decades of watching forests reshape the built environment. What site parameters are we analyzing today?'
-  }]);
+  const [messages, setMessages] = useState(function() {
+    try {
+      var saved = sessionStorage.getItem('greenAssistantMessages');
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return [{
+      role: 'assistant',
+      content: 'Ready to anchor your project\'s future. I\'m your Senior Environmental Engineer \u2014 grounded in structural mechanics, numerical methods, and decades of watching forests reshape the built environment. What site parameters are we analyzing today?'
+    }];
+  });
+  
+  useEffect(function() {
+    sessionStorage.setItem('greenAssistantMessages', JSON.stringify(messages));
+  }, [messages]);
+
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [contextTree, setContextTree] = useState(null);
@@ -1611,6 +1622,23 @@ function GreenAssistant() {
       }, 100);
     }
   }, [isOpen]);
+
+  useEffect(function () {
+    if (isOpen && window.innerWidth < 640) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return function() { document.body.style.overflow = ''; };
+  }, [isOpen]);
+
+  function handleInputFocus() {
+    setTimeout(function() {
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 300);
+  }
 
   function generateResponse(query) {
     var q = query.toLowerCase().trim();
@@ -1821,17 +1849,35 @@ function GreenAssistant() {
     });
     setIsTyping(true);
     
-    const thinkingTime = 800 + Math.random() * 1200;
+    const thinkingTime = 600 + Math.random() * 800;
     
     setTimeout(function () {
-      var response = generateResponse(userMsg);
-      setIsTyping(false);
-      setMessages(function (prev) {
-        return prev.concat([{
-          role: 'assistant',
-          content: response
-        }]);
+      var fullResponse = generateResponse(userMsg);
+      var words = fullResponse.split(' ');
+      var currentText = '';
+      var wordIndex = 0;
+      
+      setMessages(function(prev) {
+         return prev.concat([{ role: 'assistant', content: '' }]);
       });
+      
+      var streamInterval = setInterval(function() {
+        if (wordIndex < words.length) {
+          currentText += (wordIndex === 0 ? '' : ' ') + words[wordIndex];
+          setMessages(function(prev) {
+            var newMsgs = prev.slice();
+            newMsgs[newMsgs.length - 1] = { role: 'assistant', content: currentText };
+            return newMsgs;
+          });
+          wordIndex++;
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+          }
+        } else {
+          clearInterval(streamInterval);
+          setIsTyping(false);
+        }
+      }, 40);
     }, thinkingTime);
   }
 
@@ -1874,15 +1920,9 @@ function GreenAssistant() {
   var showQuickActions = messages.length === 1;
   return /*#__PURE__*/_jsxDEV(React.Fragment, {
     children: [isOpen && /*#__PURE__*/_jsxDEV("div", {
-      className: "fixed bottom-24 sm:bottom-28 right-4 sm:right-8 z-[100] w-[calc(100vw-2rem)] sm:w-[420px] chat-slide-up origin-bottom-right",
-      style: {
-        maxHeight: 'calc(100vh - 8rem)'
-      },
+      className: "fixed inset-x-0 bottom-0 sm:inset-auto sm:bottom-28 sm:right-8 z-[100] w-full sm:w-[420px] h-[90dvh] sm:h-auto sm:max-h-[calc(100dvh-8rem)] chat-slide-up origin-bottom sm:origin-bottom-right",
       children: /*#__PURE__*/_jsxDEV("div", {
-        className: "glass-card rounded-[28px] shadow-[0_24px_50px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden ring-1 ring-white/5 relative",
-        style: {
-          maxHeight: 'calc(100vh - 8rem)'
-        },
+        className: "glass-card rounded-t-[28px] sm:rounded-[28px] shadow-[0_24px_50px_rgba(0,0,0,0.6)] flex flex-col h-full overflow-hidden ring-1 ring-white/5 relative",
         children: [/*#__PURE__*/_jsxDEV("div", {
           className: "absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-earth-500/10 to-transparent pointer-events-none opacity-50"
         }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
@@ -1927,7 +1967,7 @@ function GreenAssistant() {
                 a.click();
                 URL.revokeObjectURL(a.href);
               },
-              className: "chat-export-btn w-9 h-9 rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all duration-300",
+              className: "chat-export-btn w-11 h-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all duration-300",
               "aria-label": "Export Specs",
               title: "Export Specs",
               children: /*#__PURE__*/_jsxDEV(LucideIcon, {
@@ -1942,7 +1982,7 @@ function GreenAssistant() {
                 }]);
                 setContextTree(null);
               },
-              className: "w-9 h-9 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
+              className: "w-11 h-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
               "aria-label": "Clear chat",
               title: "Clear Chat",
               children: /*#__PURE__*/_jsxDEV(LucideIcon, {
@@ -1953,7 +1993,7 @@ function GreenAssistant() {
               onClick: function () {
                 setIsOpen(false);
               },
-              className: "w-9 h-9 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
+              className: "w-11 h-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
               "aria-label": "Minimize chat",
               children: /*#__PURE__*/_jsxDEV(LucideIcon, {
                 name: "chevron-down",
@@ -1964,8 +2004,7 @@ function GreenAssistant() {
         }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
           className: "flex-1 overflow-y-auto px-5 py-6 space-y-6 chat-messages bg-forest-950/40 relative z-10",
           style: {
-            minHeight: '360px',
-            maxHeight: '480px'
+            minHeight: '360px'
           },
           children: [messages.map(function (msg, i) {
             var isUser = msg.role === 'user';
@@ -1984,13 +2023,13 @@ function GreenAssistant() {
                     className: "text-white"
                   }, void 0, false)
                 }, void 0, false), isUser ? /*#__PURE__*/_jsxDEV("div", {
-                  className: "rounded-[20px] px-5 py-3.5 text-[14.5px] leading-relaxed bg-earth-900/20 backdrop-blur-md text-white border border-earth-400 rounded-br-sm shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
+                  className: "rounded-[20px] px-5 py-3.5 text-base leading-relaxed bg-earth-900/20 backdrop-blur-md text-white border border-earth-400 rounded-br-sm shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
                   style: {
                     whiteSpace: 'pre-line'
                   },
                   children: msg.content
                 }, void 0, false) : /*#__PURE__*/_jsxDEV("div", {
-                  className: "rounded-[20px] px-6 py-4 text-[14.5px] leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
+                  className: "rounded-[20px] px-6 py-4 text-base leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
                   dangerouslySetInnerHTML: {
                     __html: window.marked ? marked.parse(msg.content.replace(/ðŸ[^\\s]+/g, '✨').replace(/•/g, '•').replace(/—/g, '—').replace(/CO₂/g, 'CO₂').replace(/O₂/g, 'O₂')) : msg.content
                   }
@@ -2026,7 +2065,7 @@ function GreenAssistant() {
                 onClick: function () {
                   handleSend(action.query);
                 },
-                className: "px-4 py-2.5 rounded-full text-[13px] font-medium bg-forest-800/40 backdrop-blur-md border border-white/10 text-cream-100 hover:text-white hover:border-earth-400/50 hover:bg-earth-500/20 hover:shadow-[0_0_15px_rgba(220,160,80,0.15)] transition-all duration-300 flex items-center gap-2",
+                className: "px-4 py-2.5 min-h-[44px] rounded-full text-[13px] font-medium bg-forest-800/40 backdrop-blur-md border border-white/10 text-cream-100 hover:text-white hover:border-earth-400/50 hover:bg-earth-500/20 hover:shadow-[0_0_15px_rgba(220,160,80,0.15)] transition-all duration-300 flex items-center gap-2",
                 children: action.label
               }, i, false);
             })
@@ -2042,7 +2081,7 @@ function GreenAssistant() {
           ].map(function(chip, ci) {
             return /*#__PURE__*/_jsxDEV("button", {
               onClick: function() { handleSend(chip.query); },
-              className: "px-3.5 py-2 rounded-full text-[12px] font-semibold bg-forest-800/50 backdrop-blur-md border border-white/8 text-cream-100/80 hover:text-white hover:border-earth-400/40 hover:bg-earth-500/15 hover:shadow-[0_0_12px_rgba(220,160,80,0.1)] transition-all duration-300 flex items-center gap-1.5 tracking-wide",
+              className: "px-3.5 py-2 min-h-[44px] rounded-full text-[12px] font-semibold bg-forest-800/50 backdrop-blur-md border border-white/8 text-cream-100/80 hover:text-white hover:border-earth-400/40 hover:bg-earth-500/15 hover:shadow-[0_0_12px_rgba(220,160,80,0.1)] transition-all duration-300 flex items-center gap-1.5 tracking-wide",
               children: [chip.icon, " ", chip.label]
             }, ci, false);
           })
@@ -2060,15 +2099,16 @@ function GreenAssistant() {
                   setInput(e.target.value);
                 },
                 onKeyDown: handleKeyDown,
+                onFocus: handleInputFocus,
                 placeholder: "Enter site parameters, species queries...",
-                className: "search-input w-full px-5 py-3.5 rounded-2xl bg-forest-950/60 border border-white/10 text-white text-[14.5px] placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-earth-500/50 focus:bg-forest-950/80 transition-all duration-300 shadow-inner group-hover:border-white/20",
+                className: "search-input w-full px-5 py-3.5 min-h-[44px] text-base rounded-2xl bg-forest-950/60 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-earth-500/50 focus:bg-forest-950/80 transition-all duration-300 shadow-inner group-hover:border-white/20",
                 disabled: isTyping,
                 "aria-label": "Chat message input"
               }, void 0, false)
             }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
               onClick: handleSend,
               disabled: !input.trim() || isTyping,
-              className: 'w-[52px] h-[52px] rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ' + (input.trim() && !isTyping ? 'bg-gradient-to-br from-earth-500 to-earth-600 text-white shadow-[0_4px_20px_rgba(220,160,80,0.4)] hover:shadow-[0_6px_25px_rgba(220,160,80,0.6)] hover:-translate-y-1 ring-1 ring-white/20' : 'bg-forest-800/40 text-white/20 cursor-not-allowed border border-white/5'),
+              className: 'w-[52px] h-[52px] min-h-[44px] min-w-[44px] rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ' + (input.trim() && !isTyping ? 'bg-gradient-to-br from-earth-500 to-earth-600 text-white shadow-[0_4px_20px_rgba(220,160,80,0.4)] hover:shadow-[0_6px_25px_rgba(220,160,80,0.6)] hover:-translate-y-1 ring-1 ring-white/20' : 'bg-forest-800/40 text-white/20 cursor-not-allowed border border-white/5'),
               "aria-label": "Send message",
               children: /*#__PURE__*/_jsxDEV(LucideIcon, {
                 name: "send",
@@ -2096,7 +2136,7 @@ function GreenAssistant() {
         onClick: function () {
           setIsOpen(!isOpen);
         },
-        className: 'w-16 h-16 rounded-[22px] flex items-center justify-center shadow-2xl transition-all duration-500 group relative ' + (isOpen ? 'bg-gradient-to-br from-forest-700 to-forest-800 shadow-black/40 hover:from-forest-600 hover:to-forest-700 rotate-[360deg]' : 'bg-gradient-to-br from-earth-400 to-earth-600 shadow-[0_8px_30px_rgba(220,160,80,0.3)] hover:shadow-[0_12px_40px_rgba(220,160,80,0.5)] hover:-translate-y-1.5'),
+        className: 'w-16 h-16 min-h-[44px] min-w-[44px] rounded-[22px] flex items-center justify-center shadow-2xl transition-all duration-500 group relative ' + (isOpen ? 'bg-gradient-to-br from-forest-700 to-forest-800 shadow-black/40 hover:from-forest-600 hover:to-forest-700 rotate-[360deg]' : 'bg-gradient-to-br from-earth-400 to-earth-600 shadow-[0_8px_30px_rgba(220,160,80,0.3)] hover:shadow-[0_12px_40px_rgba(220,160,80,0.5)] hover:-translate-y-1.5'),
         "aria-label": isOpen ? 'Close Green Assistant' : 'Open Green Assistant',
         children: [isOpen ? /*#__PURE__*/_jsxDEV(LucideIcon, {
           name: 'x',
@@ -2300,7 +2340,7 @@ function ContextualDataModal(props) {
     className: "fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 animate-fade-in",
     onClick: onClose
   }, React.createElement("div", {
-    className: "glass-strict rounded-3xl p-8 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-fade-in-up",
+    className: "glass-strict rounded-3xl p-8 max-w-4xl w-full max-h-[90dvh] overflow-y-auto relative animate-fade-in-up",
     onClick: function (e) { return e.stopPropagation(); }
   }, React.createElement("button", {
     onClick: onClose,
@@ -2774,7 +2814,7 @@ function TreeDatabase() {
         className: "fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-forest-950/90 backdrop-blur-xl animate-fade-in",
         onClick: function() { setSelectedTree(null); },
         children: /*#__PURE__*/_jsxDEV("div", {
-          className: "bg-forest-900/75 backdrop-blur-xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden max-w-3xl w-full max-h-[90vh] overflow-y-auto animate-fade-in-up",
+          className: "bg-forest-900/75 backdrop-blur-xl border border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.3)] rounded-3xl overflow-hidden max-w-3xl w-full max-h-[90dvh] overflow-y-auto animate-fade-in-up",
           onClick: function(e) { e.stopPropagation(); },
           children: [
             /*#__PURE__*/_jsxDEV("div", {

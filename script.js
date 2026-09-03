@@ -2254,6 +2254,7 @@ function CarbonCalculatorHub() {
   const [sortBy, setSortBy] = useState("default"); // default, a-z, z-a, co2-high, water-high
   const [selectedTree, setSelectedTree] = useState(null);
   const [plantationList, setPlantationList] = useState([]);
+  const [quantities, setQuantities] = useState({});
 
   // Mapping water requirement strings to numbers for sorting
   const waterValue = (waterStr) => {
@@ -2439,7 +2440,8 @@ function CarbonCalculatorHub() {
                       /*#__PURE__*/_jsxDEV("div", {
                         className: "grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar",
                         children: sortedAndFilteredTrees.map(tree => {
-                          const [qty, setQty] = useState(1);
+                          const qty = quantities[tree.rank] || 1;
+                          const setQty = (val) => setQuantities(prev => ({ ...prev, [tree.rank]: val }));
                           return /*#__PURE__*/_jsxDEV("div", {
                             key: tree.rank,
                             className: "bg-forest-900/40 p-4 rounded-xl border border-forest-800/50 flex flex-col justify-between hover:border-earth-500/30 transition-all",

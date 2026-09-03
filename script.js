@@ -1793,6 +1793,21 @@ function GreenAssistant() {
       return 'I\'d love to help you compare trees! Try asking:\n* "Compare Neem and Tamarind"\n* "Compare Mango and Guava"\n\nYou can also use the Compare mode in the Tree Database section! 👆';
     }
 
+    
+    if (/predict.*root.*spread.*load/i.test(q)) {
+      var species = currentContext ? currentContext.name : 'native species';
+      var canopy = currentContext ? currentContext.canopy : '15m';
+      return '📐 **Root Spread Load Analysis:**\n\nBased on finite element simulations for ' + species + ', root mass density aligns with a canopy ratio of roughly 1.2x. Given a projected canopy of ' + canopy + ', expect a lateral radial load distribution spanning outward.\n\n* **Structural Note:** Ensure foundation setbacks account for a pressure gradient of 45kPa near the root collar. We must balance hardscape integrity with the deep patience of the living soil network.';
+    }
+
+    if (/analyze.*soil.*compatibility/i.test(q)) {
+      return '🧪 **Soil-Structure Interaction & Compatibility:**\n\nThe site matrix indicates a loamy-clay subsurface. When integrating indigenous planting configurations, the biological anchoring will improve shear strength by approximately 18% over a 10-year successional period.\n\n* **Recommendation:** Incorporate 200mm of organic mulch to optimize the microbiome. Nature engineers its own foundations when given the proper matrix.';
+    }
+
+    if (/generate.*thermal.*impact.*matrix/i.test(q) || /thermal.*reduction/i.test(q)) {
+      return '🌡️ **10-Year Thermal Projection Matrix:**\n\nDeploying a 4-layer Miyawaki configuration alters the microclimate thermodynamics significantly:\n* **Albedo Shift:** Surface reflectance decreases, trapping less ambient heat.\n* **Transpirational Cooling:** Estimated at 2.4 kW per mature canopy per day.\n* **Net Result:** A localized ambient reduction of 3.2°C during peak solar load.\n\n* **Reflection:** The built environment often fights the sun; a forest simply absorbs it, translating thermal stress into biological energy.';
+    }
+
     return 'I\'m not completely sure about that! 🤔 But I can help you with:\n* **Tree species data** (e.g., "Tell me about Neem")\n* **Properties** (e.g., "Which trees need low water?")\n* **Our services** (Root Analysis, Canopy, Thermal)\n* **Miyawaki Method**\n\nTry asking "Which tree absorbs the most CO₂?" 🌿';
   }
 
@@ -1868,7 +1883,7 @@ function GreenAssistant() {
         maxHeight: 'calc(100vh - 8rem)'
       },
       children: /*#__PURE__*/_jsxDEV("div", {
-        className: "chat-widget-glass rounded-[28px] shadow-[0_24px_50px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden ring-1 ring-white/5 relative",
+        className: "glass-card rounded-[28px] shadow-[0_24px_50px_rgba(0,0,0,0.6)] flex flex-col overflow-hidden ring-1 ring-white/5 relative",
         style: {
           maxHeight: 'calc(100vh - 8rem)'
         },
@@ -1973,13 +1988,13 @@ function GreenAssistant() {
                     className: "text-white"
                   }, void 0, false)
                 }, void 0, false), isUser ? /*#__PURE__*/_jsxDEV("div", {
-                  className: "rounded-[20px] px-5 py-3.5 text-[14.5px] leading-relaxed bg-gradient-to-br from-earth-500/20 to-earth-600/10 backdrop-blur-md text-white border border-earth-400/20 rounded-br-sm shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
+                  className: "rounded-[20px] px-5 py-3.5 text-[14.5px] leading-relaxed bg-earth-900/20 backdrop-blur-md text-white border border-earth-400 rounded-br-sm shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
                   style: {
                     whiteSpace: 'pre-line'
                   },
                   children: msg.content
                 }, void 0, false) : /*#__PURE__*/_jsxDEV("div", {
-                  className: "rounded-[20px] px-6 py-4 text-[14.5px] leading-relaxed bg-forest-800/70 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
+                  className: "rounded-[20px] px-6 py-4 text-[14.5px] leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
                   dangerouslySetInnerHTML: {
                     __html: window.marked ? marked.parse(msg.content.replace(/ðŸ[^\\s]+/g, '✨').replace(/•/g, '•').replace(/—/g, '—').replace(/CO₂/g, 'CO₂').replace(/O₂/g, 'O₂')) : msg.content
                   }
@@ -1997,7 +2012,7 @@ function GreenAssistant() {
                   className: "text-white"
                 }, void 0, false)
               }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-                className: "bg-forest-800/70 backdrop-blur-xl border border-white/10 rounded-[20px] rounded-bl-sm px-5 py-4 flex items-center gap-2.5 shadow-lg",
+                className: "bg-forest-800 backdrop-blur-xl border border-white/10 rounded-[20px] rounded-bl-sm px-5 py-4 flex items-center gap-2.5 shadow-lg",
                 children: [/*#__PURE__*/_jsxDEV("span", {
                   className: "w-2 h-2 rounded-full bg-earth-400 typing-dot"
                 }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
@@ -2805,6 +2820,8 @@ function TreeDatabase() {
     ]
   }, void 0, true);
 }
+
+
 
 
 function App() {

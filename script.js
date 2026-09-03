@@ -1,3 +1,663 @@
+const ICON_PATHS = {
+  'tree-pine': [{
+    d: 'M17 14l3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h10z'
+  }, {
+    d: 'M12 2l4 7H8l4-7z'
+  }, {
+    d: 'M15 9l3 5H6l3-5h6z'
+  }, {
+    d: 'M12 22v-3'
+  }],
+  'menu': [{
+    d: 'M4 12h16'
+  }, {
+    d: 'M4 6h16'
+  }, {
+    d: 'M4 18h16'
+  }],
+  'x': [{
+    d: 'M18 6L6 18'
+  }, {
+    d: 'M6 6l12 12'
+  }],
+  'database': [{
+    d: 'M12 8c-3.87 0-7-1.12-7-2.5S8.13 3 12 3s7 1.12 7 2.5S15.87 8 12 8z',
+    fill: 'none'
+  }, {
+    d: 'M19 5.5v4c0 1.38-3.13 2.5-7 2.5s-7-1.12-7-2.5v-4'
+  }, {
+    d: 'M19 9.5v4c0 1.38-3.13 2.5-7 2.5s-7-1.12-7-2.5v-4'
+  }, {
+    d: 'M19 13.5v4c0 1.38-3.13 2.5-7 2.5s-7-1.12-7-2.5v-4'
+  }],
+  'arrow-right': [{
+    d: 'M5 12h14'
+  }, {
+    d: 'M12 5l7 7-7 7'
+  }],
+  'calendar': [{
+    d: 'M8 2v4',
+    tag: 'line'
+  }, {
+    d: 'M16 2v4',
+    tag: 'line'
+  }, {
+    d: 'M3 10h18'
+  }, {
+    d: 'M21 8.5V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V8.5'
+  }],
+  'layers': [{
+    d: 'M12 2L2 7l10 5 10-5-10-5z'
+  }, {
+    d: 'M2 17l10 5 10-5'
+  }, {
+    d: 'M2 12l10 5 10-5'
+  }],
+  'map': [{
+    d: 'M14.106 5.553a2 2 0 0 0 1.788 0l3.659-1.83A1 1 0 0 1 21 4.619v12.764a1 1 0 0 1-.553.894l-4.553 2.277a2 2 0 0 1-1.788 0l-4.212-2.106a2 2 0 0 0-1.788 0l-3.659 1.83A1 1 0 0 1 3 19.381V6.618a1 1 0 0 1 .553-.894l4.553-2.277a2 2 0 0 1 1.788 0z'
+  }, {
+    d: 'M15 5.764v15'
+  }, {
+    d: 'M9 3.236v15'
+  }],
+  'trees': [{
+    d: 'M10 10v.2A3 3 0 0 1 8.9 16H5a3 3 0 0 1-1-5.8V10a3 3 0 0 1 6 0z'
+  }, {
+    d: 'M7 16v6'
+  }, {
+    d: 'M13 19v3'
+  }, {
+    d: 'M16 13v.2A3 3 0 0 1 14.9 19H11a3 3 0 0 1-1-5.8V13a3 3 0 0 1 6 0z'
+  }],
+  'thermometer': [{
+    d: 'M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0z'
+  }],
+  'map-pin': [{
+    d: 'M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0'
+  }, {
+    d: 'M12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6z',
+    fill: 'none'
+  }],
+  'heart': [{
+    d: 'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z'
+  }],
+  'snowflake': [{
+    d: 'M2 12h20'
+  }, {
+    d: 'M12 2v20'
+  }, {
+    d: 'M20 16l-4-4 4-4'
+  }, {
+    d: 'M4 8l4 4-4 4'
+  }, {
+    d: 'M16 4l-4 4-4-4'
+  }, {
+    d: 'M8 20l4-4 4 4'
+  }],
+  'leaf': [{
+    d: 'M11 20A7 7 0 0 1 9.8 6.9C15.5 4.9 17 3.4 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10Z'
+  }, {
+    d: 'M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'
+  }],
+  'send': [{
+    d: 'M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z'
+  }, {
+    d: 'M21.854 2.147l-10.94 10.939'
+  }],
+  'phone': [{
+    d: 'M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z'
+  }],
+  'sparkles': [{
+    d: 'M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z'
+  }, {
+    d: 'M20 3v4'
+  }, {
+    d: 'M22 5h-4'
+  }, {
+    d: 'M4 17v2'
+  }, {
+    d: 'M5 18H3'
+  }],
+  'check': [{
+    d: 'M20 6L9 17l-5-5'
+  }],
+  'search': [{
+    d: 'M19 11A8 8 0 1 1 3 11a8 8 0 0 1 16 0z',
+    fill: 'none'
+  }, {
+    d: 'M21 21l-4.3-4.3'
+  }],
+  'bot': [{
+    d: 'M12 8V4H8'
+  }, {
+    d: 'M6 8h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z'
+  }, {
+    d: 'M2 14h2'
+  }, {
+    d: 'M20 14h2'
+  }, {
+    d: 'M15 13v2'
+  }, {
+    d: 'M9 13v2'
+  }],
+  'message-circle': [{
+    d: 'M7.9 20A9 9 0 1 0 4 16.1L2 22Z'
+  }],
+  'chevron-down': [{
+    d: 'M6 9l6 6 6-6'
+  }],
+  'user': [{
+    d: 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2'
+  }, {
+    d: 'M8 8a4 4 0 0 1 8 0a4 4 0 0 1-8 0z'
+  }],
+  'users': [{
+    d: 'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'
+  }, {
+    d: 'M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z'
+  }, {
+    d: 'M22 21v-2a4 4 0 0 0-3-3.87'
+  }, {
+    d: 'M16 3.13a4 4 0 0 1 0 7.75'
+  }]
+};
+
+const TREE_DATA = [{
+  rank: 1,
+  name: "Indian siris tree",
+  hindi: "Siris (सिरिस)",
+  img: './assets/tree-1.jpeg',
+  c: 1029.56,
+  o: 2744.81,
+  height: '15-25 m',
+  canopy: '12-18 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 2,
+  name: "Tamarind",
+  hindi: "Imli (इमली)",
+  img: './assets/tree-2.jpeg',
+  c: 808.79,
+  o: 2156.23,
+  height: '20-25 m',
+  canopy: '12-18 m',
+  safeBldg: '10-12 m',
+  safeRoad: '6-8 m',
+  water: 'Low',
+  growth: 'Slow'
+}, {
+  rank: 3,
+  name: "May flower tree",
+  hindi: "Gulmohar (गुलमोहर)",
+  img: './assets/tree-3.jpeg',
+  c: 385.26,
+  o: 1027.11,
+  height: '10-15 m',
+  canopy: '10-15 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 4,
+  name: "Yellow flame tree",
+  hindi: "Peela Gulmohar (पीला गुलमोहर)",
+  img: './assets/tree-4.jpeg',
+  c: 377.16,
+  o: 1005.52,
+  height: '15-20 m',
+  canopy: '10-15 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 5,
+  name: "Sacred fig",
+  hindi: "Peepal (पीपल)",
+  img: './assets/tree-5.jpeg',
+  c: 339.82,
+  o: 905.96,
+  height: '20-30 m',
+  canopy: '15-25 m',
+  safeBldg: '15-20 m',
+  safeRoad: '8-10 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 6,
+  name: "River tamarind",
+  hindi: "Subabul (सुबबूल)",
+  img: './assets/tree-6.jpeg',
+  c: 313.76,
+  o: 836.47,
+  height: '10-15 m',
+  canopy: '5-8 m',
+  safeBldg: '5-6 m',
+  safeRoad: '3-4 m',
+  water: 'Low',
+  growth: 'Very Fast'
+}, {
+  rank: 7,
+  name: "Kanak Champa",
+  hindi: "Kanak Champa (कनक चम्पा)",
+  img: './assets/tree-7.jpeg',
+  c: 310.08,
+  o: 826.67,
+  height: '15-20 m',
+  canopy: '10-15 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 8,
+  name: "Neem",
+  hindi: "Neem (नीम)",
+  img: './assets/tree-8.jpeg',
+  c: 301.67,
+  o: 804.25,
+  height: '15-20 m',
+  canopy: '10-15 m',
+  safeBldg: '6-8 m',
+  safeRoad: '3-4 m',
+  water: 'Low',
+  growth: 'Medium-Fast'
+}, {
+  rank: 9,
+  name: "Indian cork tree",
+  img: './assets/tree-9.jpeg',
+  hindi: "Neem Chameli (नीम चमेली)",
+  c: 211.29,
+  o: 563.29,
+  height: '15-20 m',
+  canopy: '8-10 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 10,
+  name: "Gooseberry",
+  img: './assets/tree-10.jpeg',
+  hindi: "Amla (आंवलऎ)",
+  c: 206.10,
+  o: 549.46,
+  height: '8-12 m',
+  canopy: '5-8 m',
+  safeBldg: '4-5 m',
+  safeRoad: '3 m',
+  water: 'Low',
+  growth: 'Medium'
+}, {
+  rank: 11,
+  name: "Earleaf acacia",
+  img: './assets/tree-11.jpeg',
+  hindi: "Pahari Babul (पहाड़ी बबूल)",
+  c: 204.44,
+  o: 545.04,
+  height: '15-30 m',
+  canopy: '8-12 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Low',
+  growth: 'Fast'
+}, {
+  rank: 12,
+  name: "Cluster fig",
+  img: './assets/tree-12.jpeg',
+  hindi: "Gular (गूलर)",
+  c: 195.29,
+  o: 520.66,
+  height: '15-20 m',
+  canopy: '10-15 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 13,
+  name: "Jamun tree",
+  img: './assets/tree-13.jpeg',
+  hindi: "Jamun (जामून)",
+  c: 190.59,
+  o: 508.12,
+  height: '15-20 m',
+  canopy: '10-15 m',
+  safeBldg: '6-8 m',
+  safeRoad: '4-5 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 14,
+  name: "Golden shower",
+  img: './assets/tree-14.jpeg',
+  hindi: "Amaltas (अमलतास)",
+  c: 188.51,
+  o: 502.56,
+  height: '10-15 m',
+  canopy: '6-8 m',
+  safeBldg: '5-6 m',
+  safeRoad: '3-4 m',
+  water: 'Low-Medium',
+  growth: 'Medium'
+}, {
+  rank: 15,
+  name: "Weeping fig",
+  img: './assets/tree-15.jpeg',
+  hindi: "Chilkan (चिलकन)",
+  c: 178.05,
+  o: 474.69,
+  height: '15-20 m',
+  canopy: '15-20 m',
+  safeBldg: '15-20 m',
+  safeRoad: '8-10 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 16,
+  name: "Teak",
+  img: './assets/tree-16.jpeg',
+  hindi: "Sagwan (सागवान)",
+  c: 149.42,
+  o: 398.36,
+  height: '20-30 m',
+  canopy: '8-12 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 17,
+  name: "Pungam tree",
+  img: './assets/tree-17.jpeg',
+  hindi: "Karanj (करंज)",
+  c: 140.59,
+  o: 374.81,
+  height: '10-15 m',
+  canopy: '8-10 m',
+  safeBldg: '5-6 m',
+  safeRoad: '3-4 m',
+  water: 'Low',
+  growth: 'Fast'
+}, {
+  rank: 18,
+  name: "Spanish Cherry",
+  img: './assets/tree-18.jpeg',
+  hindi: "Maulsari (मौलसिरी)",
+  c: 125.43,
+  o: 334.38,
+  height: '10-15 m',
+  canopy: '8-10 m',
+  safeBldg: '6-8 m',
+  safeRoad: '4-5 m',
+  water: 'Medium',
+  growth: 'Slow'
+}, {
+  rank: 19,
+  name: "Paradise tree",
+  img: './assets/tree-19.jpeg',
+  hindi: "Lakshmi Taru (लक्ष्मी तरु)",
+  c: 119.71,
+  o: 319.15,
+  height: '12-15 m',
+  canopy: '8-10 m',
+  safeBldg: '6-8 m',
+  safeRoad: '4-5 m',
+  water: 'Low',
+  growth: 'Fast'
+}, {
+  rank: 20,
+  name: "Wild almond tree",
+  img: './assets/tree-20.jpeg',
+  hindi: "Jangli Badam (जंगली बादाम)",
+  c: 116.82,
+  o: 311.44,
+  height: '20-30 m',
+  canopy: '10-15 m',
+  safeBldg: '10-12 m',
+  safeRoad: '6-8 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 21,
+  name: "Wood apple",
+  img: './assets/tree-21.jpeg',
+  hindi: "Kaitha (कैथा)",
+  c: 106.71,
+  o: 284.49,
+  height: '8-10 m',
+  canopy: '5-8 m',
+  safeBldg: '5-6 m',
+  safeRoad: '3-4 m',
+  water: 'Low',
+  growth: 'Slow'
+}, {
+  rank: 22,
+  name: "Mulberry tree",
+  img: './assets/tree-22.jpeg',
+  hindi: "Shahtoot (शहतूत)",
+  c: 94.15,
+  o: 251.00,
+  height: '10-15 m',
+  canopy: '8-10 m',
+  safeBldg: '6-8 m',
+  safeRoad: '4-5 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 23,
+  name: "Guava tree",
+  img: './assets/tree-23.jpeg',
+  hindi: "Amrud (अमरूद)",
+  c: 85.34,
+  o: 227.53,
+  height: '5-8 m',
+  canopy: '4-6 m',
+  safeBldg: '3-4 m',
+  safeRoad: '2-3 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 24,
+  name: "Casuarina",
+  img: './assets/tree-24.jpeg',
+  hindi: "Jhau (झाऊ)",
+  c: 80.53,
+  o: 214.70,
+  height: '15-25 m',
+  canopy: '4-6 m',
+  safeBldg: '6-8 m',
+  safeRoad: '4-5 m',
+  water: 'Low',
+  growth: 'Fast'
+}, {
+  rank: 25,
+  name: "Bibhitaki tree",
+  img: './assets/tree-25.jpeg',
+  hindi: "Baheda (बहेड़ा)",
+  c: 76.60,
+  o: 204.21,
+  height: '20-30 m',
+  canopy: '12-18 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 26,
+  name: "Purple bauhinia",
+  img: './assets/tree-26.jpeg',
+  hindi: "Kachnar (कचनार)",
+  c: 70.08,
+  o: 186.83,
+  height: '8-10 m',
+  canopy: '6-8 m',
+  safeBldg: '4-5 m',
+  safeRoad: '3-4 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 27,
+  name: "Butter tree",
+  img: './assets/tree-27.jpeg',
+  hindi: "Mahua (महुआ)",
+  c: 69.43,
+  o: 185.11,
+  height: '15-20 m',
+  canopy: '10-15 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Low-Medium',
+  growth: 'Slow-Medium'
+}, {
+  rank: 28,
+  name: "Indian mulberry",
+  img: './assets/tree-28.jpeg',
+  hindi: "Aal (आल)",
+  c: 68.81,
+  o: 183.44,
+  height: '4-8 m',
+  canopy: '3-5 m',
+  safeBldg: '3-4 m',
+  safeRoad: '2-3 m',
+  water: 'High',
+  growth: 'Medium'
+}, {
+  rank: 29,
+  name: "Geranium tree",
+  img: './assets/tree-29.jpeg',
+  hindi: "Lal Lasora (लाल लसोड़ा)",
+  c: 57.53,
+  o: 153.38,
+  height: '6-8 m',
+  canopy: '4-6 m',
+  safeBldg: '3-4 m',
+  safeRoad: '2-3 m',
+  water: 'Low',
+  growth: 'Medium'
+}, {
+  rank: 30,
+  name: "Yellow bells",
+  img: './assets/tree-30.jpeg',
+  hindi: "Pili Chameli (पीली चमेली)",
+  c: 50.19,
+  o: 133.80,
+  height: '4-6 m',
+  canopy: '3-4 m',
+  safeBldg: '2-3 m',
+  safeRoad: '2-3 m',
+  water: 'Low',
+  growth: 'Fast'
+}, {
+  rank: 31,
+  name: "Mango tree",
+  img: './assets/tree-31.jpeg',
+  hindi: "Aam (आम)",
+  c: 46.31,
+  o: 123.45,
+  height: '15-30 m',
+  canopy: '10-20 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 32,
+  name: "Indian almond",
+  img: './assets/tree-32.jpeg',
+  hindi: "Desi Badam (देसी बादाम)",
+  c: 38.34,
+  o: 102.21,
+  height: '15-25 m',
+  canopy: '10-15 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Fast'
+}, {
+  rank: 33,
+  name: "False Ashoka",
+  img: './assets/tree-33.jpeg',
+  hindi: "Ashoka (अशोक)",
+  c: 29.01,
+  o: 77.34,
+  height: '8-12 m',
+  canopy: '3-5 m',
+  safeBldg: '3-4 m',
+  safeRoad: '2-3 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 34,
+  name: "Curry leaf",
+  img: './assets/tree-34.jpeg',
+  hindi: "Kadi Patta (कड़ी पत्ता)",
+  c: 26.71,
+  o: 71.20,
+  height: '4-6 m',
+  canopy: '3-4 m',
+  safeBldg: '2-3 m',
+  safeRoad: '2 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 35,
+  name: "Quick stick",
+  img: './assets/tree-35.jpeg',
+  hindi: "Giripushpa (गिरिपुष्प)",
+  c: 21.18,
+  o: 56.46,
+  height: '10-12 m',
+  canopy: '5-8 m',
+  safeBldg: '4-5 m',
+  safeRoad: '3-4 m',
+  water: 'Low',
+  growth: 'Very Fast'
+}, {
+  rank: 36,
+  name: "Arjuna tree",
+  img: './assets/tree-36.jpeg',
+  hindi: "Arjun (अर्जुन)",
+  c: 12.75,
+  o: 33.99,
+  height: '20-25 m',
+  canopy: '10-15 m',
+  safeBldg: '8-10 m',
+  safeRoad: '5-6 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 37,
+  name: "Parijat",
+  img: './assets/tree-37.jpeg',
+  hindi: "Harsingar (हरसिंगार)",
+  c: 5.85,
+  o: 15.60,
+  height: '3-5 m',
+  canopy: '3-4 m',
+  safeBldg: '2-3 m',
+  safeRoad: '2 m',
+  water: 'Medium',
+  growth: 'Medium'
+}, {
+  rank: 38,
+  name: "Bamboo",
+  img: './assets/tree-38.jpeg',
+  hindi: "Bans (बांस)",
+  c: 5.80,
+  o: 15.46,
+  height: '8-20 m',
+  canopy: '3-6 m',
+  safeBldg: '5-6 m',
+  safeRoad: '3-4 m',
+  water: 'Med-High',
+  growth: 'Very Fast'
+}];
+
 const _Fragment = React.Fragment;
 const _jsxDEV = function(type, props, key) {
   if (key !== undefined) props.key = key;

@@ -2805,11 +2805,432 @@ function TreeDatabase() {
 
 
 
-function App() {
-  return /*#__PURE__*/_jsxDEV(_Fragment, {
-    children: [/*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(CarbonCalculatorHub, {}, void 0, false),  /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]
-  }, void 0, true);
+/* ──────────────────────────────────────────────
+   Persistent Header — minimal top bar
+────────────────────────────────────────────── */
+function PersistentHeader() {
+  var totalSpecies = TREE_DATA.length;
+  var totalCO2 = TREE_DATA.reduce(function(s, t) { return s + t.c; }, 0);
+  var totalO2 = TREE_DATA.reduce(function(s, t) { return s + t.o; }, 0);
+
+  return React.createElement("header", {
+    className: "fixed top-0 inset-x-0 z-50 bg-forest-950/80 backdrop-blur-xl border-b border-white/10"
+  },
+    React.createElement("div", {
+      className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
+    },
+      React.createElement("a", { href: "#", className: "flex items-center gap-2.5 group" },
+        React.createElement("div", {
+          className: "w-9 h-9 rounded-lg bg-gradient-to-br from-forest-500 to-forest-700 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+        }, React.createElement(LucideIcon, { name: "tree-pine", size: 20, className: "text-cream-100" })),
+        React.createElement("span", { className: "text-lg font-semibold tracking-tight text-cream-50" },
+          "af", React.createElement("span", { className: "text-earth-400" }, "forestation")
+        )
+      ),
+      React.createElement("div", { className: "hidden sm:flex items-center gap-3 lg:gap-4" },
+        React.createElement("div", { className: "flex items-center gap-2 px-3 py-1.5 rounded-full bg-forest-900/50 border border-forest-800/50" },
+          React.createElement(LucideIcon, { name: "database", size: 12, className: "text-earth-400" }),
+          React.createElement("span", { className: "text-xs font-bold text-cream-100" }, totalSpecies),
+          React.createElement("span", { className: "text-xs text-cream-100/50" }, "species")
+        ),
+        React.createElement("div", { className: "flex items-center gap-2 px-3 py-1.5 rounded-full bg-forest-900/50 border border-forest-800/50" },
+          React.createElement("span", { className: "text-xs font-bold text-earth-400" }, Math.round(totalCO2).toLocaleString()),
+          React.createElement("span", { className: "text-xs text-cream-100/50" }, "kg CO\u2082")
+        ),
+        React.createElement("div", { className: "flex items-center gap-2 px-3 py-1.5 rounded-full bg-forest-900/50 border border-forest-800/50" },
+          React.createElement("span", { className: "text-xs font-bold text-green-400" }, Math.round(totalO2).toLocaleString()),
+          React.createElement("span", { className: "text-xs text-cream-100/50" }, "kg O\u2082")
+        )
+      )
+    )
+  );
 }
-ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/_jsxDEV(App, {}, void 0, false));
 
+/* ──────────────────────────────────────────────
+   Tab Navigation — Desktop pill + Mobile dock
+────────────────────────────────────────────── */
+function TabNavigation(props) {
+  var activeTab = props.activeTab;
+  var setActiveTab = props.setActiveTab;
+  var tabs = [
+    { key: 'catalog', label: 'Species Specs', mobileLabel: 'Catalog', icon: 'database' },
+    { key: 'methodology', label: 'Methodology', mobileLabel: 'Method', icon: 'leaf' },
+    { key: 'assistant', label: 'AI Engineer', mobileLabel: 'AI Eng.', icon: 'bot' }
+  ];
 
+  return React.createElement(React.Fragment, null,
+    /* Desktop: floating centered pill bar */
+    React.createElement("div", {
+      className: "hidden md:flex fixed top-[4.25rem] left-1/2 -translate-x-1/2 z-40"
+    },
+      React.createElement("div", {
+        className: "glass-card rounded-full p-1.5 flex items-center gap-1 shadow-2xl shadow-black/30"
+      },
+        tabs.map(function(tab) {
+          var isActive = activeTab === tab.key;
+          return React.createElement("button", {
+            key: tab.key,
+            onClick: function() { setActiveTab(tab.key); },
+            className: "flex items-center gap-2 px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap " +
+              (isActive
+                ? "bg-earth-500 text-forest-950 shadow-md shadow-earth-500/30"
+                : "text-cream-100/70 hover:text-cream-50 hover:bg-white/5")
+          },
+            React.createElement(LucideIcon, { name: tab.icon, size: 16 }),
+            tab.label
+          );
+        })
+      )
+    ),
+    /* Mobile: fixed bottom dock */
+    React.createElement("div", {
+      className: "md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-white/10 safe-area-bottom"
+    },
+      React.createElement("div", {
+        className: "flex items-center justify-around px-2 py-2"
+      },
+        tabs.map(function(tab) {
+          var isActive = activeTab === tab.key;
+          return React.createElement("button", {
+            key: tab.key,
+            onClick: function() { setActiveTab(tab.key); },
+            className: "flex flex-col items-center justify-center gap-1 min-h-[48px] min-w-[48px] px-4 py-2 rounded-2xl transition-all duration-300 " +
+              (isActive
+                ? "bg-earth-500/15 text-earth-400"
+                : "text-cream-100/50 active:bg-white/5")
+          },
+            React.createElement(LucideIcon, { name: tab.icon, size: 20 }),
+            React.createElement("span", {
+              className: "text-[10px] font-semibold tracking-wider uppercase"
+            }, tab.mobileLabel)
+          );
+        })
+      )
+    )
+  );
+}
+
+/* ──────────────────────────────────────────────
+   AI Workspace — Full-page console
+────────────────────────────────────────────── */
+function AIWorkspace() {
+  var _messages = useState(function() {
+    try {
+      var saved = sessionStorage.getItem('greenAssistantMessages');
+      if (saved) return JSON.parse(saved);
+    } catch(e) {}
+    return [{ role: 'assistant', content: 'Ready to anchor your project\'s future. I\'m your Senior Environmental Engineer \u2014 grounded in structural mechanics, numerical methods, and decades of watching forests reshape the built environment. What site parameters are we analyzing today?' }];
+  });
+  var messages = _messages[0];
+  var setMessages = _messages[1];
+
+  useEffect(function() {
+    sessionStorage.setItem('greenAssistantMessages', JSON.stringify(messages));
+  }, [messages]);
+
+  var _input = useState('');
+  var input = _input[0];
+  var setInput = _input[1];
+
+  var _isTyping = useState(false);
+  var isTyping = _isTyping[0];
+  var setIsTyping = _isTyping[1];
+
+  var _contextTree = useState(null);
+  var contextTree = _contextTree[0];
+  var setContextTree = _contextTree[1];
+
+  var messagesEndRef = useRef(null);
+  var inputRef = useRef(null);
+
+  /* Auto-scroll to latest message */
+  useEffect(function() {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isTyping]);
+
+  /* Focus input on mount */
+  useEffect(function() {
+    if (inputRef.current) {
+      setTimeout(function() { inputRef.current.focus(); }, 200);
+    }
+  }, []);
+
+  /* ── Response generator (same logic as GreenAssistant) ── */
+  function generateResponse(query) {
+    var q = query.toLowerCase().trim();
+    var currentContext = contextTree;
+    var mentionedTrees = TREE_DATA.filter(function(t) {
+      var nameMatch = q.includes(t.name.toLowerCase());
+      var hindiName = t.hindi.split('(')[0].trim().toLowerCase();
+      var hindiMatch = hindiName.length > 2 && q.includes(hindiName);
+      return nameMatch || hindiMatch;
+    });
+    if (mentionedTrees.length === 1) { currentContext = mentionedTrees[0]; setContextTree(currentContext); }
+    if (/^(hi|hello|hey|namaste|good\s*(morning|afternoon|evening))\b/i.test(q)) return 'Good to have you on-site. I can run structural analysis on root-load distributions, soil compatibility matrices, or canopy thermal coefficients.\n\nSome starting points:\n* \"Predict root spread load for Neem\"\n* \"Analyze soil compatibility\"\n* \"Generate a thermal impact matrix\"';
+    if (/\b(thanks|thank\s*you|thx|dhanyavaad|awesome|great)\b/i.test(q)) return 'Acknowledged. Every species integration strengthens the site\'s long-term load profile. Standing by for your next query.';
+    if (/\b(bad|wrong|stupid|useless|frustrating)\b/i.test(q)) return 'Understood \u2014 let me recalibrate. Could you rephrase your query? I work best with specific parameters: species names, soil types, load conditions, or site dimensions.';
+    if (/\b(help|what can you|what do you do|features)\b/i.test(q)) return 'I can help you with:\n* \uD83C\uDFC6 **Insights** \u2014 \"Which tree absorbs the most CO\u2082?\"\n* \uD83C\uDF33 **Species info** \u2014 \"Tell me about Neem\"\n* \uD83D\uDCA7 **Requirements** \u2014 \"Which trees need low water?\"\n* \u2696\uFE0F **Comparisons** \u2014 \"Compare Neem and Tamarind\"\n* \uD83D\uDD2C **Services** \u2014 \"What services do you offer?\"\n* \u23F1\uFE0F **Cost/Time** \u2014 \"How long does a forest take to grow?\"';
+    if (/\b(cost|price|expensive|cheap|budget|money)\b/i.test(q)) return '\uD83D\uDCB0 **Cost & Investment:**\n\nThe cost depends on the area and specific requirements. However, the **Miyawaki Method** becomes entirely self-sustaining and maintenance-free after just 3 years, making it a highly cost-effective long-term investment!\n\nFor a detailed quote, please reach out via our contact channels.';
+    if (/\b(time|how long|duration|years|months)\b/i.test(q)) return '\u23F1\uFE0F **Timeframe:**\n\nUsing the Miyawaki Method, a forest grows **10x faster** than a conventional forest. It becomes completely self-sustaining in just **3 years** and mimics a 100-year-old forest in just **10 years**!';
+    if (/\b(space|area|size|acres|square meters|sqm)\b/i.test(q)) return '\uD83D\uDCCF **Space Requirements:**\n\nThe Miyawaki Method is incredibly space-efficient! We plant **3 to 5 saplings per square meter**. You can start a mini-forest in an area as small as a backyard (around 100 sq meters or 1000 sq ft).';
+    if (/\b(miyawaki|afforestation|layers|method)\b/i.test(q)) { if (/\b(layer|layers|4-layer|four-layer)\b/i.test(q)) return '\uD83C\uDF33 **The Miyawaki 4-Layer System:**\n1. **Shrubs** (up to 6 feet)\n2. **Sub-trees** (up to 25 feet)\n3. **Trees** (up to 40 feet)\n4. **Canopy layer** (above 40 feet)\n\nThis ensures sunlight is received only from the top, promoting rapid upward growth.'; return '\uD83C\uDF31 **The Miyawaki Method** is an advanced afforestation technique that uses native species to create dense, multilayered forests.\n\n**Core Principles:**\n* **30x denser**, grows **10x faster**\n* **Maintenance-free** after 3 years\n* Uses **4 layers** (shrubs, sub-trees, trees, canopy)\n* Requires **3-5 saplings per square meter**'; }
+    if (/\b(fast|fastest|quick|rapid)\b/i.test(q) && /\b(grow|growth)\b/i.test(q)) { var fastTrees = TREE_DATA.filter(function(t) { return t.growth && (t.growth.includes('Fast') || t.growth.includes('Very Fast')); }); return '\uD83D\uDE80 **Fastest Growing Trees:**\n\n' + fastTrees.slice(0, 5).map(function(t) { return '* **' + t.name + '** (' + t.growth + ')'; }).join('\n') + '\n\nThese are excellent for rapid canopy establishment!'; }
+    if (/\b(slow|slowest)\b/i.test(q) && /\b(grow|growth)\b/i.test(q)) { var slowTrees = TREE_DATA.filter(function(t) { return t.growth && t.growth.includes('Slow'); }); return '\uD83D\uDC22 **Slowest Growing Trees:**\n\n' + slowTrees.slice(0, 5).map(function(t) { return '* **' + t.name + '** (' + t.growth + ')'; }).join('\n'); }
+    if (/\b(water|irrigation)\b/i.test(q) && /\b(low|less|little|dry)\b/i.test(q)) { var lowWater = TREE_DATA.filter(function(t) { return t.water && t.water.includes('Low'); }); return '\uD83C\uDF35 **Low Water Requirement Trees:**\n\n' + lowWater.slice(0, 5).map(function(t) { return '* **' + t.name + '**'; }).join('\n') + '\n\nGreat for dry or drought-prone areas.'; }
+    if (/\b(water|irrigation)\b/i.test(q) && /\b(high|more|a lot|wet)\b/i.test(q)) { var highWater = TREE_DATA.filter(function(t) { return t.water && t.water.includes('High'); }); return '\uD83D\uDCA7 **High Water Requirement Trees:**\n\n' + highWater.map(function(t) { return '* **' + t.name + '**'; }).join('\n'); }
+    if (/\b(most|best|highest|top|maximum|greatest|rank\s*1)\b/i.test(q) && /co2|carbon|absorb/i.test(q)) { var sorted = TREE_DATA.slice().sort(function(a, b) { return b.c - a.c; }); return '\uD83C\uDFC6 **Top CO\u2082 Absorbers (kg/year):**\n\n' + sorted.slice(0, 5).map(function(t) { return '* **' + t.name + '** \u2014 ' + t.c.toLocaleString() + ' kg/yr'; }).join('\n'); }
+    if (/\b(most|best|highest|top|maximum|greatest)\b/i.test(q) && /o2|oxygen|release|produce|breath/i.test(q)) { var sorted2 = TREE_DATA.slice().sort(function(a, b) { return b.o - a.o; }); return '\uD83C\uDF2C\uFE0F **Top O\u2082 Producers (kg/year):**\n\n' + sorted2.slice(0, 5).map(function(t) { return '* **' + t.name + '** \u2014 ' + t.o.toLocaleString() + ' kg/yr'; }).join('\n'); }
+    if (currentContext && mentionedTrees.length === 0) { var hasAnswered = false; var response = 'About **' + currentContext.name + '**:\n'; if (/\b(safe|distance|building|road)\b/i.test(q)) { response += '* Safe from building: ' + (currentContext.safeBldg || 'N/A') + '\n* Safe from road: ' + (currentContext.safeRoad || 'N/A'); hasAnswered = true; } if (/\b(water|irrigation)\b/i.test(q)) { response += '* Water requirement: ' + (currentContext.water || 'Unknown'); hasAnswered = true; } if (/\b(growth|grow|fast|slow)\b/i.test(q)) { response += '* Growth rate: ' + (currentContext.growth || 'Unknown'); hasAnswered = true; } if (/\b(height|tall)\b/i.test(q)) { response += '* Mature height: ' + (currentContext.height || 'Unknown'); hasAnswered = true; } if (/\b(canopy|shade|spread)\b/i.test(q)) { response += '* Canopy spread: ' + (currentContext.canopy || 'Unknown'); hasAnswered = true; } if (/co2|carbon/i.test(q)) { response += '* CO\u2082 Absorbed: ' + currentContext.c.toLocaleString() + ' kg/yr'; hasAnswered = true; } if (/o2|oxygen/i.test(q)) { response += '* O\u2082 Released: ' + currentContext.o.toLocaleString() + ' kg/yr'; hasAnswered = true; } if (hasAnswered) return response; }
+    if (mentionedTrees.length === 1) { var t = mentionedTrees[0]; var extra = ''; if (q.includes('safe') || q.includes('distance')) extra += '\n* \uD83D\uDCCF **Safe Distance:** Building ' + t.safeBldg + ', Road ' + t.safeRoad; if (q.includes('water')) extra += '\n* \uD83D\uDCA7 **Water:** ' + t.water; if (q.includes('grow')) extra += '\n* \uD83D\uDCC8 **Growth:** ' + t.growth; return '\uD83C\uDF33 **' + t.name + '** (' + t.hindi + ')\n\n* \uD83C\uDF3F **CO\u2082 Absorbed:** ' + t.c.toLocaleString() + ' kg/year\n* \uD83C\uDF2C\uFE0F **O\u2082 Released:** ' + t.o.toLocaleString() + ' kg/year' + extra + '\n* \uD83D\uDE97 Offsets ' + getCarEquivalent(t.c) + ' days of car driving/year\n* \uD83D\uDC65 Provides O\u2082 for ' + getPeopleO2(t.o) + ' people/year\n\n*(You can now ask follow-up questions like \"what is its water requirement?\" or \"how tall does it grow?\")*'; }
+    if (mentionedTrees.length >= 2) { var trees = mentionedTrees.slice(0, 4); var resp = '\u2696\uFE0F **Comparison:**\n\n'; trees.forEach(function(t) { resp += '* **' + t.name + ':** ' + t.c.toLocaleString() + ' kg CO\u2082 | ' + (t.water || 'N/A') + ' Water | ' + (t.growth || 'N/A') + ' Growth\n'; }); var best = trees.reduce(function(a, b) { return a.c > b.c ? a : b; }); var worst = trees.reduce(function(a, b) { return a.c < b.c ? a : b; }); if (best.rank !== worst.rank) { var diff = ((best.c - worst.c) / worst.c * 100).toFixed(0); resp += '\n\uD83D\uDCA1 **' + best.name + '** absorbs ' + diff + '% more CO\u2082 than **' + worst.name + '**.'; } return resp; }
+    if (/\b(service|offer|what.*(do|does)|root\s*analysis|canopy|thermal|planning)\b/i.test(q)) return '\uD83D\uDD2C **Our Core Services:**\n\n1. **Root & Plot Analysis:** We map root zones against your site boundaries and utilities.\n2. **Canopy Projection:** Visualize future canopy coverage at 5, 10, and 25-year intervals.\n3. **Thermal Impact Assessment:** Quantify the cooling effect of strategic tree placement.';
+    if (/\b(lokesh|toshniwal|dilip|special thanks)\b/i.test(q)) return '\u2728 **Special Thanks:**\n\nA massive shoutout to **Lokesh Dilip Toshniwal**! The afforestation platform is especially thankful for their vision and support. \uD83C\uDF3F';
+    if (/\b(develop|developer|created|creator|made|who made)\b/i.test(q)) return '\uD83D\uDC68\u200D\uD83D\uDCBB **Development Team:**\n\nThis platform was brought to life by an amazing team:\n* **Pradyumn Kumthekar**\n* **Vaibhav Chalakh**\n* **Aaryan Lengure**\n* **Aarush Rathod**\n* **Parth Ambartani**';
+    if (/\b(total|how many|database|all trees|overall|sum|statistic)\b/i.test(q)) { var tCO2 = TREE_DATA.reduce(function(s, t) { return s + t.c; }, 0); var tO2 = TREE_DATA.reduce(function(s, t) { return s + t.o; }, 0); return '\uD83D\uDCCA **Database Overview:**\n\n* **Total species:** ' + TREE_DATA.length + '\n* **Combined CO\u2082 absorption:** ' + tCO2.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' kg/year\n* **Combined O\u2082 release:** ' + tO2.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' kg/year\n* **Top absorber:** ' + TREE_DATA[0].name + ' (' + TREE_DATA[0].c + ' kg CO\u2082/yr)'; }
+    if (/\b(plant|planting|impact|environment|green|sustainable|benefit|ecology)\b/i.test(q)) return '\uD83C\uDF31 **Environmental Impact of Tree Planting:**\n\nPlanting just 10 ' + TREE_DATA[0].name + ' trees would absorb ' + (TREE_DATA[0].c * 10).toLocaleString() + ' kg of CO\u2082 per year!\n\nUse our Species Specs tab to explore different species and quantities.';
+    if (/\bcompare\b/i.test(q)) return 'I\'d love to help you compare trees! Try asking:\n* \"Compare Neem and Tamarind\"\n* \"Compare Mango and Guava\"\n\nYou can also use the Compare mode in the Species Specs tab! \uD83D\uDC46';
+    if (/predict.*root.*spread.*load/i.test(q)) { var sp = currentContext ? currentContext.name : 'native species'; var ca = currentContext ? currentContext.canopy : '15m'; return '\uD83D\uDCD0 **Root Spread Load Analysis:**\n\nBased on finite element simulations for ' + sp + ', root mass density aligns with a canopy ratio of roughly 1.2x. Given a projected canopy of ' + ca + ', expect a lateral radial load distribution spanning outward.\n\n* **Structural Note:** Ensure foundation setbacks account for a pressure gradient of 45kPa near the root collar. We must balance hardscape integrity with the deep patience of the living soil network.'; }
+    if (/analyze.*soil.*compatibility/i.test(q)) return '\uD83E\uDDEA **Soil-Structure Interaction & Compatibility:**\n\nThe site matrix indicates a loamy-clay subsurface. When integrating indigenous planting configurations, the biological anchoring will improve shear strength by approximately 18% over a 10-year successional period.\n\n* **Recommendation:** Incorporate 200mm of organic mulch to optimize the microbiome. Nature engineers its own foundations when given the proper matrix.';
+    if (/generate.*thermal.*impact.*matrix/i.test(q) || /thermal.*reduction/i.test(q)) return '\uD83C\uDF21\uFE0F **10-Year Thermal Projection Matrix:**\n\nDeploying a 4-layer Miyawaki configuration alters the microclimate thermodynamics significantly:\n* **Albedo Shift:** Surface reflectance decreases, trapping less ambient heat.\n* **Transpirational Cooling:** Estimated at 2.4 kW per mature canopy per day.\n* **Net Result:** A localized ambient reduction of 3.2\u00B0C during peak solar load.\n\n* **Reflection:** The built environment often fights the sun; a forest simply absorbs it, translating thermal stress into biological energy.';
+    return 'I\'m not completely sure about that! \uD83E\uDD14 But I can help you with:\n* **Tree species data** (e.g., \"Tell me about Neem\")\n* **Properties** (e.g., \"Which trees need low water?\")\n* **Our services** (Root Analysis, Canopy, Thermal)\n* **Miyawaki Method**\n\nTry asking \"Which tree absorbs the most CO\u2082?\" \uD83C\uDF3F';
+  }
+
+  /* ── Send handler with streaming ── */
+  function handleSend(forcedQuery) {
+    var userMsg = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
+    if (!userMsg || isTyping) return;
+    if (typeof forcedQuery !== 'string') setInput('');
+    setMessages(function(prev) { return prev.concat([{ role: 'user', content: userMsg }]); });
+    setIsTyping(true);
+    var thinkingTime = 600 + Math.random() * 800;
+    setTimeout(function() {
+      var fullResponse = generateResponse(userMsg);
+      var words = fullResponse.split(' ');
+      var currentText = '';
+      var wordIndex = 0;
+      setMessages(function(prev) { return prev.concat([{ role: 'assistant', content: '' }]); });
+      var streamInterval = setInterval(function() {
+        if (wordIndex < words.length) {
+          currentText += (wordIndex === 0 ? '' : ' ') + words[wordIndex];
+          setMessages(function(prev) { var n = prev.slice(); n[n.length - 1] = { role: 'assistant', content: currentText }; return n; });
+          wordIndex++;
+          if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
+        } else { clearInterval(streamInterval); setIsTyping(false); }
+      }, 40);
+    }, thinkingTime);
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
+  }
+
+  var showQuickActions = messages.length === 1;
+
+  var quickActions = [
+    { label: '\uD83C\uDFC6 Top CO\u2082 trees', query: 'Which trees absorb the most CO2?' },
+    { label: '\uD83C\uDF33 About Neem', query: 'Tell me about Neem' },
+    { label: '\uD83D\uDCA7 Low Water', query: 'Which trees need low water?' },
+    { label: '\uD83D\uDE80 Fast Growers', query: 'What are the fastest growing trees?' },
+    { label: '\uD83C\uDF31 Miyawaki Method', query: 'What is the Miyawaki Method?' },
+    { label: '\uD83D\uDCB0 Cost & Time', query: 'How much does it cost and how long does it take?' }
+  ];
+
+  var promptChips = [
+    { icon: "\uD83D\uDCD0", label: "Predict Root Load", query: "Predict the root spread load for the selected species on this site" },
+    { icon: "\uD83E\uDDEA", label: "Analyze Soil", query: "Analyze soil compatibility for native species at this site" },
+    { icon: "\uD83C\uDF21\uFE0F", label: "Thermal Matrix", query: "Generate a thermal impact matrix for this planting configuration" }
+  ];
+
+  /* ── Render ── */
+  return React.createElement("div", {
+    className: "h-[calc(100dvh-5rem)] flex flex-col glass-card rounded-2xl md:rounded-3xl overflow-hidden mx-2 md:mx-6 lg:mx-8 shadow-2xl shadow-black/30"
+  },
+    /* Header */
+    React.createElement("div", {
+      className: "flex items-center justify-between px-4 sm:px-6 py-4 border-b border-white/10 bg-gradient-to-r from-forest-800/60 to-forest-900/60 backdrop-blur-md flex-shrink-0 relative z-10"
+    },
+      React.createElement("div", { className: "flex items-center gap-3" },
+        React.createElement("div", { className: "relative w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-earth-400 to-earth-600 flex items-center justify-center shadow-lg shadow-earth-500/40 ring-2 ring-white/20" },
+          React.createElement(TreeAvatarSVG, { size: 24, className: "text-white" }),
+          React.createElement("span", { className: "absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 border-2 border-forest-900 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]" })
+        ),
+        React.createElement("div", null,
+          React.createElement("h3", { className: "text-base sm:text-[17px] font-bold text-white tracking-wide leading-tight flex items-center gap-2" },
+            "Arbor Engineer",
+            React.createElement("span", { className: "px-2 py-0.5 rounded-full bg-gradient-to-r from-earth-500/20 to-earth-600/20 border border-earth-400/30 text-[10px] text-earth-300 uppercase tracking-widest" }, "Pro")
+          ),
+          React.createElement("p", { className: "text-[11px] sm:text-[12px] text-cream-100/60 font-medium tracking-wide" }, "Senior Env. Engineer \u2022 Analytical")
+        )
+      ),
+      React.createElement("div", { className: "flex items-center gap-1.5" },
+        React.createElement("button", {
+          onClick: function() {
+            var text = messages.map(function(m) { return (m.role === 'user' ? 'YOU' : 'ENGINEER') + ': ' + m.content; }).join('\n\n');
+            var blob = new Blob([text], { type: 'text/plain' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'arbor-specs-' + new Date().toISOString().slice(0,10) + '.txt';
+            a.click();
+            URL.revokeObjectURL(a.href);
+          },
+          className: "chat-export-btn w-10 h-10 sm:w-11 sm:h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-white/40 hover:text-white transition-all duration-300",
+          title: "Export Specs"
+        }, React.createElement(LucideIcon, { name: "download", size: 16 })),
+        React.createElement("button", {
+          onClick: function() {
+            setMessages([{ role: 'assistant', content: 'Session cleared. Standing by for your next site analysis. What parameters shall we evaluate?' }]);
+            setContextTree(null);
+          },
+          className: "w-10 h-10 sm:w-11 sm:h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
+          title: "Clear Chat"
+        }, React.createElement(LucideIcon, { name: "rotate-ccw", size: 16 }))
+      )
+    ),
+
+    /* Messages */
+    React.createElement("div", {
+      className: "flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-5 chat-messages bg-forest-950/40 relative z-10"
+    },
+      messages.map(function(msg, i) {
+        var isUser = msg.role === 'user';
+        return React.createElement("div", { key: i, className: 'flex animate-fade-in ' + (isUser ? 'justify-end' : 'justify-start') },
+          React.createElement("div", { className: 'flex gap-3 max-w-[88%] lg:max-w-[70%] ' + (isUser ? 'flex-row-reverse' : 'flex-row') },
+            React.createElement("div", {
+              className: 'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm mt-auto ' +
+                (isUser ? 'bg-earth-500/20 text-earth-300 border border-earth-500/30' : 'bg-gradient-to-br from-earth-400 to-earth-600 text-white shadow-earth-500/30 ring-1 ring-white/20')
+            }, isUser
+              ? React.createElement(LucideIcon, { name: 'user', size: 14 })
+              : React.createElement(TreeAvatarSVG, { size: 16, className: "text-white" })
+            ),
+            isUser
+              ? React.createElement("div", {
+                  className: "rounded-[20px] px-5 py-3.5 text-sm sm:text-base leading-relaxed bg-earth-900/20 backdrop-blur-md text-white border border-earth-400 rounded-br-sm shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
+                  style: { whiteSpace: 'pre-line' }
+                }, msg.content)
+              : React.createElement("div", {
+                  className: "rounded-[20px] px-5 sm:px-6 py-3.5 sm:py-4 text-sm sm:text-base leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
+                  dangerouslySetInnerHTML: { __html: window.marked ? marked.parse(msg.content) : msg.content }
+                })
+          )
+        );
+      }),
+      isTyping && React.createElement("div", { className: "flex justify-start animate-fade-in" },
+        React.createElement("div", { className: "flex gap-3" },
+          React.createElement("div", { className: "flex-shrink-0 w-8 h-8 mt-auto rounded-full flex items-center justify-center bg-gradient-to-br from-earth-400 to-earth-600 text-white shadow-lg shadow-earth-500/30 ring-1 ring-white/20" },
+            React.createElement(TreeAvatarSVG, { size: 16, className: "text-white" })
+          ),
+          React.createElement("div", { className: "bg-forest-800 backdrop-blur-xl border border-white/10 rounded-[20px] rounded-bl-sm px-5 py-4 flex items-center gap-2.5 shadow-lg" },
+            React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 typing-dot" }),
+            React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 typing-dot" }),
+            React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 typing-dot" })
+          )
+        )
+      ),
+      showQuickActions && !isTyping && React.createElement("div", {
+        className: "flex flex-wrap gap-2.5 pt-3 animate-fade-in-up"
+      },
+        quickActions.map(function(action, i) {
+          return React.createElement("button", {
+            key: i,
+            onClick: function() { handleSend(action.query); },
+            className: "px-4 py-2.5 min-h-[44px] rounded-full text-[13px] font-medium bg-forest-800/40 backdrop-blur-md border border-white/10 text-cream-100 hover:text-white hover:border-earth-400/50 hover:bg-earth-500/20 hover:shadow-[0_0_15px_rgba(220,160,80,0.15)] transition-all duration-300 flex items-center gap-2"
+          }, action.label);
+        })
+      ),
+      React.createElement("div", { ref: messagesEndRef })
+    ),
+
+    /* Prompt Chips */
+    React.createElement("div", {
+      className: "flex gap-2 overflow-x-auto px-4 sm:px-6 py-3 border-t border-white/5 bg-forest-900/40 flex-shrink-0 relative z-10 scrollbar-none"
+    },
+      promptChips.map(function(chip, ci) {
+        return React.createElement("button", {
+          key: ci,
+          onClick: function() { handleSend(chip.query); },
+          className: "px-3.5 py-2 min-h-[40px] rounded-full text-[12px] font-semibold bg-forest-800/50 backdrop-blur-md border border-white/8 text-cream-100/80 hover:text-white hover:border-earth-400/40 hover:bg-earth-500/15 transition-all duration-300 flex items-center gap-1.5 tracking-wide whitespace-nowrap flex-shrink-0"
+        }, chip.icon, " ", chip.label);
+      })
+    ),
+
+    /* Input Bar */
+    React.createElement("div", {
+      className: "p-4 sm:p-5 border-t border-white/10 bg-forest-900/60 backdrop-blur-xl flex-shrink-0 relative z-10"
+    },
+      React.createElement("div", { className: "flex items-center gap-3 max-w-4xl mx-auto" },
+        React.createElement("div", { className: "flex-1 relative" },
+          React.createElement("input", {
+            ref: inputRef,
+            type: "text",
+            value: input,
+            onChange: function(e) { setInput(e.target.value); },
+            onKeyDown: handleKeyDown,
+            placeholder: "Enter site parameters, species queries...",
+            className: "search-input w-full px-5 py-3.5 min-h-[44px] text-sm sm:text-base rounded-2xl bg-forest-950/60 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-earth-500/50 focus:bg-forest-950/80 transition-all duration-300 shadow-inner",
+            disabled: isTyping
+          })
+        ),
+        React.createElement("button", {
+          onClick: handleSend,
+          disabled: !input.trim() || isTyping,
+          className: 'w-12 h-12 min-h-[44px] min-w-[44px] rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ' +
+            (input.trim() && !isTyping
+              ? 'bg-gradient-to-br from-earth-500 to-earth-600 text-white shadow-[0_4px_20px_rgba(220,160,80,0.4)] hover:shadow-[0_6px_25px_rgba(220,160,80,0.6)] hover:-translate-y-1 ring-1 ring-white/20'
+              : 'bg-forest-800/40 text-white/20 cursor-not-allowed border border-white/5')
+        }, React.createElement(LucideIcon, { name: "send", size: 18, className: input.trim() && !isTyping ? "translate-x-0.5 -translate-y-0.5" : "" }))
+      ),
+      React.createElement("div", { className: "flex justify-center items-center mt-3" },
+        React.createElement("p", { className: "text-[10px] text-white/25 font-semibold tracking-[0.2em] uppercase flex items-center gap-2" },
+          React.createElement(LucideIcon, { name: "zap", size: 10, className: "text-earth-500/50" }),
+          "Structural Analysis Engine"
+        )
+      )
+    )
+  );
+}
+
+/* ──────────────────────────────────────────────
+   App — 3-Tab Workstation Layout
+────────────────────────────────────────────── */
+function App() {
+  var _activeTab = useState('catalog');
+  var activeTab = _activeTab[0];
+  var setActiveTab = _activeTab[1];
+
+  return React.createElement(React.Fragment, null,
+    React.createElement(PersistentHeader, null),
+    React.createElement(TabNavigation, { activeTab: activeTab, setActiveTab: setActiveTab }),
+
+    /* Tab Content */
+    React.createElement("main", { className: "pt-20 md:pt-[7.5rem]" },
+
+      /* Catalog Tab */
+      React.createElement("div", {
+        style: { display: activeTab === 'catalog' ? 'block' : 'none' },
+        className: "pb-24 md:pb-8 tab-fade-in"
+      },
+        React.createElement(TreeDatabase, null)
+      ),
+
+      /* Methodology Tab */
+      React.createElement("div", {
+        style: { display: activeTab === 'methodology' ? 'block' : 'none' },
+        className: "pb-24 md:pb-8 tab-fade-in"
+      },
+        React.createElement(MiyawakiMethod, null)
+      ),
+
+      /* AI Workspace Tab */
+      React.createElement("div", {
+        style: { display: activeTab === 'assistant' ? 'block' : 'none' },
+        className: "pb-24 md:pb-8 tab-fade-in"
+      },
+        React.createElement(AIWorkspace, null)
+      )
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App, null));

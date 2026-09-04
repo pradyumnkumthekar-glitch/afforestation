@@ -2731,12 +2731,24 @@ function TreeDatabase() {
   const [selectedTree, setSelectedTree] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
 
+  useEffect(function() {
+    if (selectedTree) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return function() {
+      document.body.style.overflow = '';
+    };
+  }, [selectedTree]);
+
+
   const filteredTrees = TREE_DATA.filter(function(tree) {
     return tree.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
            tree.hindi.toLowerCase().includes(searchTerm.toLowerCase());
   });
 
-  return /*#__PURE__*/_jsxDEV("section", {
+  return React.createElement(React.Fragment, null, /*#__PURE__*/_jsxDEV("section", {
     id: "tree-database",
     className: "py-10 md:py-16 md:py-24 bg-forest-950 border-t border-forest-900/50 relative overflow-hidden",
     children: [
@@ -2815,7 +2827,8 @@ function TreeDatabase() {
             })
           }, void 0, false)
         ]
-      }, void 0, true),
+      }, void 0, true)
+    ] }, void 0, true),
       selectedTree && /*#__PURE__*/_jsxDEV("div", {
         className: "fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-forest-950/90 backdrop-blur-xl animate-fade-in",
         onClick: function() { setSelectedTree(null); },
@@ -2887,8 +2900,7 @@ function TreeDatabase() {
           ]
         }, void 0, true)
       }, void 0, false)
-    ]
-  }, void 0, true);
+  );
 }
 
 

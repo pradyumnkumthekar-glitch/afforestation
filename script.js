@@ -2648,12 +2648,7 @@ function CarbonCalculatorHub() {
             ]
           }, void 0, true)
         ]
-                    ]
-                  }, void 0, true)
-                ]
-              }, void 0, true)
-            ]
-          }, void 0, true),
+      }, void 0, true),
       selectedTree && /*#__PURE__*/_jsxDEV("div", {
         className: "fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-forest-950/90 backdrop-blur-xl animate-fade-in",
         onClick: function() { setSelectedTree(null); },

@@ -872,14 +872,6 @@ function Hero() {
           }, void 0, false), "Book a Site Consultation"]
         }, void 0, true)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-        className: "animate-fade-in opacity-0 delay-700 mt-12 w-full max-w-lg mx-auto",
-        children: /*#__PURE__*/_jsxDEV("a", {
-          href: "#tree-database",
-          onClick: function() { setTimeout(function() { var el = document.getElementById('main-search'); if (el) el.focus(); }, 100); },
-          className: "hero-search-bar group flex items-center justify-between w-full px-8 py-5 rounded-full bg-forest-900/60 border border-earth-500/30 text-cream-100/80 hover:border-earth-400 hover:text-white transition-all cursor-pointer backdrop-blur-md shadow-2xl",
-          children: [/*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-3", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "search", size: 20, className: "text-earth-400" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-base", children: "Search native tree species..." }, void 0, false)] }, void 0, true), /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 text-xs text-cream-200/75 bg-forest-800/60 px-3 py-1.5 rounded-full border border-forest-700/40", children: "Explore" }, void 0, false)]
-        }, void 0, true)
-      }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
         className: "animate-fade-in opacity-0 delay-700 mt-12 flex flex-col items-center gap-2",
         children: [/*#__PURE__*/_jsxDEV("span", {
           className: "text-[11px] uppercase tracking-[0.2em] text-cream-200/70 font-medium",
@@ -2344,9 +2336,6 @@ function ProjectROIDashboard(props) {
 
 
 
-function StickyCommandBar() {
-  return React.createElement("div", { className: "fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-full max-w-xl px-4 animate-fade-in-up" }, React.createElement("div", { className: "glass-strict rounded-full p-2 flex items-center gap-2 shadow-[0_20px_40px_rgba(0,0,0,0.5)]" }, React.createElement("div", { className: "w-10 h-10 rounded-full bg-forest-800/80 flex items-center justify-center text-earth-400 shrink-0" }, React.createElement(LucideIcon, { name: "search", size: 18 })), React.createElement("input", { type: "text", placeholder: "Search architectural specs & flora database...", className: "flex-1 bg-transparent border-none outline-none text-cream-100 placeholder:text-cream-100/40 text-sm px-2" }), React.createElement("button", { className: "px-5 py-2 rounded-full bg-earth-500 text-forest-950 text-sm font-bold tracking-wide hover:bg-earth-400 transition-colors shrink-0" }, "CMD + K")));
-}
 
 
 function CarbonCalculatorHub() {
@@ -2818,7 +2807,7 @@ function TreeDatabase() {
 
 function App() {
   return /*#__PURE__*/_jsxDEV(_Fragment, {
-    children: [React.createElement(StickyCommandBar, null), /*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(CarbonCalculatorHub, {}, void 0, false),  /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]
+    children: [/*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(CarbonCalculatorHub, {}, void 0, false),  /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]
   }, void 0, true);
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/_jsxDEV(App, {}, void 0, false));

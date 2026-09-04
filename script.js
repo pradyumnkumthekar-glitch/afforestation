@@ -2965,13 +2965,13 @@ function TabNavigation(props) {
           return React.createElement("button", {
             key: tab.key,
             onClick: function() { setActiveTab(tab.key); },
-            className: "flex items-center gap-2 px-4 md:px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap " +
+            className: "flex items-center gap-2 px-3 md:px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap " +
               (isActive
                 ? "bg-earth-500 text-forest-950 shadow-md shadow-earth-500/30"
                 : "text-cream-100/70 hover:text-cream-50 hover:bg-white/5")
           },
-            React.createElement(LucideIcon, { name: tab.icon, size: 16 }),
-            tab.label
+            React.createElement(LucideIcon, { name: tab.icon, size: 18 }),
+            isActive && React.createElement("span", { className: "animate-fade-in" }, tab.label)
           );
         })
       )
@@ -2981,21 +2981,21 @@ function TabNavigation(props) {
       className: "md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-white/10 safe-area-bottom"
     },
       React.createElement("div", {
-        className: "flex items-center justify-around px-2 py-2"
+        className: "flex items-center justify-between px-3 py-2 gap-1 max-w-sm mx-auto"
       },
         tabs.map(function(tab) {
           var isActive = activeTab === tab.key;
           return React.createElement("button", {
             key: tab.key,
             onClick: function() { setActiveTab(tab.key); },
-            className: "flex flex-col items-center justify-center gap-1 min-h-[48px] min-w-[48px] px-4 py-2 rounded-2xl transition-all duration-300 " +
+            className: "flex items-center justify-center gap-2 h-12 rounded-2xl transition-all duration-300 overflow-hidden " +
               (isActive
-                ? "bg-earth-500/15 text-earth-400"
-                : "text-cream-100/50 active:bg-white/5")
+                ? "bg-earth-500/20 text-earth-400 px-5 flex-shrink-0"
+                : "text-cream-100/50 active:bg-white/5 px-4")
           },
-            React.createElement(LucideIcon, { name: tab.icon, size: 20 }),
-            React.createElement("span", {
-              className: "text-[10px] font-semibold tracking-wider uppercase"
+            React.createElement(LucideIcon, { name: tab.icon, size: 22, className: isActive ? "" : "opacity-80" }),
+            isActive && React.createElement("span", {
+              className: "text-[12px] font-bold tracking-wide animate-fade-in"
             }, tab.mobileLabel)
           );
         })

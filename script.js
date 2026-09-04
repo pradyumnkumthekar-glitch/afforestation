@@ -709,7 +709,7 @@ function Navbar() {
   return /*#__PURE__*/_jsxDEV("nav", {
     id: "navbar",
     className: `fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? 'bg-forest-950/60 backdrop-blur-md border-b border-white/10 shadow-lg py-3' : 'bg-transparent py-5'}`,
-    children: [React.createElement(MicroclimateImpactTicker, { plantationList: window.plantationList || [] }), /*#__PURE__*/_jsxDEV("div", {
+    children: [/*#__PURE__*/_jsxDEV("div", {
       className: "max-w-7xl mx-auto px-6 lg:px-8 flex items-center justify-between",
       children: [/*#__PURE__*/_jsxDEV("a", {
         href: "#",
@@ -2329,65 +2329,6 @@ function MiyawakiMethod() {
 
 
 
-function ContextualDataModal(props) {
-  var tree = props.tree;
-  var onClose = props.onClose;
-  if (!tree) return null;
-  var matrixC = (tree.c * 1.4).toFixed(2);
-  var matrixO = (tree.o * 1.4).toFixed(2);
-
-  return React.createElement("div", {
-    className: "fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/40 animate-fade-in",
-    onClick: onClose
-  }, React.createElement("div", {
-    className: "glass-strict rounded-3xl p-8 max-w-4xl w-full max-h-[90dvh] overflow-y-auto relative animate-fade-in-up",
-    onClick: function (e) { return e.stopPropagation(); }
-  }, React.createElement("button", {
-    onClick: onClose,
-    className: "absolute top-6 right-6 text-white/50 hover:text-white transition-colors"
-  }, React.createElement(LucideIcon, { name: "x", size: 24 })), React.createElement("div", {
-    className: "grid md:grid-cols-2 gap-8"
-  }, React.createElement("div", null, React.createElement("img", {
-    src: tree.img, alt: tree.name,
-    className: "w-full h-64 object-cover rounded-2xl mb-6 shadow-lg"
-  }), React.createElement("h2", {
-    className: "text-3xl font-serif font-bold text-cream-50 mb-2"
-  }, tree.name), React.createElement("p", {
-    className: "text-earth-400 font-medium mb-6"
-  }, tree.hindi), React.createElement("div", {
-    className: "space-y-3 text-sm text-cream-100/80 bg-forest-900/40 p-4 rounded-xl border border-white/5"
-  }, React.createElement("p", null, React.createElement("span", {
-    className: "text-earth-300"
-  }, "Growth Rate:"), " ", tree.growth || 'N/A'), React.createElement("p", null, React.createElement("span", {
-    className: "text-earth-300"
-  }, "Water Req:"), " ", tree.water || 'N/A'), React.createElement("p", null, React.createElement("span", {
-    className: "text-earth-300"
-  }, "Safe Distance (Bldg):"), " ", tree.safeBldg || 'N/A'), React.createElement("p", null, React.createElement("span", {
-    className: "text-earth-300"
-  }, "Safe Distance (Road):"), " ", tree.safeRoad || 'N/A'))), React.createElement("div", null, React.createElement("h3", {
-    className: "text-xl font-bold text-cream-50 mb-4 border-b border-white/10 pb-2"
-  }, "Multi-Decade Projection Matrix"), React.createElement("div", {
-    className: "bg-forest-950/60 rounded-xl p-5 border border-white/5 font-mono text-[13px] text-cream-200/90 leading-relaxed shadow-inner"
-  }, React.createElement("p", {
-    className: "text-earth-500 mb-2"
-  }, "// 10-Year Canopy Growth Calculus"), React.createElement("p", null, "∫ [G(t) * S_comp] dt from 0 to 10"), React.createElement("p", null, "M_soil = ", Math.random().toFixed(3), " (Loam/Clay index)"), React.createElement("p", null, "ΔC_seq = ", tree.c, " * e^(0.12t)"), React.createElement("p", null, "Estimated 10y yield: ", matrixC, " kg CO₂"), React.createElement("br", null), React.createElement("p", {
-    className: "text-earth-500 mb-2"
-  }, "// 25-Year Structural Mechanics"), React.createElement("p", null, "Max root radial force = ", (Math.random() * 50 + 20).toFixed(1), " kPa"), React.createElement("p", null, "Thermal reduction coefficient = -1.", (Math.random() * 8 + 1).toFixed(0), "°C"), React.createElement("p", null, "O₂ vector = ", matrixO, " kg/yr at maturity")), React.createElement("div", {
-    className: "mt-8 grid grid-cols-2 gap-4"
-  }, React.createElement("div", {
-    className: "glass-strict p-4 rounded-2xl flex flex-col items-center justify-center text-center"
-  }, React.createElement("span", {
-    className: "text-earth-400 font-black text-2xl"
-  }, tree.c), React.createElement("span", {
-    className: "text-xs text-cream-100/50 uppercase tracking-wider mt-1"
-  }, "Base CO₂ (kg)")), React.createElement("div", {
-    className: "glass-strict p-4 rounded-2xl flex flex-col items-center justify-center text-center"
-  }, React.createElement("span", {
-    className: "text-blue-400 font-black text-2xl"
-  }, tree.o), React.createElement("span", {
-    className: "text-xs text-cream-100/50 uppercase tracking-wider mt-1"
-  }, "Base O₂ (kg)")))))));
-}
 
 function ProjectROIDashboard(props) {
   var plantationList = props.plantationList;
@@ -2401,18 +2342,7 @@ function ProjectROIDashboard(props) {
   return React.createElement("div", { className: "animate-fade-in-up mt-8" }, React.createElement("div", { className: "grid md:grid-cols-3 gap-6 mb-8" }, React.createElement("div", { className: "glass-strict p-6 rounded-3xl border-l-4 border-l-earth-500" }, React.createElement("p", { className: "text-cream-100/60 text-sm font-semibold uppercase tracking-wider mb-2" }, "Total Initial Investment"), React.createElement("p", { className: "text-4xl font-black text-cream-50" }, "$", totalCost.toLocaleString()), React.createElement("p", { className: "text-xs text-earth-400 mt-2" }, "Based on avg. $25/sapling")), React.createElement("div", { className: "glass-strict p-6 rounded-3xl border-l-4 border-l-green-500" }, React.createElement("p", { className: "text-cream-100/60 text-sm font-semibold uppercase tracking-wider mb-2" }, "Annual Thermal Savings"), React.createElement("p", { className: "text-4xl font-black text-green-400" }, "+$", annualSavings.toLocaleString()), React.createElement("p", { className: "text-xs text-cream-100/50 mt-2" }, "HVAC reduction via transpiration")), React.createElement("div", { className: "glass-strict p-6 rounded-3xl border-l-4 border-l-blue-500" }, React.createElement("p", { className: "text-cream-100/60 text-sm font-semibold uppercase tracking-wider mb-2" }, "Est. Break-Even Time"), React.createElement("p", { className: "text-4xl font-black text-blue-400" }, totalCost > 0 ? roiYears : 0, " ", React.createElement("span", { className: "text-xl" }, "Yrs")), React.createElement("p", { className: "text-xs text-cream-100/50 mt-2" }, "ROI trajectory"))), React.createElement("div", { className: "glass-strict p-8 rounded-3xl" }, React.createElement("h3", { className: "text-xl font-bold text-cream-50 mb-6 flex items-center gap-3" }, React.createElement(LucideIcon, { name: "trending-up", className: "text-earth-400" }), "Long-Term Financial & Ecological Return"), totalTrees === 0 ? React.createElement("div", { className: "text-center py-12 text-cream-100/50" }, React.createElement(LucideIcon, { name: "calculator", size: 48, className: "mx-auto mb-4 opacity-50" }), React.createElement("p", null, "Add trees to your plantation list to generate ROI projections.")) : React.createElement("div", { className: "space-y-6" }, React.createElement("div", { className: "w-full bg-forest-900/50 rounded-full h-4 overflow-hidden flex border border-white/5" }, React.createElement("div", { className: "bg-earth-500 h-full", style: { width: '20%' } }), React.createElement("div", { className: "bg-green-500 h-full", style: { width: '80%' } })), React.createElement("div", { className: "flex justify-between text-sm text-cream-100/70" }, React.createElement("span", null, "Year 0: -$", totalCost.toLocaleString()), React.createElement("span", null, "Year ", roiYears, ": Break-Even"), React.createElement("span", null, "Year 10: +$", (annualSavings * 10 - totalCost).toLocaleString(), " Net Return")), React.createElement("p", { className: "text-sm text-cream-100/50 bg-forest-950/50 p-4 rounded-xl" }, "* Note: Thermal savings are calculated based on average transpirational cooling of a 4-layer Miyawaki canopy in urban hardscape environments. Actual HVAC offset may vary."))));
 }
 
-function MicroclimateImpactTicker(props) {
-  var plantationList = props.plantationList;
-  var totalTrees = plantationList.reduce(function (acc, item) { return acc + item.quantity; }, 0);
-  var tempReduction = (totalTrees * 0.005).toFixed(2);
-  var transpirationKW = (totalTrees * 0.12).toFixed(1);
-  if (totalTrees === 0) return null;
-  return React.createElement("div", { className: "fixed top-[84px] left-1/2 -translate-x-1/2 z-[90] animate-fade-in-up" }, React.createElement("div", { className: "glass-strict px-6 py-2 rounded-full flex items-center gap-4 whitespace-nowrap" }, React.createElement("span", { className: "flex items-center gap-2 text-earth-300 text-sm font-bold tracking-wide" }, React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 animate-pulse" }), "LIVE MICROCLIMATE"), React.createElement("span", { className: "w-px h-4 bg-white/20" }), React.createElement("span", { className: "text-cream-100 text-sm font-medium" }, "Ambient Reduction: ", React.createElement("span", { className: "text-blue-400" }, "-", tempReduction, "°C")), React.createElement("span", { className: "w-px h-4 bg-white/20" }), React.createElement("span", { className: "text-cream-100 text-sm font-medium" }, "Transpiration: ", React.createElement("span", { className: "text-green-400" }, transpirationKW, " kW"))));
-}
 
-function Floating3DMapControls() {
-  return React.createElement("div", { className: "fixed right-6 top-1/2 -translate-y-1/2 z-[90] flex flex-col gap-3 animate-fade-in hidden xl:flex" }, React.createElement("div", { className: "glass-strict p-2 rounded-2xl flex flex-col gap-2" }, React.createElement("button", { className: "w-12 h-12 rounded-xl bg-forest-800/80 flex items-center justify-center text-earth-400 hover:bg-earth-500/20 hover:text-earth-300 transition-all group relative", title: "3D Topography" }, React.createElement(LucideIcon, { name: "map", size: 20 }), React.createElement("span", { className: "absolute right-14 bg-forest-950 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-cream-100 border border-white/10 pointer-events-none" }, "3D Topography")), React.createElement("button", { className: "w-12 h-12 rounded-xl bg-forest-800/80 flex items-center justify-center text-white/50 hover:bg-earth-500/20 hover:text-earth-300 transition-all group relative", title: "Route Planner (13km)" }, React.createElement(LucideIcon, { name: "route", size: 20 }), React.createElement("span", { className: "absolute right-14 bg-forest-950 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-cream-100 border border-white/10 pointer-events-none" }, "13km Route Planner")), React.createElement("button", { className: "w-12 h-12 rounded-xl bg-forest-800/80 flex items-center justify-center text-white/50 hover:bg-earth-500/20 hover:text-earth-300 transition-all group relative", title: "Soil Density Overlay" }, React.createElement(LucideIcon, { name: "layers", size: 20 }), React.createElement("span", { className: "absolute right-14 bg-forest-950 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-cream-100 border border-white/10 pointer-events-none" }, "Soil Matrix Overlay")), React.createElement("div", { className: "h-px w-8 bg-white/10 mx-auto my-1" }), React.createElement("button", { className: "w-12 h-12 rounded-xl bg-earth-500/10 border border-earth-500/30 flex items-center justify-center text-earth-400 hover:bg-earth-500/30 transition-all group relative" }, React.createElement(LucideIcon, { name: "compass", size: 20 }), React.createElement("span", { className: "absolute right-14 bg-forest-950 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap text-cream-100 border border-earth-400/30 pointer-events-none" }, "Recenter View"))));
-}
 
 function StickyCommandBar() {
   return React.createElement("div", { className: "fixed bottom-6 left-1/2 -translate-x-1/2 z-[90] w-full max-w-xl px-4 animate-fade-in-up" }, React.createElement("div", { className: "glass-strict rounded-full p-2 flex items-center gap-2 shadow-[0_20px_40px_rgba(0,0,0,0.5)]" }, React.createElement("div", { className: "w-10 h-10 rounded-full bg-forest-800/80 flex items-center justify-center text-earth-400 shrink-0" }, React.createElement(LucideIcon, { name: "search", size: 18 })), React.createElement("input", { type: "text", placeholder: "Search architectural specs & flora database...", className: "flex-1 bg-transparent border-none outline-none text-cream-100 placeholder:text-cream-100/40 text-sm px-2" }), React.createElement("button", { className: "px-5 py-2 rounded-full bg-earth-500 text-forest-950 text-sm font-bold tracking-wide hover:bg-earth-400 transition-colors shrink-0" }, "CMD + K")));
@@ -2723,8 +2653,6 @@ function CarbonCalculatorHub() {
         ]
       }, void 0, true),
 
-      /* Tree Modal */
-      selectedTree && React.createElement(ContextualDataModal, { tree: selectedTree, onClose: function() { setSelectedTree(null); } })
     ]
   }, void 0, true);
 }
@@ -2890,7 +2818,7 @@ function TreeDatabase() {
 
 function App() {
   return /*#__PURE__*/_jsxDEV(_Fragment, {
-    children: [React.createElement(Floating3DMapControls, null), React.createElement(StickyCommandBar, null), /*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(CarbonCalculatorHub, {}, void 0, false),  /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]
+    children: [React.createElement(StickyCommandBar, null), /*#__PURE__*/_jsxDEV(Navbar, {}, void 0, false), /*#__PURE__*/_jsxDEV(Hero, {}, void 0, false), /*#__PURE__*/_jsxDEV(Services, {}, void 0, false), /*#__PURE__*/_jsxDEV(MiyawakiMethod, {}, void 0, false), /*#__PURE__*/_jsxDEV(CarbonCalculatorHub, {}, void 0, false),  /*#__PURE__*/_jsxDEV(Contact, {}, void 0, false), /*#__PURE__*/_jsxDEV(Footer, {}, void 0, false), /*#__PURE__*/_jsxDEV(GreenAssistant, {}, void 0, false)]
   }, void 0, true);
 }
 ReactDOM.createRoot(document.getElementById('root')).render(/*#__PURE__*/_jsxDEV(App, {}, void 0, false));

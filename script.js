@@ -2648,8 +2648,83 @@ function CarbonCalculatorHub() {
             ]
           }, void 0, true)
         ]
-      }, void 0, true),
-
+                    ]
+                  }, void 0, true)
+                ]
+              }, void 0, true)
+            ]
+          }, void 0, true),
+      selectedTree && /*#__PURE__*/_jsxDEV("div", {
+        className: "fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-forest-950/90 backdrop-blur-xl animate-fade-in",
+        onClick: function() { setSelectedTree(null); },
+        children: /*#__PURE__*/_jsxDEV("div", {
+          className: "bg-forest-900/85 backdrop-blur-2xl border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden max-w-4xl w-full max-h-[90dvh] overflow-y-auto animate-scale-in",
+          onClick: function(e) { e.stopPropagation(); },
+          children: [
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "relative h-64 sm:h-80 md:h-96",
+              children: [
+                /*#__PURE__*/_jsxDEV("img", { src: selectedTree.img, alt: selectedTree.name, className: "w-full h-full object-cover" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-t from-forest-950 via-forest-950/30 to-transparent" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("button", {
+                  className: "absolute top-6 right-6 w-10 h-10 bg-black/40 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-earth-500 hover:scale-110 transition-all border border-white/10",
+                  onClick: function() { setSelectedTree(null); },
+                  children: /*#__PURE__*/_jsxDEV(LucideIcon, { name: "x", size: 20 }, void 0, false)
+                }, void 0, false),
+                /*#__PURE__*/_jsxDEV("div", {
+                  className: "absolute bottom-6 left-6 right-6",
+                  children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-3 mb-2", children: [
+                      /*#__PURE__*/_jsxDEV("h2", { className: "text-3xl sm:text-4xl md:text-5xl font-serif font-medium tracking-tight text-white shadow-sm", children: selectedTree.name }, void 0, false),
+                      /*#__PURE__*/_jsxDEV("span", { className: "bg-earth-500/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium shadow-lg", children: "Rank #" + selectedTree.rank }, void 0, false)
+                    ] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("p", { className: "text-earth-300/90 text-lg sm:text-xl font-normal", children: selectedTree.hindi }, void 0, false)
+                  ]
+                }, void 0, true)
+              ]
+            }, void 0, true),
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "p-6 sm:p-8",
+              children: /*#__PURE__*/_jsxDEV("div", {
+                className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6",
+                children: [
+                  /*#__PURE__*/_jsxDEV("div", { className: "bg-gradient-to-br from-forest-900/80 to-forest-950/80 p-6 rounded-3xl border border-white/10 shadow-lg shadow-black/20 hover:border-earth-500/50 hover:shadow-earth-500/20 transition-all duration-300 group flex flex-col justify-center", children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 mb-2", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "leaf", size: 16, className: "text-earth-400" }, void 0, false), /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm uppercase tracking-wider font-semibold", children: "CO\u2082 Absorption" }, void 0, false)] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-3xl font-black text-earth-400 group-hover:scale-105 transition-transform duration-300 origin-left", children: [selectedTree.c, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/60 font-medium", children: "kg/yr" }, void 0, false)] }, void 0, true)
+                  ] }, void 0, true),
+                  /*#__PURE__*/_jsxDEV("div", { className: "bg-gradient-to-br from-forest-900/80 to-forest-950/80 p-6 rounded-3xl border border-white/10 shadow-lg shadow-black/20 hover:border-green-500/50 hover:shadow-green-500/20 transition-all duration-300 group flex flex-col justify-center", children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 mb-2", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "wind", size: 16, className: "text-green-400" }, void 0, false), /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm uppercase tracking-wider font-semibold", children: "O\u2082 Release" }, void 0, false)] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-3xl font-black text-green-400 group-hover:scale-105 transition-transform duration-300 origin-left", children: [selectedTree.o, " ", /*#__PURE__*/_jsxDEV("span", { className: "text-lg text-cream-100/60 font-medium", children: "kg/yr" }, void 0, false)] }, void 0, true)
+                  ] }, void 0, true),
+                  selectedTree.water && /*#__PURE__*/_jsxDEV("div", { className: "bg-gradient-to-br from-forest-900/80 to-forest-950/80 p-6 rounded-3xl border border-white/10 shadow-lg shadow-black/20 hover:border-blue-400/50 hover:shadow-blue-500/20 transition-all duration-300 group", children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 mb-2", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "droplets", size: 16, className: "text-blue-400" }, void 0, false), /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm uppercase tracking-wider font-semibold", children: "Water Req." }, void 0, false)] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-xl font-bold text-cream-50", children: selectedTree.water }, void 0, false)
+                  ] }, void 0, true),
+                  selectedTree.growth && /*#__PURE__*/_jsxDEV("div", { className: "bg-gradient-to-br from-forest-900/80 to-forest-950/80 p-6 rounded-3xl border border-white/10 shadow-lg shadow-black/20 hover:border-earth-500/30 transition-all duration-300 group", children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 mb-2", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "trending-up", size: 16, className: "text-earth-300" }, void 0, false), /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm uppercase tracking-wider font-semibold", children: "Growth Rate" }, void 0, false)] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-xl font-bold text-cream-50", children: selectedTree.growth }, void 0, false)
+                  ] }, void 0, true),
+                  selectedTree.height && /*#__PURE__*/_jsxDEV("div", { className: "bg-gradient-to-br from-forest-900/80 to-forest-950/80 p-6 rounded-3xl border border-white/10 shadow-lg shadow-black/20 hover:border-earth-500/30 transition-all duration-300 group", children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 mb-2", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "arrow-up", size: 16, className: "text-earth-300" }, void 0, false), /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm uppercase tracking-wider font-semibold", children: "Mature Height" }, void 0, false)] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-xl font-bold text-cream-50", children: selectedTree.height }, void 0, false)
+                  ] }, void 0, true),
+                  selectedTree.canopy && /*#__PURE__*/_jsxDEV("div", { className: "bg-gradient-to-br from-forest-900/80 to-forest-950/80 p-6 rounded-3xl border border-white/10 shadow-lg shadow-black/20 hover:border-earth-500/30 transition-all duration-300 group", children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 mb-2", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "cloud", size: 16, className: "text-earth-300" }, void 0, false), /*#__PURE__*/_jsxDEV("div", { className: "text-cream-100/75 text-sm uppercase tracking-wider font-semibold", children: "Canopy Spread" }, void 0, false)] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("div", { className: "text-xl font-bold text-cream-50", children: selectedTree.canopy }, void 0, false)
+                  ] }, void 0, true),
+                  (selectedTree.safeBldg || selectedTree.safeRoad) && /*#__PURE__*/_jsxDEV("div", { className: "sm:col-span-2 lg:col-span-3 bg-gradient-to-r from-forest-900/90 to-forest-950/90 p-6 rounded-3xl border border-earth-500/30 shadow-lg shadow-earth-500/10 hover:shadow-earth-500/20 transition-all duration-300", children: [
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-2 mb-4", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "shield", size: 18, className: "text-earth-400" }, void 0, false), /*#__PURE__*/_jsxDEV("div", { className: "text-earth-300 text-sm uppercase tracking-widest font-bold", children: "Safe Planting Distance" }, void 0, false)] }, void 0, true),
+                    /*#__PURE__*/_jsxDEV("div", { className: "flex flex-wrap gap-8", children: [
+                      selectedTree.safeBldg && /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-3 bg-black/20 px-4 py-2 rounded-2xl border border-white/5", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "home", size: 16, className: "text-cream-100/50" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/80 font-medium", children: "From Building:" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-white font-bold text-lg", children: selectedTree.safeBldg }, void 0, false)] }, void 0, true),
+                      selectedTree.safeRoad && /*#__PURE__*/_jsxDEV("div", { className: "flex items-center gap-3 bg-black/20 px-4 py-2 rounded-2xl border border-white/5", children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "map", size: 16, className: "text-cream-100/50" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-cream-100/80 font-medium", children: "From Road:" }, void 0, false), /*#__PURE__*/_jsxDEV("span", { className: "text-white font-bold text-lg", children: selectedTree.safeRoad }, void 0, false)] }, void 0, true)
+                    ] }, void 0, true)
+                  ] }, void 0, true)
+                ]
+              }, void 0, false)
+            }, void 0, false)
+          ]
+        }, void 0, true)
+      }, void 0, false)
     ]
   }, void 0, true);
 }

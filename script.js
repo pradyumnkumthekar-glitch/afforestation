@@ -2493,10 +2493,18 @@ function CarbonCalculatorHub() {
                           /*#__PURE__*/_jsxDEV("h3", { className: "text-lg font-bold text-cream-50 mb-1 line-clamp-1", children: tree.name }, void 0, false),
                           /*#__PURE__*/_jsxDEV("p", { className: "text-earth-400 text-sm mb-4 line-clamp-1", children: tree.hindi }, void 0, false),
                           /*#__PURE__*/_jsxDEV("div", {
-                            className: "flex justify-between text-sm text-cream-100/80 border-t border-forest-800/50 pt-4",
+                            className: "flex justify-between text-sm text-cream-100/80 border-t border-forest-800/50 pt-4 mb-2",
                             children: [
                               /*#__PURE__*/_jsxDEV("span", { children: ["CO\u2082: ", tree.c, " kg/yr"] }, void 0, true),
                               /*#__PURE__*/_jsxDEV("span", { children: ["O\u2082: ", tree.o, " kg/yr"] }, void 0, true)
+                            ]
+                          }, void 0, true),
+                          /*#__PURE__*/_jsxDEV("div", {
+                            className: "grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-cream-100/60 mt-2",
+                            children: [
+                              tree.canopy && /*#__PURE__*/_jsxDEV("div", { children: [/*#__PURE__*/_jsxDEV("span", { className: "font-semibold", children: "Canopy: " }, void 0, false), tree.canopy] }, void 0, true),
+                              tree.water && /*#__PURE__*/_jsxDEV("div", { children: [/*#__PURE__*/_jsxDEV("span", { className: "font-semibold", children: "Water: " }, void 0, false), tree.water] }, void 0, true),
+                              (tree.safeBldg || tree.safeRoad) && /*#__PURE__*/_jsxDEV("div", { className: "col-span-2", children: [/*#__PURE__*/_jsxDEV("span", { className: "font-semibold", children: "Safe Dist: " }, void 0, false), tree.safeBldg ? "Bldg " + tree.safeBldg : "", tree.safeBldg && tree.safeRoad ? " | " : "", tree.safeRoad ? "Road " + tree.safeRoad : ""] }, void 0, true)
                             ]
                           }, void 0, true)
                         ]
@@ -2713,10 +2721,18 @@ function TreeDatabase() {
                       /*#__PURE__*/_jsxDEV("h3", { className: "text-xl font-serif font-medium text-cream-50 mb-1 line-clamp-1", children: tree.name }, void 0, false),
                       /*#__PURE__*/_jsxDEV("p", { className: "text-earth-400/90 text-sm font-normal mb-4 line-clamp-1", children: tree.hindi }, void 0, false),
                       /*#__PURE__*/_jsxDEV("div", {
-                        className: "flex justify-between text-sm text-cream-100/80 font-medium tracking-wide border-t border-forest-800/50 pt-4",
+                        className: "flex justify-between text-sm text-cream-100/80 font-medium tracking-wide border-t border-forest-800/50 pt-4 mb-2",
                         children: [
                           /*#__PURE__*/_jsxDEV("span", { children: ["CO\u2082: ", tree.c, " kg/yr"] }, void 0, true),
                           /*#__PURE__*/_jsxDEV("span", { children: ["O\u2082: ", tree.o, " kg/yr"] }, void 0, true)
+                        ]
+                      }, void 0, true),
+                      /*#__PURE__*/_jsxDEV("div", {
+                        className: "grid grid-cols-2 gap-x-2 gap-y-1 text-xs text-cream-100/60 mt-2",
+                        children: [
+                          tree.canopy && /*#__PURE__*/_jsxDEV("div", { children: [/*#__PURE__*/_jsxDEV("span", { className: "font-medium", children: "Canopy: " }, void 0, false), tree.canopy] }, void 0, true),
+                          tree.water && /*#__PURE__*/_jsxDEV("div", { children: [/*#__PURE__*/_jsxDEV("span", { className: "font-medium", children: "Water: " }, void 0, false), tree.water] }, void 0, true),
+                          (tree.safeBldg || tree.safeRoad) && /*#__PURE__*/_jsxDEV("div", { className: "col-span-2", children: [/*#__PURE__*/_jsxDEV("span", { className: "font-medium", children: "Safe Dist: " }, void 0, false), tree.safeBldg ? "Bldg " + tree.safeBldg : "", tree.safeBldg && tree.safeRoad ? " | " : "", tree.safeRoad ? "Road " + tree.safeRoad : ""] }, void 0, true)
                         ]
                       }, void 0, true)
                     ]

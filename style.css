@@ -487,3 +487,4 @@
   background: rgba(12, 30, 17, 0.60);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
+body.modal-open { overflow: hidden !important; touch-action: none; }

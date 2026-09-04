@@ -321,7 +321,7 @@ const TREE_DATA = [{
 }, {
   rank: 9,
   name: "Indian cork tree",
-  img: './images/indian-cork-tree.jpg',
+  img: './images/wild-almond.jpg',
   hindi: "Neem Chameli (नीम चमेली)", marathi: 'Buch (बुच)',
   c: 211.29,
   o: 563.29,
@@ -347,7 +347,7 @@ const TREE_DATA = [{
 }, {
   rank: 11,
   name: "Earleaf acacia",
-  img: './images/earleaf-acacia.jpg',
+  img: './images/wild-almond.jpg',
   hindi: "Pahari Babul (पहाड़ी बबूल)", marathi: 'Australi Babhul (ऑस्ट्रेलियन बाभूळ)',
   c: 204.44,
   o: 545.04,
@@ -360,7 +360,7 @@ const TREE_DATA = [{
 }, {
   rank: 12,
   name: "Cluster fig",
-  img: './images/cluster-fig.jpg',
+  img: './images/wild-almond.jpg',
   hindi: "Gular (गूलर)", marathi: 'Umber (उंबर)',
   c: 195.29,
   o: 520.66,
@@ -373,7 +373,7 @@ const TREE_DATA = [{
 }, {
   rank: 13,
   name: "Jamun tree",
-  img: './images/jamun-tree.jpg',
+  img: './images/wild-almond.jpg',
   hindi: "Jamun (जामून)", marathi: 'Jambhul (जांभूळ)',
   c: 190.59,
   o: 508.12,
@@ -386,7 +386,7 @@ const TREE_DATA = [{
 }, {
   rank: 14,
   name: "Golden shower",
-  img: './images/golden-shower.jpg',
+  img: './images/wild-almond.jpg',
   hindi: "Amaltas (अमलतास)", marathi: 'Bahawa (बहावा)',
   c: 188.51,
   o: 502.56,
@@ -399,7 +399,7 @@ const TREE_DATA = [{
 }, {
   rank: 15,
   name: "Weeping fig",
-  img: './images/weeping-fig.jpg',
+  img: './images/wild-almond.jpg',
   hindi: "Chilkan (चिलकन)", marathi: 'Nandruk (नांदृक)',
   c: 178.05,
   o: 474.69,
@@ -425,7 +425,7 @@ const TREE_DATA = [{
 }, {
   rank: 17,
   name: "Pungam tree",
-  img: './images/pungam-tree.jpg',
+  img: './images/pungam.jpg',
   hindi: "Karanj (करंज)", marathi: 'Karanj (करंज)',
   c: 140.59,
   o: 374.81,
@@ -451,7 +451,7 @@ const TREE_DATA = [{
 }, {
   rank: 19,
   name: "Paradise tree",
-  img: './images/paradise-tree.jpg',
+  img: './images/paradise.jpg',
   hindi: "Lakshmi Taru (लक्ष्मी तरु)", marathi: 'Lakshmi Taru (लक्ष्मीतरू)',
   c: 119.71,
   o: 319.15,
@@ -503,7 +503,7 @@ const TREE_DATA = [{
 }, {
   rank: 23,
   name: "Guava tree",
-  img: './images/guava-tree.jpg',
+  img: './images/guava.jpg',
   hindi: "Amrud (अमरूद)", marathi: 'Peru (पेरू)',
   c: 85.34,
   o: 227.53,
@@ -529,7 +529,7 @@ const TREE_DATA = [{
 }, {
   rank: 25,
   name: "Bibhitaki tree",
-  img: './images/bibhitaki-tree.jpg',
+  img: './images/bibhitaki.jpg',
   hindi: "Baheda (बहेड़ा)", marathi: 'Behada (बेहडा)',
   c: 76.60,
   o: 204.21,
@@ -607,7 +607,7 @@ const TREE_DATA = [{
 }, {
   rank: 31,
   name: "Mango tree",
-  img: './images/mango-tree.jpg',
+  img: './images/mango.jpg',
   hindi: "Aam (आम)", marathi: 'Amba (आंबा)',
   c: 46.31,
   o: 123.45,
@@ -2973,13 +2973,11 @@ function PersistentHeader() {
       className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
     },
       React.createElement("a", { href: "#", className: "flex items-center gap-2.5 group" },
-        React.createElement("img", {
-          src: "logo.png",
-          alt: "GreenGrowth Logo",
-          className: "h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-        }),
+        React.createElement("div", {
+          className: "w-9 h-9 rounded-lg bg-gradient-to-br from-forest-500 to-forest-700 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+        }, React.createElement(LucideIcon, { name: "tree-pine", size: 20, className: "text-cream-100" })),
         React.createElement("span", { className: "text-lg font-semibold tracking-tight text-cream-50" },
-          "Green", React.createElement("span", { className: "text-earth-400" }, "Growth")
+          "af", React.createElement("span", { className: "text-earth-400" }, "forestation")
         )
       ),
       React.createElement("div", { className: "hidden sm:flex items-center gap-3 lg:gap-4" },

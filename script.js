@@ -1,4 +1,5 @@
 const ICON_PATHS = {
+  'info': [{"d": "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"}, {"d": "M12 16v-4"}, {"d": "M12 8h.01"}],
   'tree-pine': [{
     d: 'M17 14l3 3.3a1 1 0 0 1-.7 1.7H4.7a1 1 0 0 1-.7-1.7L7 14h10z'
   }, {
@@ -1487,39 +1488,34 @@ function Footer() {
         }, void 0, true)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
         className: "mt-12 pt-8 border-t border-forest-800/30 text-center",
-        children: [/*#__PURE__*/_jsxDEV("p", {
-          className: "font-serif italic text-earth-400/80 mb-5 text-xl",
-          children: "Developed By"
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          className: "flex flex-wrap justify-center items-center gap-x-6 gap-y-3 text-cream-100/90 font-medium tracking-wide",
-          children: [/*#__PURE__*/_jsxDEV("span", {
-            className: "text-base sm:text-lg hover:text-earth-300 transition-colors cursor-default",
-            children: "Pradyumn Kumthekar"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-forest-500/40 hidden sm:inline",
-            children: "\u2022"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-base sm:text-lg hover:text-earth-300 transition-colors cursor-default",
-            children: "Vaibhav Chalakh"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-forest-500/40 hidden sm:inline",
-            children: "\u2022"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-base sm:text-lg hover:text-earth-300 transition-colors cursor-default",
-            children: "Aaryan Lengure"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-forest-500/40 hidden sm:inline",
-            children: "\u2022"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-base sm:text-lg hover:text-earth-300 transition-colors cursor-default",
-            children: "Aarush Rathod"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-forest-500/40 hidden sm:inline",
-            children: "\u2022"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "text-base sm:text-lg hover:text-earth-300 transition-colors cursor-default",
-            children: "Parth Ambartani"
-          }, void 0, false)]
+        children: [/*#__PURE__*/_jsxDEV("div", {
+          className: "relative py-6 mt-12 overflow-hidden rounded-3xl bg-forest-900/40 border border-white/5",
+          children: [
+            /*#__PURE__*/_jsxDEV("div", { className: "absolute inset-0 bg-gradient-to-r from-earth-500/0 via-earth-500/5 to-earth-500/0 animate-shimmer" }, void 0, false),
+            /*#__PURE__*/_jsxDEV("p", {
+              className: "font-serif text-earth-400 uppercase tracking-[0.25em] text-xs font-bold mb-4 text-center opacity-80",
+              children: "Developed By"
+            }, void 0, false),
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "flex flex-wrap justify-center items-center gap-x-8 gap-y-4 text-cream-50 font-bold tracking-wide",
+              children: [
+                /*#__PURE__*/_jsxDEV("span", {
+                  className: "text-lg md:text-xl bg-gradient-to-r from-cream-50 to-cream-200 bg-clip-text text-transparent hover:scale-105 transition-transform cursor-default",
+                  children: "Pradyumn Kumthekar"
+                }, void 0, false),
+                /*#__PURE__*/_jsxDEV("div", { className: "w-1.5 h-1.5 rounded-full bg-earth-500/50 hidden sm:block shadow-[0_0_8px_rgba(220,160,80,0.8)]" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("span", {
+                  className: "text-lg md:text-xl bg-gradient-to-r from-cream-50 to-cream-200 bg-clip-text text-transparent hover:scale-105 transition-transform cursor-default",
+                  children: "Vaibhav Chalakh"
+                }, void 0, false),
+                /*#__PURE__*/_jsxDEV("div", { className: "w-1.5 h-1.5 rounded-full bg-earth-500/50 hidden sm:block shadow-[0_0_8px_rgba(220,160,80,0.8)]" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("span", {
+                  className: "text-lg md:text-xl bg-gradient-to-r from-cream-50 to-cream-200 bg-clip-text text-transparent hover:scale-105 transition-transform cursor-default",
+                  children: "Siddhesh Jadhav"
+                }, void 0, false)
+              ]
+            }, void 0, true)
+          ]
         }, void 0, true)]
       }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
         className: "mt-12 pt-8 border-t border-forest-800/30 text-center animate-fade-in-up delay-200",
@@ -2946,6 +2942,7 @@ function TabNavigation(props) {
   var activeTab = props.activeTab;
   var setActiveTab = props.setActiveTab;
   var tabs = [
+    { key: 'about', label: 'About Us', mobileLabel: 'About', icon: 'info' },
     { key: 'catalog', label: 'Species Specs', mobileLabel: 'Catalog', icon: 'database' },
     { key: 'methodology', label: 'Methodology', mobileLabel: 'Method', icon: 'leaf' },
     { key: 'assistant', label: 'AI Engineer', mobileLabel: 'AI Eng.', icon: 'bot' },
@@ -3288,6 +3285,62 @@ function AIWorkspace() {
 /* ──────────────────────────────────────────────
    App — 3-Tab Workstation Layout
 ────────────────────────────────────────────── */
+
+function About() {
+  return /*#__PURE__*/_jsxDEV("section", {
+    className: "py-16 md:py-24 animate-fade-in",
+    children: /*#__PURE__*/_jsxDEV("div", {
+      className: "max-w-5xl mx-auto px-4 md:px-6 lg:px-8",
+      children: [
+        /*#__PURE__*/_jsxDEV("div", {
+          className: "text-center mb-16",
+          children: [
+            /*#__PURE__*/_jsxDEV("h2", { className: "text-3xl md:text-5xl font-serif font-bold text-cream-50 mb-6 tracking-tight", children: "About & Services" }, void 0, false),
+            /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/70 text-lg max-w-2xl mx-auto leading-relaxed", children: "We engineer sustainable futures. Here's a brief overview of the core services and technologies provided by our platform." }, void 0, false)
+          ]
+        }, void 0, true),
+        /*#__PURE__*/_jsxDEV("div", {
+          className: "grid grid-cols-1 sm:grid-cols-2 gap-6",
+          children: [
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "glass-card p-6 md:p-8 rounded-3xl border border-white/10 hover:border-earth-500/40 hover:bg-forest-900/40 transition-all duration-300 group",
+              children: [
+                /*#__PURE__*/_jsxDEV("div", { className: "w-14 h-14 rounded-2xl bg-earth-500/10 flex items-center justify-center mb-6 border border-earth-500/20 group-hover:scale-110 transition-transform", children: /*#__PURE__*/_jsxDEV(LucideIcon, { name: "leaf", size: 28, className: "text-earth-400" }, void 0, false) }, void 0, false),
+                /*#__PURE__*/_jsxDEV("h3", { className: "text-xl font-bold text-cream-50 mb-3", children: "Miyawaki Method Experts" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/70 text-sm leading-relaxed", children: "We specialize in the Miyawaki afforestation technique, creating hyper-dense, biodiverse mini-forests that grow 10x faster and absorb 30x more carbon than conventional plantations." }, void 0, false)
+              ]
+            }, void 0, true),
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "glass-card p-6 md:p-8 rounded-3xl border border-white/10 hover:border-earth-500/40 hover:bg-forest-900/40 transition-all duration-300 group",
+              children: [
+                /*#__PURE__*/_jsxDEV("div", { className: "w-14 h-14 rounded-2xl bg-earth-500/10 flex items-center justify-center mb-6 border border-earth-500/20 group-hover:scale-110 transition-transform", children: /*#__PURE__*/_jsxDEV(LucideIcon, { name: "database", size: 28, className: "text-earth-400" }, void 0, false) }, void 0, false),
+                /*#__PURE__*/_jsxDEV("h3", { className: "text-xl font-bold text-cream-50 mb-3", children: "Species Data Hub" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/70 text-sm leading-relaxed", children: "Access our comprehensive database of native Indian tree species, complete with exact growth rates, canopy spreads, and critical ecological metrics." }, void 0, false)
+              ]
+            }, void 0, true),
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "glass-card p-6 md:p-8 rounded-3xl border border-white/10 hover:border-green-500/40 hover:bg-forest-900/40 transition-all duration-300 group",
+              children: [
+                /*#__PURE__*/_jsxDEV("div", { className: "w-14 h-14 rounded-2xl bg-green-500/10 flex items-center justify-center mb-6 border border-green-500/20 group-hover:scale-110 transition-transform", children: /*#__PURE__*/_jsxDEV(LucideIcon, { name: "wind", size: 28, className: "text-green-400" }, void 0, false) }, void 0, false),
+                /*#__PURE__*/_jsxDEV("h3", { className: "text-xl font-bold text-cream-50 mb-3", children: "Carbon & O2 Tracking" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/70 text-sm leading-relaxed", children: "Quantify your environmental impact. We provide precise calculations for CO2 absorption and oxygen release per year for every species planted." }, void 0, false)
+              ]
+            }, void 0, true),
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "glass-card p-6 md:p-8 rounded-3xl border border-white/10 hover:border-blue-500/40 hover:bg-forest-900/40 transition-all duration-300 group",
+              children: [
+                /*#__PURE__*/_jsxDEV("div", { className: "w-14 h-14 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-6 border border-blue-500/20 group-hover:scale-110 transition-transform", children: /*#__PURE__*/_jsxDEV(LucideIcon, { name: "shield", size: 28, className: "text-blue-400" }, void 0, false) }, void 0, false),
+                /*#__PURE__*/_jsxDEV("h3", { className: "text-xl font-bold text-cream-50 mb-3", children: "Structural Safety Engineering" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/70 text-sm leading-relaxed", children: "Plant safely. Our system provides AI-powered guidelines for minimum safe planting distances from buildings, roads, and utilities to prevent root damage." }, void 0, false)
+              ]
+            }, void 0, true)
+          ]
+        }, void 0, false)
+      ]
+    }, void 0, true)
+  }, void 0, false);
+}
+
 function App() {
   var _activeTab = useState('catalog');
   var activeTab = _activeTab[0];
@@ -3300,6 +3353,14 @@ function App() {
     /* Tab Content */
     React.createElement("main", { className: "pt-20 md:pt-[7.5rem]" },
 
+      
+      /* About Tab */
+      React.createElement("div", {
+        style: { display: activeTab === 'about' ? 'block' : 'none' },
+        className: "pb-24 md:pb-8 tab-fade-in"
+      },
+        React.createElement(About, null)
+      ),
       /* Catalog Tab */
       React.createElement("div", {
         style: { display: activeTab === 'catalog' ? 'block' : 'none' },

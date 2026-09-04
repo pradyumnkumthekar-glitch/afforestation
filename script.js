@@ -2744,10 +2744,10 @@ function TreeDatabase() {
         ]
       }, void 0, true),
       selectedTree && /*#__PURE__*/_jsxDEV("div", {
-        className: "fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6 bg-forest-950/90 backdrop-blur-xl animate-fade-in",
+        className: "fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 md:p-6 bg-forest-950/90 backdrop-blur-xl animate-fade-in",
         onClick: function() { setSelectedTree(null); },
         children: /*#__PURE__*/_jsxDEV("div", {
-          className: "bg-forest-900/85 backdrop-blur-2xl border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden max-w-4xl w-full max-h-[90dvh] overflow-y-auto transform transition-all duration-500 scale-100 animate-fade-in-up",
+          className: "bg-forest-900/85 backdrop-blur-2xl border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.5)] rounded-[2rem] overflow-hidden max-w-4xl w-full max-h-[90dvh] overflow-y-auto animate-scale-in",
           onClick: function(e) { e.stopPropagation(); },
           children: [
             /*#__PURE__*/_jsxDEV("div", {

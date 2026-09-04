@@ -2973,11 +2973,13 @@ function PersistentHeader() {
       className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between"
     },
       React.createElement("a", { href: "#", className: "flex items-center gap-2.5 group" },
-        React.createElement("div", {
-          className: "w-9 h-9 rounded-lg bg-gradient-to-br from-forest-500 to-forest-700 flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-        }, React.createElement(LucideIcon, { name: "tree-pine", size: 20, className: "text-cream-100" })),
+        React.createElement("img", {
+          src: "logo.png",
+          alt: "GreenGrowth Logo",
+          className: "h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+        }),
         React.createElement("span", { className: "text-lg font-semibold tracking-tight text-cream-50" },
-          "af", React.createElement("span", { className: "text-earth-400" }, "forestation")
+          "Green", React.createElement("span", { className: "text-earth-400" }, "Growth")
         )
       ),
       React.createElement("div", { className: "hidden sm:flex items-center gap-3 lg:gap-4" },

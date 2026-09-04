@@ -213,6 +213,7 @@ const TRANSLATIONS = {
   }
 };
 
+let language = 'en';
 const TREE_DATA = [{
   rank: 1,
   name: "Indian siris tree",
@@ -2651,7 +2652,7 @@ function CarbonCalculatorHub() {
                             children: [
                               /*#__PURE__*/_jsxDEV("div", {
                                 children: [
-                                  /*#__PURE__*/_jsxDEV("h5", { className: "text-cream-50 text-sm font-semibold", children: item.(language === 'mr' ? tree.marathi : language === 'hi' ? tree.hindi : tree.name) }, void 0, false),
+                                  /*#__PURE__*/_jsxDEV("h5", { className: "text-cream-50 text-sm font-semibold", children: (language === 'mr' ? item.tree.marathi : language === 'hi' ? item.tree.hindi : item.tree.name) }, void 0, false),
                                   /*#__PURE__*/_jsxDEV("p", { className: "text-cream-100/80 text-xs", children: ["Qty: ", item.quantity, " | CO\u2082: ", (item.tree.c * item.quantity).toFixed(1)] }, void 0, true)
                                 ]
                               }, void 0, true),
@@ -3460,6 +3461,7 @@ function App() {
       },
         React.createElement(Contact, null)
       )
+    )
     )
   );
 }

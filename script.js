@@ -218,7 +218,7 @@ const TREE_DATA = [{
   rank: 1,
   name: "Indian siris tree",
   hindi: "Siris (सिरिस)", marathi: 'Shirish (शिरीष)',
-  img: './images/indian-siris.jpeg',
+  img: './assets/tree-1.jpeg',
   c: 1029.56,
   o: 2744.81,
   height: '15-25 m',
@@ -231,7 +231,7 @@ const TREE_DATA = [{
   rank: 2,
   name: "Tamarind",
   hindi: "Imli (इमली)", marathi: 'Chinch (चिंच)',
-  img: './images/tamarind.jpeg',
+  img: './assets/tree-2.jpeg',
   c: 808.79,
   o: 2156.23,
   height: '20-25 m',
@@ -244,7 +244,7 @@ const TREE_DATA = [{
   rank: 3,
   name: "May flower tree",
   hindi: "Gulmohar (गुलमोहर)", marathi: 'Gulmohar (गुलमोहर)',
-  img: './images/gulmohar.jpeg',
+  img: './assets/tree-3.jpeg',
   c: 385.26,
   o: 1027.11,
   height: '10-15 m',
@@ -257,7 +257,7 @@ const TREE_DATA = [{
   rank: 4,
   name: "Yellow flame tree",
   hindi: "Peela Gulmohar (पीला गुलमोहर)", marathi: 'Sonmohar (सोनमोहर)',
-  img: './images/yellow-flame.jpeg',
+  img: './assets/tree-4.jpeg',
   c: 377.16,
   o: 1005.52,
   height: '15-20 m',
@@ -270,7 +270,7 @@ const TREE_DATA = [{
   rank: 5,
   name: "Sacred fig",
   hindi: "Peepal (पीपल)", marathi: 'Pimpal (पिंपळ)',
-  img: './images/peepal.jpeg',
+  img: './assets/tree-5.jpeg',
   c: 339.82,
   o: 905.96,
   height: '20-30 m',
@@ -283,7 +283,7 @@ const TREE_DATA = [{
   rank: 6,
   name: "River tamarind",
   hindi: "Subabul (सुबबूल)", marathi: 'Subabhul (सुबाभूळ)',
-  img: './images/subabul.jpeg',
+  img: './assets/tree-6.jpeg',
   c: 313.76,
   o: 836.47,
   height: '10-15 m',
@@ -296,7 +296,7 @@ const TREE_DATA = [{
   rank: 7,
   name: "Kanak Champa",
   hindi: "Kanak Champa (कनक चम्पा)", marathi: 'Kanak Champa (मुचकुंद)',
-  img: './images/kanak-champa.jpeg',
+  img: './assets/tree-7.jpeg',
   c: 310.08,
   o: 826.67,
   height: '15-20 m',
@@ -309,7 +309,7 @@ const TREE_DATA = [{
   rank: 8,
   name: "Neem",
   hindi: "Neem (नीम)", marathi: 'Kadulimb (कडुनिंब)',
-  img: './images/neem.jpeg',
+  img: './assets/tree-8.jpeg',
   c: 301.67,
   o: 804.25,
   height: '15-20 m',
@@ -321,7 +321,7 @@ const TREE_DATA = [{
 }, {
   rank: 9,
   name: "Indian cork tree",
-  img: './images/wild-almond.jpg',
+  img: './assets/tree-9.jpeg',
   hindi: "Neem Chameli (नीम चमेली)", marathi: 'Buch (बुच)',
   c: 211.29,
   o: 563.29,
@@ -334,7 +334,7 @@ const TREE_DATA = [{
 }, {
   rank: 10,
   name: "Gooseberry",
-  img: './images/neem.jpeg',
+  img: './assets/tree-10.jpeg',
   hindi: "Amla (आंवलऎ)", marathi: 'Amla (आवळा)',
   c: 206.10,
   o: 549.46,
@@ -347,7 +347,7 @@ const TREE_DATA = [{
 }, {
   rank: 11,
   name: "Earleaf acacia",
-  img: './images/wild-almond.jpg',
+  img: './assets/tree-11.jpeg',
   hindi: "Pahari Babul (पहाड़ी बबूल)", marathi: 'Australi Babhul (ऑस्ट्रेलियन बाभूळ)',
   c: 204.44,
   o: 545.04,
@@ -360,7 +360,7 @@ const TREE_DATA = [{
 }, {
   rank: 12,
   name: "Cluster fig",
-  img: './images/wild-almond.jpg',
+  img: './assets/tree-12.jpeg',
   hindi: "Gular (गूलर)", marathi: 'Umber (उंबर)',
   c: 195.29,
   o: 520.66,
@@ -373,7 +373,7 @@ const TREE_DATA = [{
 }, {
   rank: 13,
   name: "Jamun tree",
-  img: './images/wild-almond.jpg',
+  img: './assets/tree-13.jpeg',
   hindi: "Jamun (जामून)", marathi: 'Jambhul (जांभूळ)',
   c: 190.59,
   o: 508.12,
@@ -386,7 +386,7 @@ const TREE_DATA = [{
 }, {
   rank: 14,
   name: "Golden shower",
-  img: './images/wild-almond.jpg',
+  img: './assets/tree-14.jpeg',
   hindi: "Amaltas (अमलतास)", marathi: 'Bahawa (बहावा)',
   c: 188.51,
   o: 502.56,
@@ -399,7 +399,7 @@ const TREE_DATA = [{
 }, {
   rank: 15,
   name: "Weeping fig",
-  img: './images/wild-almond.jpg',
+  img: './assets/tree-15.jpeg',
   hindi: "Chilkan (चिलकन)", marathi: 'Nandruk (नांदृक)',
   c: 178.05,
   o: 474.69,
@@ -412,7 +412,7 @@ const TREE_DATA = [{
 }, {
   rank: 16,
   name: "Teak",
-  img: './images/teak.jpg',
+  img: './assets/tree-16.jpeg',
   hindi: "Sagwan (सागवान)", marathi: 'Sagwan (सागवान)',
   c: 149.42,
   o: 398.36,
@@ -425,7 +425,7 @@ const TREE_DATA = [{
 }, {
   rank: 17,
   name: "Pungam tree",
-  img: './images/pungam.jpg',
+  img: './assets/tree-17.jpeg',
   hindi: "Karanj (करंज)", marathi: 'Karanj (करंज)',
   c: 140.59,
   o: 374.81,
@@ -438,7 +438,7 @@ const TREE_DATA = [{
 }, {
   rank: 18,
   name: "Spanish Cherry",
-  img: './images/spanish-cherry.jpg',
+  img: './assets/tree-18.jpeg',
   hindi: "Maulsari (मौलसिरी)", marathi: 'Bakul (बकुळ)',
   c: 125.43,
   o: 334.38,
@@ -451,7 +451,7 @@ const TREE_DATA = [{
 }, {
   rank: 19,
   name: "Paradise tree",
-  img: './images/paradise.jpg',
+  img: './assets/tree-19.jpeg',
   hindi: "Lakshmi Taru (लक्ष्मी तरु)", marathi: 'Lakshmi Taru (लक्ष्मीतरू)',
   c: 119.71,
   o: 319.15,
@@ -464,7 +464,7 @@ const TREE_DATA = [{
 }, {
   rank: 20,
   name: "Wild almond tree",
-  img: './images/paradise.jpg',
+  img: './assets/tree-20.jpeg',
   hindi: "Jangli Badam (जंगली बादाम)", marathi: 'Jangli Badam (रानबदाम)',
   c: 116.82,
   o: 311.44,
@@ -477,7 +477,7 @@ const TREE_DATA = [{
 }, {
   rank: 21,
   name: "Wood apple",
-  img: './images/wood-apple.jpg',
+  img: './assets/tree-21.jpeg',
   hindi: "Kaitha (कैथा)", marathi: 'Kavath (कवठ)',
   c: 106.71,
   o: 284.49,
@@ -490,7 +490,7 @@ const TREE_DATA = [{
 }, {
   rank: 22,
   name: "Mulberry tree",
-  img: './images/indian-mulberry.jpg',
+  img: './assets/tree-22.jpeg',
   hindi: "Shahtoot (शहतूत)", marathi: 'Tuti (तुती)',
   c: 94.15,
   o: 251.00,
@@ -503,7 +503,7 @@ const TREE_DATA = [{
 }, {
   rank: 23,
   name: "Guava tree",
-  img: './images/guava.jpg',
+  img: './assets/tree-23.jpeg',
   hindi: "Amrud (अमरूद)", marathi: 'Peru (पेरू)',
   c: 85.34,
   o: 227.53,
@@ -516,7 +516,7 @@ const TREE_DATA = [{
 }, {
   rank: 24,
   name: "Casuarina",
-  img: './images/casuarina.jpg',
+  img: './assets/tree-24.jpeg',
   hindi: "Jhau (झाऊ)", marathi: 'Suru (सुरू)',
   c: 80.53,
   o: 214.70,
@@ -529,7 +529,7 @@ const TREE_DATA = [{
 }, {
   rank: 25,
   name: "Bibhitaki tree",
-  img: './images/bibhitaki.jpg',
+  img: './assets/tree-25.jpeg',
   hindi: "Baheda (बहेड़ा)", marathi: 'Behada (बेहडा)',
   c: 76.60,
   o: 204.21,
@@ -542,7 +542,7 @@ const TREE_DATA = [{
 }, {
   rank: 26,
   name: "Purple bauhinia",
-  img: './images/purple-bauhinia.jpg',
+  img: './assets/tree-26.jpeg',
   hindi: "Kachnar (कचनार)", marathi: 'Rakta Kanchan (रक्त कांचन)',
   c: 70.08,
   o: 186.83,
@@ -555,7 +555,7 @@ const TREE_DATA = [{
 }, {
   rank: 27,
   name: "Butter tree",
-  img: './images/butter-tree.jpg',
+  img: './assets/tree-27.jpeg',
   hindi: "Mahua (महुआ)", marathi: 'Moh (मोह)',
   c: 69.43,
   o: 185.11,
@@ -568,7 +568,7 @@ const TREE_DATA = [{
 }, {
   rank: 28,
   name: "Indian mulberry",
-  img: './images/indian-mulberry.jpg',
+  img: './assets/tree-28.jpeg',
   hindi: "Aal (आल)", marathi: 'Noni (नोनो)',
   c: 68.81,
   o: 183.44,
@@ -581,7 +581,7 @@ const TREE_DATA = [{
 }, {
   rank: 29,
   name: "Geranium tree",
-  img: './images/geranium-tree.jpg',
+  img: './assets/tree-29.jpeg',
   hindi: "Lal Lasora (लाल लसोड़ा)", marathi: 'Kanchan (कांचन)',
   c: 57.53,
   o: 153.38,
@@ -594,7 +594,7 @@ const TREE_DATA = [{
 }, {
   rank: 30,
   name: "Yellow bells",
-  img: './images/yellow-bells.jpg',
+  img: './assets/tree-30.jpeg',
   hindi: "Pili Chameli (पीली चमेली)", marathi: 'Tecoma (पिवळी कण्हेर)',
   c: 50.19,
   o: 133.80,
@@ -607,7 +607,7 @@ const TREE_DATA = [{
 }, {
   rank: 31,
   name: "Mango tree",
-  img: './images/mango.jpg',
+  img: './assets/tree-31.jpeg',
   hindi: "Aam (आम)", marathi: 'Amba (आंबा)',
   c: 46.31,
   o: 123.45,
@@ -620,7 +620,7 @@ const TREE_DATA = [{
 }, {
   rank: 32,
   name: "Indian almond",
-  img: './images/indian-almond.jpg',
+  img: './assets/tree-32.jpeg',
   hindi: "Desi Badam (देसी बादाम)", marathi: 'Deshi Badam (देशी बदाम)',
   c: 38.34,
   o: 102.21,
@@ -633,7 +633,7 @@ const TREE_DATA = [{
 }, {
   rank: 33,
   name: "False Ashoka",
-  img: './images/false-ashoka.jpg',
+  img: './assets/tree-33.jpeg',
   hindi: "Ashoka (अशोक)", marathi: 'Ashoka (अशोक)',
   c: 29.01,
   o: 77.34,
@@ -646,7 +646,7 @@ const TREE_DATA = [{
 }, {
   rank: 34,
   name: "Curry leaf",
-  img: './images/curry-leaf.jpg',
+  img: './assets/tree-34.jpeg',
   hindi: "Kadi Patta (कड़ी पत्ता)", marathi: 'Kadi Patta (कढीपत्ता)',
   c: 26.71,
   o: 71.20,
@@ -659,7 +659,7 @@ const TREE_DATA = [{
 }, {
   rank: 35,
   name: "Quick stick",
-  img: './images/quick-stick.jpg',
+  img: './assets/tree-35.jpeg',
   hindi: "Giripushpa (गिरिपुष्प)", marathi: 'Gliricidia (उंदीरमारी)',
   c: 21.18,
   o: 56.46,
@@ -672,7 +672,7 @@ const TREE_DATA = [{
 }, {
   rank: 36,
   name: "Arjuna tree",
-  img: './images/arjuna.jpg',
+  img: './assets/tree-36.jpeg',
   hindi: "Arjun (अर्जुन)", marathi: 'Arjun (अर्जुन)',
   c: 12.75,
   o: 33.99,
@@ -685,7 +685,7 @@ const TREE_DATA = [{
 }, {
   rank: 37,
   name: "Parijat",
-  img: './images/parijat.jpg',
+  img: './assets/tree-37.jpeg',
   hindi: "Harsingar (हरसिंगार)", marathi: 'Parijatak (पारिजातक)',
   c: 5.85,
   o: 15.60,
@@ -698,7 +698,7 @@ const TREE_DATA = [{
 }, {
   rank: 38,
   name: "Bamboo",
-  img: './images/bamboo.jpg',
+  img: './assets/tree-38.jpeg',
   hindi: "Bans (बांस)", marathi: 'Bambu (बांबू)',
   c: 5.80,
   o: 15.46,

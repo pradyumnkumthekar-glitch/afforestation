@@ -2478,7 +2478,7 @@ function GreenAssistant() {
 
     try {
       // Direct Google Gemini API Call
-      const API_KEY = "AQ.Ab8RN6JKAaL3hW9_NGEwALLvCH4p0i2I9E7BWyjGiRXzDshY1Q"; 
+      const API_KEY = "AQ.Ab8RN6Ksdw3MQ75vhsbMFxbmP8WLFMsPGf9uT3n9hycfu-6_cw"; 
       
       // Multi-model cascade: gemini-3.5-flash, gemini-3.5-flash-lite, gemini-2.5-flash
       const candidateModels = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-2.5-flash"];
@@ -4161,7 +4161,7 @@ function AIWorkspace() {
 
     try {
       // Direct Google Gemini API Call
-      const API_KEY = "AQ.Ab8RN6JKAaL3hW9_NGEwALLvCH4p0i2I9E7BWyjGiRXzDshY1Q"; 
+      const API_KEY = "AQ.Ab8RN6Ksdw3MQ75vhsbMFxbmP8WLFMsPGf9uT3n9hycfu-6_cw"; 
       
       // Multi-model cascade: gemini-3.5-flash, gemini-3.5-flash-lite, gemini-2.5-flash
       const candidateModels = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-2.5-flash"];

@@ -2458,10 +2458,16 @@ function GreenAssistant() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg, lang: currentLang })
       });
-      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error(data.error || 'Server error');
+        const errorText = await res.text();
+        console.error("Assistant Fetch Error (HTTP " + res.status + "):", errorText);
+        let errorData = null;
+        try { errorData = JSON.parse(errorText); } catch(e) {}
+        throw new Error((errorData && (errorData.error || errorData.message || errorData.details)) || ("Server returned HTTP " + res.status));
       }
+
+      const data = await res.json();
       const reply = data.reply || data.text || data.message || 'No response received.';
       setMessages(function(prev) {
         return prev.concat([{ role: 'assistant', content: reply }]);
@@ -3761,10 +3767,16 @@ function AIWorkspace() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMsg, lang: language })
       });
-      const data = await res.json();
+
       if (!res.ok) {
-        throw new Error(data.error || 'Server error');
+        const errorText = await res.text();
+        console.error("Assistant Fetch Error (HTTP " + res.status + "):", errorText);
+        let errorData = null;
+        try { errorData = JSON.parse(errorText); } catch(e) {}
+        throw new Error((errorData && (errorData.error || errorData.message || errorData.details)) || ("Server returned HTTP " + res.status));
       }
+
+      const data = await res.json();
       const reply = data.reply || data.text || data.message || 'No response received.';
       setMessages(function(prev) {
         return prev.concat([{ role: 'assistant', content: reply }]);

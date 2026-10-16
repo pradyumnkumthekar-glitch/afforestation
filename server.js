@@ -1,6 +1,14 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+if (!process.env.GEMINI_API_KEY) {
+  try {
+    const envContent = fs.readFileSync(path.join(__dirname, '.env.local'), 'utf8');
+    const m = envContent.match(/GEMINI_API_KEY\s*=\s*([^\r\n]+)/);
+    if (m) process.env.GEMINI_API_KEY = m[1].trim().replace(/^['"]|['"]$/g, '');
+  } catch (e) {}
+}
+
 const chatHandler = require('./api/chat.js');
 
 const PORT = process.env.PORT || 3000;
@@ -40,6 +48,9 @@ const server = http.createServer((req, res) => {
         };
         const mockRes = {
           statusCode: 200,
+          setHeader(name, val) {
+            try { res.setHeader(name, val); } catch(e) {}
+          },
           status(code) {
             this.statusCode = code;
             return this;
@@ -47,6 +58,10 @@ const server = http.createServer((req, res) => {
           json(data) {
             res.writeHead(this.statusCode, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(data));
+          },
+          end() {
+            res.writeHead(this.statusCode);
+            res.end();
           }
         };
         await chatHandler(mockReq, mockRes);

@@ -2375,301 +2375,110 @@ var SYSTEM_PROMPT = 'You are a Senior Environmental Engineer with 25+ years of e
 /* ──────────────────────────────────────────────
    Green Assistant — AI Chatbot Widget
 ────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────
+   Green Assistant — Modernized AI Chatbot Widget
+────────────────────────────────────────────── */
 function GreenAssistant() {
+  const context = React.useContext(LanguageContext);
+  const currentLang = (context && context.language) || 'en';
+  const t = (context && context.t) || TRANSLATIONS[currentLang] || TRANSLATIONS.en;
+
+  const welcomeGreetings = {
+    en: "Hello! I am your Ecological Assistant 🌱. Ask me anything about native tree species, water conservation, climate resilience, and soil health!",
+    hi: "नमस्ते! मैं आपका पारिस्थितिकी सहायक हूँ 🌱। मुझसे देशी पेड़ों की प्रजातियों, जल संरक्षण, जलवायु लचीलापन और मिट्टी के स्वास्थ्य के बारे में कुछ भी पूछें!",
+    mr: "नमस्कार! मी तुमचा पर्यावरण सहाय्यक आहे 🌱. मला स्थानिक झाडांच्या प्रजाती, जलसंधारण, हवामान लवचिकता आणि मातीबद्दल काहीही विचारा!"
+  };
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState(function() {
     try {
-      var saved = sessionStorage.getItem('greenAssistantMessages');
+      const saved = sessionStorage.getItem('greenAssistantMessages_' + currentLang);
       if (saved) return JSON.parse(saved);
-    } catch(e) {}
+    } catch (e) {}
     return [{
       role: 'assistant',
-      content: 'Ready to anchor your project\'s future. I\'m your Senior Environmental Engineer \u2014 grounded in structural mechanics, numerical methods, and decades of watching forests reshape the built environment. What site parameters are we analyzing today?'
+      content: welcomeGreetings[currentLang] || welcomeGreetings.en
     }];
   });
-  
-  useEffect(function() {
-    sessionStorage.setItem('greenAssistantMessages', JSON.stringify(messages));
-  }, [messages]);
 
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [contextTree, setContextTree] = useState(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  useEffect(function () {
+  // Sync to session storage
+  useEffect(function() {
+    try {
+      sessionStorage.setItem('greenAssistantMessages_' + currentLang, JSON.stringify(messages));
+    } catch (e) {}
+  }, [messages, currentLang]);
+
+  // Update initial greeting when language changes if no conversation started
+  useEffect(function() {
+    if (messages.length === 1 && messages[0].role === 'assistant') {
+      setMessages([{
+        role: 'assistant',
+        content: welcomeGreetings[currentLang] || welcomeGreetings.en
+      }]);
+    }
+  }, [currentLang]);
+
+  // Auto scroll to bottom
+  useEffect(function() {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({
-        behavior: 'smooth'
-      });
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [messages, isTyping]);
 
-  useEffect(function () {
+  // Auto focus input on open
+  useEffect(function() {
     if (isOpen && inputRef.current) {
-      setTimeout(function () {
+      setTimeout(function() {
         inputRef.current.focus();
-      }, 100);
+      }, 150);
     }
   }, [isOpen]);
 
-  useEffect(function () {
-    if (isOpen && window.innerWidth < 640) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return function() { document.body.style.overflow = ''; };
-  }, [isOpen]);
-
-  function handleInputFocus() {
-    setTimeout(function() {
-      if (messagesEndRef.current) {
-        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 300);
-  }
-
-  function generateResponse(query) {
-    var q = query.toLowerCase().trim();
-    let currentContext = contextTree;
-    var mentionedTrees = TREE_DATA.filter(function (t) {
-      var nameMatch = q.includes(t.name.toLowerCase());
-      var hindiName = t.hindi.split('(')[0].trim().toLowerCase();
-      var hindiMatch = hindiName.length > 2 && q.includes(hindiName);
-      return nameMatch || hindiMatch;
-    });
-    if (mentionedTrees.length === 1) {
-      currentContext = mentionedTrees[0];
-      setContextTree(currentContext);
-    }
-
-    if (/^(hi|hello|hey|namaste|good\s*(morning|afternoon|evening))\b/i.test(q)) {
-      return 'Good to have you on-site. I can run structural analysis on root-load distributions, soil compatibility matrices, or canopy thermal coefficients.\n\nSome starting points:\n* \"Predict root spread load for Neem\"\n* \"Analyze soil compatibility\"\n* \"Generate a thermal impact matrix\"';
-    }
-
-    if (/\b(thanks|thank\s*you|thx|dhanyavaad|awesome|great)\b/i.test(q)) {
-      return 'Acknowledged. Every species integration strengthens the site\'s long-term load profile. Standing by for your next query.';
-    }
-
-    if (/\b(bad|wrong|stupid|useless|frustrating)\b/i.test(q)) {
-      return 'Understood \u2014 let me recalibrate. Could you rephrase your query? I work best with specific parameters: species names, soil types, load conditions, or site dimensions.';
-    }
-
-    if (/\b(help|what can you|what do you do|features)\b/i.test(q)) {
-      return 'I can help you with:\n* 🏆 **Insights** — "Which tree absorbs the most CO₂?"\n* 🌳 **Species info** — "Tell me about Neem"\n* 💧 **Requirements** — "Which trees need low water?"\n* ⚖️ **Comparisons** — "Compare Neem and Tamarind"\n* 🔬 **Services** — "What services do you offer?"\n* ⏱️ **Cost/Time** — "How long does a forest take to grow?"';
-    }
-
-    if (/\b(cost|price|expensive|cheap|budget|money)\b/i.test(q)) {
-      return '💰 **Cost & Investment:**\n\nThe cost of an afforestation project depends on the area and specific requirements. However, the **Miyawaki Method** becomes entirely self-sustaining and maintenance-free after just 3 years, making it a highly cost-effective long-term investment!\n\nFor a detailed quote, please reach out via our **Contact** section.';
-    }
-    
-    if (/\b(time|how long|duration|years|months)\b/i.test(q)) {
-      return '⏱️ **Timeframe:**\n\nUsing the Miyawaki Method, a forest grows **10x faster** than a conventional forest. It becomes completely self-sustaining in just **3 years** and mimics a 100-year-old forest in just **10 years**!';
-    }
-    
-    if (/\b(space|area|size|acres|square meters|sqm)\b/i.test(q)) {
-      return '📏 **Space Requirements:**\n\nThe Miyawaki Method is incredibly space-efficient! We plant **3 to 5 saplings per square meter**. You can start a mini-forest in an area as small as a backyard (around 100 sq meters or 1000 sq ft).';
-    }
-
-    if (/\b(miyawaki|afforestation|layers|method)\b/i.test(q)) {
-      if (/\b(layer|layers|4-layer|four-layer)\b/i.test(q)) {
-        return '🌳 **The Miyawaki 4-Layer System:**\n1. **Shrubs** (up to 6 feet)\n2. **Sub-trees** (up to 25 feet)\n3. **Trees** (up to 40 feet)\n4. **Canopy layer** (above 40 feet)\n\nThis ensures sunlight is received only from the top, promoting rapid upward growth.';
-      }
-      return '🌱 **The Miyawaki Method** is an advanced afforestation technique that uses native species to create dense, multilayered forests.\n\n**Core Principles:**\n* **30x denser**, grows **10x faster**\n* **Maintenance-free** after 3 years\n* Uses **4 layers** (shrubs, sub-trees, trees, canopy)\n* Requires **3-5 saplings per square meter**';
-    }
-
-    if (/\b(fast|fastest|quick|rapid)\b/i.test(q) && /\b(grow|growth)\b/i.test(q)) {
-      var fastTrees = TREE_DATA.filter(t => t.growth && (t.growth.includes('Fast') || t.growth.includes('Very Fast')));
-      return '🚀 **Fastest Growing Trees:**\n\n' + fastTrees.slice(0, 5).map(t => '* **' + t.name + '** (' + t.growth + ')').join('\n') + '\n\nThese are excellent for rapid canopy establishment!';
-    }
-    if (/\b(slow|slowest)\b/i.test(q) && /\b(grow|growth)\b/i.test(q)) {
-      var slowTrees = TREE_DATA.filter(t => t.growth && t.growth.includes('Slow'));
-      return '🐢 **Slowest Growing Trees:**\n\n' + slowTrees.slice(0, 5).map(t => '* **' + t.name + '** (' + t.growth + ')').join('\n');
-    }
-
-    if (/\b(water|irrigation)\b/i.test(q) && /\b(low|less|little|dry)\b/i.test(q)) {
-      var lowWater = TREE_DATA.filter(t => t.water && t.water.includes('Low'));
-      return '🌵 **Low Water Requirement Trees:**\n\n' + lowWater.slice(0, 5).map(t => '* **' + t.name + '**').join('\n') + '\n\nGreat for dry or drought-prone areas.';
-    }
-    if (/\b(water|irrigation)\b/i.test(q) && /\b(high|more|a lot|wet)\b/i.test(q)) {
-      var highWater = TREE_DATA.filter(t => t.water && t.water.includes('High'));
-      return '💧 **High Water Requirement Trees:**\n\n' + highWater.map(t => '* **' + t.name + '**').join('\n');
-    }
-
-    if (/\b(most|best|highest|top|maximum|greatest|rank\s*1)\b/i.test(q) && /co2|carbon|absorb/i.test(q)) {
-      var sorted = TREE_DATA.slice().sort(function (a, b) {
-        return b.c - a.c;
-      });
-      return '🏆 **Top CO₂ Absorbers (kg/year):**\n\n' + sorted.slice(0, 5).map(t => '* **' + t.name + '** — ' + t.c.toLocaleString() + ' kg/yr').join('\n');
-    }
-
-    if (/\b(most|best|highest|top|maximum|greatest)\b/i.test(q) && /o2|oxygen|release|produce|breath/i.test(q)) {
-      var sorted = TREE_DATA.slice().sort(function (a, b) {
-        return b.o - a.o;
-      });
-      return '🌬️ **Top O₂ Producers (kg/year):**\n\n' + sorted.slice(0, 5).map(t => '* **' + t.name + '** — ' + t.o.toLocaleString() + ' kg/yr').join('\n');
-    }
-
-    if (currentContext && mentionedTrees.length === 0) {
-      let hasAnswered = false;
-      let response = 'About **' + currentContext.name + '**:\n';
-      if (/\b(safe|distance|building|road)\b/i.test(q)) {
-        response += '* Safe from building: ' + (currentContext.safeBldg || 'N/A') + '\n* Safe from road: ' + (currentContext.safeRoad || 'N/A');
-        hasAnswered = true;
-      }
-      if (/\b(water|irrigation)\b/i.test(q)) {
-        response += '* Water requirement: ' + (currentContext.water || 'Unknown');
-        hasAnswered = true;
-      }
-      if (/\b(growth|grow|fast|slow)\b/i.test(q)) {
-        response += '* Growth rate: ' + (currentContext.growth || 'Unknown');
-        hasAnswered = true;
-      }
-      if (/\b(height|tall)\b/i.test(q)) {
-        response += '* Mature height: ' + (currentContext.height || 'Unknown');
-        hasAnswered = true;
-      }
-      if (/\b(canopy|shade|spread)\b/i.test(q)) {
-        response += '* Canopy spread: ' + (currentContext.canopy || 'Unknown');
-        hasAnswered = true;
-      }
-      if (/co2|carbon/i.test(q)) {
-        response += '* CO₂ Absorbed: ' + currentContext.c.toLocaleString() + ' kg/yr';
-        hasAnswered = true;
-      }
-      if (/o2|oxygen/i.test(q)) {
-        response += '* O₂ Released: ' + currentContext.o.toLocaleString() + ' kg/yr';
-        hasAnswered = true;
-      }
-      if (hasAnswered) return response;
-    }
-
-    if (mentionedTrees.length === 1) {
-      var t = mentionedTrees[0];
-      let extra = '';
-      if (q.includes('safe') || q.includes('distance')) extra += '\n* 📏 **Safe Distance:** Building ' + t.safeBldg + ', Road ' + t.safeRoad;
-      if (q.includes('water')) extra += '\n* 💧 **Water:** ' + t.water;
-      if (q.includes('grow')) extra += '\n* 📈 **Growth:** ' + t.growth;
-      return '🌳 **' + t.name + '** (' + t.hindi + ')\n\n* 🌿 **CO₂ Absorbed:** ' + t.c.toLocaleString() + ' kg/year\n* 🌬️ **O₂ Released:** ' + t.o.toLocaleString() + ' kg/year' + extra + '\n* 🚗 Offsets ' + getCarEquivalent(t.c) + ' days of car driving/year\n* 👥 Provides O₂ for ' + getPeopleO2(t.o) + ' people/year\n\n*(You can now ask follow-up questions like "what is its water requirement?" or "how tall does it grow?")*';
-    }
-
-    if (mentionedTrees.length >= 2) {
-      var trees = mentionedTrees.slice(0, 4);
-      var response = '⚖️ **Comparison:**\n\n';
-      trees.forEach(function (t) {
-        response += '* **' + t.name + ':** ' + t.c.toLocaleString() + ' kg CO₂ | ' + (t.water || 'N/A') + ' Water | ' + (t.growth || 'N/A') + ' Growth\n';
-      });
-      var best = trees.reduce(function (a, b) {
-        return a.c > b.c ? a : b;
-      });
-      var worst = trees.reduce(function (a, b) {
-        return a.c < b.c ? a : b;
-      });
-      if (best.rank !== worst.rank) {
-        var diff = ((best.c - worst.c) / worst.c * 100).toFixed(0);
-        response += '\n💡 **' + best.name + '** absorbs ' + diff + '% more CO₂ than **' + worst.name + '**.';
-      }
-      return response;
-    }
-
-    if (/\b(service|offer|what.*(do|does)|root\s*analysis|canopy|thermal|planning)\b/i.test(q)) {
-      return '🔬 **Our Core Services:**\n\n1. **Root & Plot Analysis:** We map root zones against your site boundaries and utilities.\n2. **Canopy Projection:** Visualize future canopy coverage at 5, 10, and 25-year intervals.\n3. **Thermal Impact Assessment:** Quantify the cooling effect of strategic tree placement.';
-    }
-
-    if (/\b(lokesh|toshniwal|dilip|special thanks)\b/i.test(q)) {
-      return '✨ **Special Thanks:**\n\nA massive shoutout to **Lokesh Dilip Toshniwal**! The afforestation platform is especially thankful for their vision and support. 🌿';
-    }
-
-    if (/\b(develop|developer|created|creator|made|who made)\b/i.test(q)) {
-      return '👨‍💻 **Development Team:**\n\nThis platform was brought to life by an amazing team:\n* **Pradyumn Kumthekar**\n* **Vaibhav Chalakh**\n* **Aaryan Lengure**\n* **Aarush Rathod**\n* **Parth Ambartani**';
-    }
-
-    if (/\b(total|how many|database|all trees|overall|sum|statistic)\b/i.test(q)) {
-      var totalCO2 = TREE_DATA.reduce(function (s, t) {
-        return s + t.c;
-      }, 0);
-      var totalO2 = TREE_DATA.reduce(function (s, t) {
-        return s + t.o;
-      }, 0);
-      return '📊 **Database Overview:**\n\n* **Total species:** ' + TREE_DATA.length + '\n* **Combined CO₂ absorption:** ' + totalCO2.toLocaleString(undefined, {
-        maximumFractionDigits: 0
-      }) + ' kg/year\n* **Combined O₂ release:** ' + totalO2.toLocaleString(undefined, {
-        maximumFractionDigits: 0
-      }) + ' kg/year\n* **Top absorber:** ' + TREE_DATA[0].name + ' (' + TREE_DATA[0].c + ' kg CO₂/yr)';
-    }
-
-    if (/\b(plant|planting|impact|environment|green|sustainable|benefit|ecology)\b/i.test(q)) {
-      return '🌱 **Environmental Impact of Tree Planting:**\n\nPlanting just 10 ' + TREE_DATA[0].name + ' trees would absorb ' + (TREE_DATA[0].c * 10).toLocaleString() + ' kg of CO₂ per year!\n\nUse our Planting Impact Calculator in the Tree Database section to explore different species and quantities.';
-    }
-
-    if (/\bcompare\b/i.test(q)) {
-      return 'I\'d love to help you compare trees! Try asking:\n* "Compare Neem and Tamarind"\n* "Compare Mango and Guava"\n\nYou can also use the Compare mode in the Tree Database section! 👆';
-    }
-
-    
-    if (/predict.*root.*spread.*load/i.test(q)) {
-      var species = currentContext ? currentContext.name : 'native species';
-      var canopy = currentContext ? currentContext.canopy : '15m';
-      return '📐 **Root Spread Load Analysis:**\n\nBased on finite element simulations for ' + species + ', root mass density aligns with a canopy ratio of roughly 1.2x. Given a projected canopy of ' + canopy + ', expect a lateral radial load distribution spanning outward.\n\n* **Structural Note:** Ensure foundation setbacks account for a pressure gradient of 45kPa near the root collar. We must balance hardscape integrity with the deep patience of the living soil network.';
-    }
-
-    if (/analyze.*soil.*compatibility/i.test(q)) {
-      return '🧪 **Soil-Structure Interaction & Compatibility:**\n\nThe site matrix indicates a loamy-clay subsurface. When integrating indigenous planting configurations, the biological anchoring will improve shear strength by approximately 18% over a 10-year successional period.\n\n* **Recommendation:** Incorporate 200mm of organic mulch to optimize the microbiome. Nature engineers its own foundations when given the proper matrix.';
-    }
-
-    if (/generate.*thermal.*impact.*matrix/i.test(q) || /thermal.*reduction/i.test(q)) {
-      return '🌡️ **10-Year Thermal Projection Matrix:**\n\nDeploying a 4-layer Miyawaki configuration alters the microclimate thermodynamics significantly:\n* **Albedo Shift:** Surface reflectance decreases, trapping less ambient heat.\n* **Transpirational Cooling:** Estimated at 2.4 kW per mature canopy per day.\n* **Net Result:** A localized ambient reduction of 3.2°C during peak solar load.\n\n* **Reflection:** The built environment often fights the sun; a forest simply absorbs it, translating thermal stress into biological energy.';
-    }
-
-    return 'I\'m not completely sure about that! 🤔 But I can help you with:\n* **Tree species data** (e.g., "Tell me about Neem")\n* **Properties** (e.g., "Which trees need low water?")\n* **Our services** (Root Analysis, Canopy, Thermal)\n* **Miyawaki Method**\n\nTry asking "Which tree absorbs the most CO₂?" 🌿';
-  }
-
-  function handleSend(forcedQuery) {
-    var userMsg = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
+  // Backend submission handler using native fetch to /api/chat
+  async function handleSend(forcedQuery) {
+    const userMsg = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
     if (!userMsg || isTyping) return;
     if (typeof forcedQuery !== 'string') {
       setInput('');
     }
-    setMessages(function (prev) {
-      return prev.concat([{
-        role: 'user',
-        content: userMsg
-      }]);
+
+    setMessages(function(prev) {
+      return prev.concat([{ role: 'user', content: userMsg }]);
     });
     setIsTyping(true);
-    
-    const thinkingTime = 600 + Math.random() * 800;
-    
-    setTimeout(function () {
-      var fullResponse = generateResponse(userMsg);
-      var words = fullResponse.split(' ');
-      var currentText = '';
-      var wordIndex = 0;
-      
-      setMessages(function(prev) {
-         return prev.concat([{ role: 'assistant', content: '' }]);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMsg, lang: currentLang })
       });
-      
-      var streamInterval = setInterval(function() {
-        if (wordIndex < words.length) {
-          currentText += (wordIndex === 0 ? '' : ' ') + words[wordIndex];
-          setMessages(function(prev) {
-            var newMsgs = prev.slice();
-            newMsgs[newMsgs.length - 1] = { role: 'assistant', content: currentText };
-            return newMsgs;
-          });
-          wordIndex++;
-          if (messagesEndRef.current) {
-            messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
-          }
-        } else {
-          clearInterval(streamInterval);
-          setIsTyping(false);
-        }
-      }, 40);
-    }, thinkingTime);
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Server error');
+      }
+      const reply = data.reply || data.text || data.message || 'No response received.';
+      setMessages(function(prev) {
+        return prev.concat([{ role: 'assistant', content: reply }]);
+      });
+    } catch (err) {
+      console.error('Chat error:', err);
+      const errorMsg = currentLang === 'hi'
+        ? "पारिस्थितिकी ज्ञानकोष से जुड़ने में त्रुटि हुई। कृपया पुनः प्रयास करें।"
+        : currentLang === 'mr'
+        ? "पर्यावरण ज्ञानकोषाशी जोडणी करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."
+        : "I'm having trouble connecting to the ecological server. Please check your network or try again.";
+      setMessages(function(prev) {
+        return prev.concat([{ role: 'assistant', content: errorMsg }]);
+      });
+    } finally {
+      setIsTyping(false);
+    }
   }
 
   function handleKeyDown(e) {
@@ -2679,274 +2488,244 @@ function GreenAssistant() {
     }
   }
 
-  var allQuickActions = [{
-    label: '🏆 Top CO₂ trees',
-    query: 'Which trees absorb the most CO2?'
-  }, {
-    label: '🌳 About Neem',
-    query: 'Tell me about Neem'
-  }, {
-    label: '💧 Low Water',
-    query: 'Which trees need low water?'
-  }, {
-    label: '🚀 Fast Growers',
-    query: 'What are the fastest growing trees?'
-  }, {
-    label: '🌱 Miyawaki Method',
-    query: 'What is the Miyawaki Method?'
-  }, {
-    label: '💰 Cost & Time',
-    query: 'How much does it cost and how long does it take?'
-  }];
-  
-  const [quickActions, setQuickActions] = useState([]);
-  
-  useEffect(function() {
-    if (isOpen) {
-      const shuffled = [...allQuickActions].sort(function() { return 0.5 - Math.random(); });
-      setQuickActions(shuffled.slice(0, 4));
-    }
-  }, [isOpen]);
+  const quickPrompts = {
+    en: [
+      { label: "🏆 Top CO₂ Absorbers", query: "Which native trees absorb the most CO2?" },
+      { label: "💧 Low Water Species", query: "Which native trees require minimal water?" },
+      { label: "🌳 About Neem", query: "Tell me about Neem tree ecological benefits" },
+      { label: "🌱 Miyawaki Method", query: "What is the Miyawaki Method and how does it work?" }
+    ],
+    hi: [
+      { label: "🏆 शीर्ष CO₂ अवशोषक", query: "सबसे अधिक CO2 कौन से देशी पेड़ सोखते हैं?" },
+      { label: "💧 कम पानी वाले पेड़", query: "कम पानी में जीवित रहने वाले देशी पेड़ कौन से हैं?" },
+      { label: "🌳 नीम के फायदे", query: "नीम के पेड़ के पारिस्थितिकी लाभ बताएं" },
+      { label: "🌱 मियावाकी पद्धति", query: "मियावाकी पद्धति क्या है और यह कैसे काम करती है?" }
+    ],
+    mr: [
+      { label: "🏆 अव्वल CO₂ शोषक", query: "सर्वात जास्त CO2 शोषून घेणारी झाडे कोणती?" },
+      { label: "💧 कमी पाणी लागणारी", query: "कमी पाण्यात येणारी स्थानिक झाडे कोणती आहेत?" },
+      { label: "🌳 कडुनिंबाचे महत्त्व", query: "कडुनिंबाचे पर्यावरणीय फायदे काय आहेत?" },
+      { label: "🌱 मियावाकी पद्धत", query: "मियावाकी पद्धत काय आहे आणि ती कशी कार्य करते?" }
+    ]
+  }[currentLang] || [
+    { label: "🏆 Top CO₂ Absorbers", query: "Which native trees absorb the most CO2?" },
+    { label: "💧 Low Water Species", query: "Which native trees require minimal water?" }
+  ];
 
-  var showQuickActions = messages.length === 1;
-  return /*#__PURE__*/_jsxDEV(React.Fragment, {
-    children: [isOpen && /*#__PURE__*/_jsxDEV("div", {
-      className: "fixed inset-x-0 bottom-0 sm:inset-auto sm:bottom-28 sm:right-8 z-[100] w-full sm:w-[420px] h-[90dvh] sm:h-auto sm:max-h-[calc(100dvh-8rem)] chat-slide-up origin-bottom sm:origin-bottom-right",
-      children: /*#__PURE__*/_jsxDEV("div", {
-        className: "glass-card rounded-t-[28px] sm:rounded-[28px] shadow-[0_24px_50px_rgba(0,0,0,0.6)] flex flex-col h-full overflow-hidden ring-1 ring-white/5 relative",
-        children: [/*#__PURE__*/_jsxDEV("div", {
-          className: "absolute top-0 left-0 w-full h-[300px] bg-gradient-to-b from-earth-500/10 to-transparent pointer-events-none opacity-50"
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          className: "flex items-center justify-between px-4 md:px-6 py-5 border-b border-white/10 bg-gradient-to-r from-forest-800/60 to-forest-900/60 flex-shrink-0 relative z-10 backdrop-blur-md",
-          children: [/*#__PURE__*/_jsxDEV("div", {
-            className: "flex items-center gap-4",
-            children: [/*#__PURE__*/_jsxDEV("div", {
-              className: "relative w-12 h-12 rounded-[18px] bg-gradient-to-br from-earth-400 to-earth-600 flex items-center justify-center shadow-lg shadow-earth-500/40 ring-2 ring-white/20 transform transition-transform hover:scale-105",
-              children: [
-                /*#__PURE__*/_jsxDEV(TreeAvatarSVG, {
-                  size: 26,
-                  className: "text-white"
-                }, void 0, false),
-                /*#__PURE__*/_jsxDEV("span", {
-                  className: "absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-400 border-2 border-forest-900 rounded-full animate-pulse shadow-[0_0_8px_rgba(74,222,128,0.6)]"
-                }, void 0, false)
-              ]
-            }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-              children: [/*#__PURE__*/_jsxDEV("h3", {
-                className: "text-[17px] font-bold text-white tracking-wide leading-tight flex items-center gap-2",
-                children: ["Arbor Engineer", /*#__PURE__*/_jsxDEV("span", {
-                  className: "px-2 py-0.5 rounded-full bg-gradient-to-r from-earth-500/20 to-earth-600/20 border border-earth-400/30 text-[10px] text-earth-300 uppercase tracking-widest",
-                  children: "Pro"
-                }, void 0, false)]
-              }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-                className: "flex items-center gap-1.5 mt-1",
-                children: [/*#__PURE__*/_jsxDEV("span", {
-                  className: "text-[12px] text-cream-100/80 font-medium tracking-wide",
-                  children: "Senior Env. Engineer • Analytical"
-                }, void 0, false)]
-              }, void 0, true)]
-            }, void 0, true)]
-          }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-            className: "flex items-center gap-1.5",
-            children: [/*#__PURE__*/_jsxDEV("button", {
-              onClick: function () {
-                var text = messages.map(function(m) { return (m.role === 'user' ? 'YOU' : 'ENGINEER') + ': ' + m.content; }).join('\n\n');
-                var blob = new Blob([text], { type: 'text/plain' });
-                var a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = 'arbor-specs-' + new Date().toISOString().slice(0,10) + '.txt';
-                a.click();
-                URL.revokeObjectURL(a.href);
-              },
-              className: "chat-export-btn w-11 h-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center text-white/40 hover:text-white transition-all duration-300",
-              "aria-label": "Export Specs",
-              title: "Export Specs",
-              children: /*#__PURE__*/_jsxDEV(LucideIcon, {
-                name: "download",
-                size: 16
-              }, void 0, false)
-            }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
-              onClick: function () {
-                setMessages([{
-                  role: 'assistant',
-                  content: 'Session cleared. Standing by for your next site analysis. What parameters shall we evaluate?'
-                }]);
-                setContextTree(null);
-              },
-              className: "w-11 h-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
-              "aria-label": "Clear chat",
-              title: "Clear Chat",
-              children: /*#__PURE__*/_jsxDEV(LucideIcon, {
-                name: "rotate-ccw",
-                size: 16
-              }, void 0, false)
-            }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
-              onClick: function () {
-                setIsOpen(false);
-              },
-              className: "w-11 h-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
-              "aria-label": "Minimize chat",
-              children: /*#__PURE__*/_jsxDEV(LucideIcon, {
-                name: "chevron-down",
-                size: 20
-              }, void 0, false)
-            }, void 0, false)]
-          }, void 0, true)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          className: "flex-1 overflow-y-auto px-5 py-4 md:py-6 space-y-6 chat-messages bg-forest-950/40 relative z-10",
-          style: {
-            minHeight: '360px'
+  return React.createElement(React.Fragment, null,
+    // Chat Window
+    isOpen && React.createElement("div", {
+      className: "fixed inset-x-3 bottom-24 sm:inset-auto sm:bottom-24 sm:right-6 z-[95] w-auto sm:w-[420px] max-w-[calc(100vw-1.5rem)] h-[74vh] sm:h-[580px] max-h-[calc(100dvh-7rem)] flex flex-col rounded-2xl bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-emerald-500/20 shadow-2xl shadow-black/40 overflow-hidden chat-slide-up origin-bottom-right transition-all"
+    },
+      // Header
+      React.createElement("div", {
+        className: "flex items-center justify-between px-4 py-3.5 border-b border-gray-200/60 dark:border-white/10 bg-gradient-to-r from-emerald-600/10 via-emerald-600/5 to-transparent dark:from-emerald-950/60 dark:to-forest-950/60 backdrop-blur-md flex-shrink-0 relative z-10"
+      },
+        React.createElement("div", { className: "flex items-center gap-3" },
+          React.createElement("div", {
+            className: "relative w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/20 ring-1 ring-white/20"
           },
-          children: [messages.map(function (msg, i) {
-            var isUser = msg.role === 'user';
-            return /*#__PURE__*/_jsxDEV("div", {
-              className: 'flex animate-fade-in ' + (isUser ? 'justify-end' : 'justify-start'),
-              style: { animationDelay: '0.1s' },
-              children: /*#__PURE__*/_jsxDEV("div", {
-                className: 'flex gap-3 max-w-[88%] ' + (isUser ? 'flex-row-reverse' : 'flex-row'),
-                children: [/*#__PURE__*/_jsxDEV("div", {
-                  className: 'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm mt-auto ' + (isUser ? 'bg-earth-500/20 text-earth-300 border border-earth-500/30' : 'bg-gradient-to-br from-earth-400 to-earth-600 text-white shadow-earth-500/30 ring-1 ring-white/20'),
-                  children: isUser ? /*#__PURE__*/_jsxDEV(LucideIcon, {
-                    name: 'user',
-                    size: 14
-                  }, void 0, false) : /*#__PURE__*/_jsxDEV(TreeAvatarSVG, {
-                    size: 16,
-                    className: "text-white"
-                  }, void 0, false)
-                }, void 0, false), isUser ? /*#__PURE__*/_jsxDEV("div", {
-                  className: "rounded-[20px] px-5 py-3.5 text-base leading-relaxed bg-earth-900/20 backdrop-blur-md text-white border border-earth-400 rounded-br-sm shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
-                  style: {
-                    whiteSpace: 'pre-line'
-                  },
-                  children: msg.content
-                }, void 0, false) : /*#__PURE__*/_jsxDEV("div", {
-                  className: "rounded-[20px] px-4 md:px-6 py-4 text-base leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
-                  dangerouslySetInnerHTML: {
-                    __html: window.marked ? marked.parse(msg.content.replace(/ðŸ[^\\s]+/g, '✨').replace(/•/g, '•').replace(/—/g, '—').replace(/CO₂/g, 'CO₂').replace(/O₂/g, 'O₂')) : msg.content
-                  }
-                }, void 0, false)]
-              }, void 0, true)
-            }, i, false);
-          }), isTyping && /*#__PURE__*/_jsxDEV("div", {
-            className: "flex justify-start animate-fade-in",
-            children: /*#__PURE__*/_jsxDEV("div", {
-              className: "flex gap-3",
-              children: [/*#__PURE__*/_jsxDEV("div", {
-                className: "flex-shrink-0 w-8 h-8 mt-auto rounded-full flex items-center justify-center bg-gradient-to-br from-earth-400 to-earth-600 text-white shadow-lg shadow-earth-500/30 ring-1 ring-white/20",
-                children: /*#__PURE__*/_jsxDEV(TreeAvatarSVG, {
-                  size: 16,
-                  className: "text-white"
-                }, void 0, false)
-              }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-                className: "bg-forest-800 backdrop-blur-xl border border-white/10 rounded-[20px] rounded-bl-sm px-5 py-4 flex items-center gap-2.5 shadow-lg",
-                children: [/*#__PURE__*/_jsxDEV("span", {
-                  className: "w-2 h-2 rounded-full bg-earth-400 typing-dot"
-                }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-                  className: "w-2 h-2 rounded-full bg-earth-400 typing-dot"
-                }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-                  className: "w-2 h-2 rounded-full bg-earth-400 typing-dot"
-                }, void 0, false)]
-              }, void 0, true)]
-            }, void 0, true)
-          }, void 0, false), showQuickActions && !isTyping && /*#__PURE__*/_jsxDEV("div", {
-            className: "flex flex-wrap gap-2.5 pt-3 animate-fade-in-up",
-            style: { animationDelay: '0.2s' },
-            children: quickActions.map(function (action, i) {
-              return /*#__PURE__*/_jsxDEV("button", {
-                onClick: function () {
-                  handleSend(action.query);
-                },
-                className: "px-4 py-2.5 min-h-[44px] rounded-full text-[13px] font-medium bg-forest-800/40 backdrop-blur-md border border-white/10 text-cream-100 hover:text-white hover:border-earth-400/50 hover:bg-earth-500/20 hover:shadow-[0_0_15px_rgba(220,160,80,0.15)] transition-all duration-300 flex items-center gap-2",
-                children: action.label
-              }, i, false);
+            React.createElement(LucideIcon, { name: 'leaf', size: 20 }),
+            React.createElement("span", {
+              className: "absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-400 border-2 border-white dark:border-gray-900 rounded-full animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"
             })
-          }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-            ref: messagesEndRef
-          }, void 0, false)]
-        }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-          className: "chat-quick-prompts-row border-t border-white/5 bg-forest-900/40 flex-shrink-0 relative z-10",
-          children: [
-            { icon: "📐", label: "Predict Root Spread Load", query: "Predict the root spread load for the selected species on this site" },
-            { icon: "🧪", label: "Analyze Soil Compatibility", query: "Analyze soil compatibility for native species at this site" },
-            { icon: "🌡️", label: "Thermal Impact Matrix", query: "Generate a thermal impact matrix for this planting configuration" }
-          ].map(function(chip, ci) {
-            return /*#__PURE__*/_jsxDEV("button", {
-              onClick: function() { handleSend(chip.query); },
-              className: "px-3.5 py-2 min-h-[44px] rounded-full text-[12px] font-semibold bg-forest-800/50 backdrop-blur-md border border-white/8 text-cream-100/80 hover:text-white hover:border-earth-400/40 hover:bg-earth-500/15 hover:shadow-[0_0_12px_rgba(220,160,80,0.1)] transition-all duration-300 flex items-center gap-1.5 tracking-wide",
-              children: [chip.icon, " ", chip.label]
-            }, ci, false);
-          })
-        }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-          className: "p-5 border-t border-white/10 bg-forest-900/80 backdrop-blur-2xl flex-shrink-0 relative z-10",
-          children: [/*#__PURE__*/_jsxDEV("div", {
-            className: "flex items-center gap-3",
-            children: [/*#__PURE__*/_jsxDEV("div", {
-              className: "flex-1 relative group",
-              children: /*#__PURE__*/_jsxDEV("input", {
-                ref: inputRef,
-                type: "text",
-                value: input,
-                onChange: function (e) {
-                  setInput(e.target.value);
-                },
-                onKeyDown: handleKeyDown,
-                onFocus: handleInputFocus,
-                placeholder: "Enter site parameters, species queries...",
-                className: "search-input w-full px-5 py-3.5 min-h-[44px] text-base rounded-2xl bg-forest-950/60 border border-white/10 text-white placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-earth-500/50 focus:bg-forest-950/80 transition-all duration-300 shadow-inner group-hover:border-white/20",
-                disabled: isTyping,
-                "aria-label": "Chat message input"
-              }, void 0, false)
-            }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
-              onClick: handleSend,
-              disabled: !input.trim() || isTyping,
-              className: 'w-[52px] h-[52px] min-h-[44px] min-w-[44px] rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ' + (input.trim() && !isTyping ? 'bg-gradient-to-br from-earth-500 to-earth-600 text-white shadow-[0_4px_20px_rgba(220,160,80,0.4)] hover:shadow-[0_6px_25px_rgba(220,160,80,0.6)] hover:-translate-y-1 ring-1 ring-white/20' : 'bg-forest-800/40 text-white/20 cursor-not-allowed border border-white/5'),
-              "aria-label": "Send message",
-              children: /*#__PURE__*/_jsxDEV(LucideIcon, {
-                name: "send",
-                size: 20,
-                className: input.trim() && !isTyping ? "translate-x-0.5 -translate-y-0.5" : ""
-              }, void 0, false)
-            }, void 0, false)]
-          }, void 0, true), /*#__PURE__*/_jsxDEV("div", {
-            className: "flex justify-center items-center mt-3.5",
-            children: /*#__PURE__*/_jsxDEV("p", {
-              className: "text-[10px] text-white/30 font-semibold tracking-[0.2em] uppercase flex items-center gap-2",
-              children: [/*#__PURE__*/_jsxDEV(LucideIcon, { name: "zap", size: 10, className: "text-earth-500/50" }, void 0, false), "Structural Analysis Engine"]
-            }, void 0, true)
-          }, void 0, false)]
-        }, void 0, true)]
-      }, void 0, true)
-    }, void 0, false), /*#__PURE__*/_jsxDEV("div", {
-      className: "fixed bottom-6 right-6 z-[90] flex items-center gap-4",
-      children: [!isOpen && /*#__PURE__*/_jsxDEV("div", {
-        className: "bg-forest-900/80 backdrop-blur-md border border-white/10 px-4 py-2.5 rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.3)] text-cream-100 text-[13px] font-medium animate-fade-in-up hidden md:block",
-        style: { animationDelay: '1s' },
-        children: "Site analysis available"
-      }, void 0, false), /*#__PURE__*/_jsxDEV("button", {
+          ),
+          React.createElement("div", null,
+            React.createElement("h3", { className: "text-sm sm:text-base font-bold text-gray-900 dark:text-white tracking-wide flex items-center gap-1.5 leading-tight" },
+              currentLang === 'hi' ? 'पारिस्थितिकी सहायक' : currentLang === 'mr' ? 'पर्यावरण सहाय्यक' : 'Eco Assistant',
+              React.createElement("span", {
+                className: "px-1.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-[9px] text-emerald-700 dark:text-emerald-300 uppercase tracking-widest font-bold"
+              }, 'AI')
+            ),
+            React.createElement("p", { className: "text-[11px] text-gray-500 dark:text-emerald-200/70 font-medium tracking-wide mt-0.5" },
+              currentLang === 'hi' ? 'वृक्ष, मिट्टी एवं जल ज्ञानकोष' : currentLang === 'mr' ? 'झाडे, माती व जल ज्ञानकोष' : 'Trees, Soil & Ecological AI'
+            )
+          )
+        ),
+        React.createElement("div", { className: "flex items-center gap-1" },
+          // Export Transcript Button
+          React.createElement("button", {
+            onClick: function() {
+              const text = messages.map(function(m) {
+                return (m.role === 'user' ? 'YOU' : 'ECO ASSISTANT') + ': ' + m.content;
+              }).join('\n\n');
+              const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+              const a = document.createElement('a');
+              a.href = URL.createObjectURL(blob);
+              a.download = 'eco-assistant-chat-' + new Date().toISOString().slice(0, 10) + '.txt';
+              a.click();
+              URL.revokeObjectURL(a.href);
+            },
+            className: "w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors",
+            title: currentLang === 'hi' ? 'चैट डाउनलोड करें' : currentLang === 'mr' ? 'चॅट डाउनलोड करा' : 'Export Chat'
+          }, React.createElement(LucideIcon, { name: 'download', size: 16 })),
+          // Clear Chat Button
+          React.createElement("button", {
+            onClick: function() {
+              setMessages([{
+                role: 'assistant',
+                content: welcomeGreetings[currentLang] || welcomeGreetings.en
+              }]);
+            },
+            className: "w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors",
+            title: currentLang === 'hi' ? 'चैट साफ़ करें' : currentLang === 'mr' ? 'चॅट साफ करा' : 'Clear Chat'
+          }, React.createElement(LucideIcon, { name: 'rotate-ccw', size: 16 })),
+          // Minimize Button
+          React.createElement("button", {
+            onClick: function() { setIsOpen(false); },
+            className: "w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-700 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-white/10 transition-colors",
+            title: 'Close'
+          }, React.createElement(LucideIcon, { name: 'chevron-down', size: 18 }))
+        )
+      ),
+
+      // Messages Feed
+      React.createElement("div", {
+        className: "flex-1 overflow-y-auto px-4 py-4 space-y-4 chat-messages bg-gray-50/60 dark:bg-forest-950/40 relative z-10"
+      },
+        messages.map(function(msg, i) {
+          const isUser = msg.role === 'user';
+          return React.createElement("div", {
+            key: i,
+            className: 'flex animate-fade-in ' + (isUser ? 'justify-end' : 'justify-start')
+          },
+            React.createElement("div", {
+              className: 'flex gap-2.5 max-w-[88%] ' + (isUser ? 'flex-row-reverse items-end' : 'flex-row items-end')
+            },
+              React.createElement("div", {
+                className: 'flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center shadow-sm mb-0.5 ' +
+                  (isUser ? 'bg-emerald-700 text-white' : 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-emerald-500/20')
+              }, isUser
+                ? React.createElement(LucideIcon, { name: 'user', size: 13 })
+                : React.createElement(LucideIcon, { name: 'leaf', size: 13 })
+              ),
+              isUser
+                ? React.createElement("div", {
+                    className: "rounded-2xl rounded-br-sm px-4 py-2.5 text-sm leading-relaxed bg-emerald-600 text-white shadow-md select-text",
+                    style: { whiteSpace: 'pre-wrap', wordBreak: 'break-word' }
+                  }, msg.content)
+                : React.createElement("div", {
+                    className: "rounded-2xl rounded-bl-sm px-4 py-3 text-sm leading-relaxed bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200/60 dark:border-gray-700/60 shadow-md prose prose-sm dark:prose-invert max-w-none select-text",
+                    style: { wordBreak: 'break-word' },
+                    dangerouslySetInnerHTML: {
+                      __html: window.marked ? marked.parse(msg.content) : msg.content
+                    }
+                  })
+            )
+          );
+        }),
+
+        // Typing Indicator
+        isTyping && React.createElement("div", { className: "flex justify-start animate-fade-in" },
+          React.createElement("div", { className: "flex gap-2.5 items-end" },
+            React.createElement("div", {
+              className: "flex-shrink-0 w-7 h-7 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-white flex items-center justify-center shadow-sm mb-0.5"
+            }, React.createElement(LucideIcon, { name: 'leaf', size: 13 })),
+            React.createElement("div", {
+              className: "rounded-2xl rounded-bl-sm px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-200/60 dark:border-gray-700/60 shadow-sm flex items-center gap-2"
+            },
+              React.createElement("span", { className: "w-2 h-2 rounded-full bg-emerald-500 typing-dot" }),
+              React.createElement("span", { className: "w-2 h-2 rounded-full bg-emerald-500 typing-dot" }),
+              React.createElement("span", { className: "w-2 h-2 rounded-full bg-emerald-500 typing-dot" })
+            )
+          )
+        ),
+        React.createElement("div", { ref: messagesEndRef })
+      ),
+
+      // Quick Suggestion Chips
+      React.createElement("div", {
+        className: "chat-quick-prompts-row border-t border-gray-200/50 dark:border-white/5 bg-gray-50/70 dark:bg-forest-950/60 flex-shrink-0 relative z-10 py-2 px-3"
+      },
+        quickPrompts.map(function(chip, ci) {
+          return React.createElement("button", {
+            key: ci,
+            onClick: function() { handleSend(chip.query); },
+            disabled: isTyping,
+            className: "px-3 py-1.5 min-h-[32px] rounded-full text-xs font-medium bg-emerald-50 dark:bg-forest-900/50 border border-emerald-500/20 text-emerald-800 dark:text-emerald-200 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-600 dark:hover:text-white transition-all duration-200 flex-shrink-0 shadow-sm disabled:opacity-50"
+          }, chip.label);
+        })
+      ),
+
+      // Input Bar
+      React.createElement("div", {
+        className: "p-3 border-t border-gray-200/80 dark:border-white/10 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md flex-shrink-0 relative z-10"
+      },
+        React.createElement("div", { className: "flex items-center gap-2" },
+          React.createElement("div", { className: "flex-1 relative" },
+            React.createElement("input", {
+              ref: inputRef,
+              type: "text",
+              value: input,
+              onChange: function(e) { setInput(e.target.value); },
+              onKeyDown: handleKeyDown,
+              placeholder: currentLang === 'hi' ? 'वृक्ष, मिट्टी, जल संरक्षण संबंधी प्रश्न पूछें...' : currentLang === 'mr' ? 'झाडे, माती, जलसंधारण प्रश्न विचारा...' : 'Ask about trees, soil, water conservation...',
+              className: "w-full px-4 py-2.5 text-sm rounded-xl bg-gray-100 dark:bg-gray-950/60 border border-gray-200 dark:border-gray-700/60 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-0 focus:border-emerald-500 shadow-inner transition-all",
+              disabled: isTyping,
+              "aria-label": "Eco Assistant input"
+            })
+          ),
+          React.createElement("button", {
+            onClick: function() { handleSend(); },
+            disabled: !input.trim() || isTyping,
+            className: 'w-10 h-10 min-w-[40px] rounded-xl flex items-center justify-center transition-all flex-shrink-0 ' +
+              (input.trim() && !isTyping
+                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-md hover:scale-105 active:scale-95'
+                : 'bg-gray-200 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed'),
+            "aria-label": "Send message"
+          },
+            React.createElement(LucideIcon, {
+              name: 'send',
+              size: 18,
+              className: input.trim() && !isTyping ? 'translate-x-0.5 -translate-y-0.5' : ''
+            })
+          )
+        )
+      )
+    ),
+
+    // Floating Action Button
+    React.createElement("div", {
+      className: "fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[90] flex items-center gap-3"
+    },
+      !isOpen && React.createElement("div", {
+        className: "hidden md:flex items-center gap-2 bg-forest-900/90 backdrop-blur-md border border-emerald-500/20 px-3.5 py-2 rounded-full shadow-lg text-emerald-100 text-xs font-medium animate-fade-in pointer-events-none"
+      },
+        React.createElement(LucideIcon, { name: 'sparkles', size: 14, className: 'text-emerald-400' }),
+        currentLang === 'hi' ? 'पर्यावरण सहायक' : currentLang === 'mr' ? 'पर्यावरण सहाय्यक' : 'Ask Eco Assistant'
+      ),
+      React.createElement("button", {
         id: "green-assistant-toggle",
-        onClick: function () {
-          setIsOpen(!isOpen);
-        },
-        className: 'w-16 h-16 min-h-[44px] min-w-[44px] rounded-[22px] flex items-center justify-center shadow-2xl transition-all duration-500 group relative ' + (isOpen ? 'bg-gradient-to-br from-forest-700 to-forest-800 shadow-black/40 hover:from-forest-600 hover:to-forest-700 rotate-[360deg]' : 'bg-gradient-to-br from-earth-400 to-earth-600 shadow-[0_8px_30px_rgba(220,160,80,0.3)] hover:shadow-[0_12px_40px_rgba(220,160,80,0.5)] hover:-translate-y-1.5'),
-        "aria-label": isOpen ? 'Close Green Assistant' : 'Open Green Assistant',
-        children: [isOpen ? /*#__PURE__*/_jsxDEV(LucideIcon, {
-          name: 'x',
-          size: 26,
-          className: "text-white transition-transform duration-300 rotate-90"
-        }, void 0, false) : /*#__PURE__*/_jsxDEV(TreeAvatarSVG, {
-          size: 28,
-          className: "text-white transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-12"
-        }, void 0, false), !isOpen && /*#__PURE__*/_jsxDEV("span", {
-          className: "absolute -top-1 -right-1 flex items-center justify-center",
-          children: [/*#__PURE__*/_jsxDEV("span", {
-            className: "w-4 h-4 rounded-full bg-green-400 border-[3px] border-forest-950 z-10"
-          }, void 0, false), /*#__PURE__*/_jsxDEV("span", {
-            className: "w-4 h-4 rounded-full bg-green-400 animate-ping absolute"
-          }, void 0, false)]
-        }, void 0, true)]
-      }, void 0, true)]
-    }, void 0, true)]
-  }, void 0, true);
+        onClick: function() { setIsOpen(!isOpen); },
+        className: "w-14 h-14 min-h-[44px] min-w-[44px] rounded-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 shadow-xl shadow-emerald-950/40 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center text-white relative focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-forest-950",
+        "aria-label": isOpen ? 'Close Eco Assistant' : 'Open Eco Assistant'
+      },
+        isOpen
+          ? React.createElement(LucideIcon, {
+              name: 'x',
+              size: 24,
+              className: "text-white transition-transform duration-300 rotate-90"
+            })
+          : React.createElement(React.Fragment, null,
+              React.createElement(LucideIcon, {
+                name: 'leaf',
+                size: 24,
+                className: "text-white transition-transform duration-300 group-hover:rotate-12"
+              }),
+              React.createElement("span", {
+                className: "absolute -top-1 -right-1 flex h-3.5 w-3.5"
+              },
+                React.createElement("span", {
+                  className: "animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                }),
+                React.createElement("span", {
+                  className: "relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-400 border-2 border-forest-950"
+                })
+              )
+            )
+      )
+    )
+  );
 }
 
 
@@ -2958,7 +2737,7 @@ function MiyawakiMethod() {
 
   return /*#__PURE__*/_jsxDEV("section", {
     id: "miyawaki-method",
-    className: "py-10 md:py-16 md:py-24 bg-forest-950 relative border-b border-forest-900/50",
+    className: "py-10 md:py-16 md:py-24 relative",
     children: [/*#__PURE__*/_jsxDEV("div", {
       className: "absolute inset-0 overflow-hidden pointer-events-none",
       children: [/*#__PURE__*/_jsxDEV("div", {
@@ -3151,7 +2930,7 @@ function CarbonCalculatorHub() {
 
   return React.createElement(React.Fragment, null, /*#__PURE__*/_jsxDEV("section", {
     id: "calculator-hub",
-    className: "py-10 md:py-16 md:py-24 bg-forest-950 border-t border-forest-900/50 relative overflow-hidden",
+    className: "py-10 md:py-16 md:py-24 border-t border-forest-900/50 relative overflow-hidden",
     children: [
       /*#__PURE__*/_jsxDEV("div", {
         className: "max-w-7xl mx-auto px-4 md:px-6 lg:px-8 relative z-10",
@@ -3520,7 +3299,7 @@ function TreeDatabase() {
 
   return React.createElement(React.Fragment, null, /*#__PURE__*/_jsxDEV("section", {
     id: "tree-database",
-    className: "py-10 md:py-16 md:py-24 bg-forest-950 border-t border-forest-900/50 relative overflow-hidden",
+    className: "py-10 md:py-16 md:py-24 relative overflow-hidden",
     children: [
       /*#__PURE__*/_jsxDEV("div", {
         className: "max-w-7xl mx-auto px-4 md:px-6 lg:px-8 relative z-10",
@@ -3969,28 +3748,40 @@ function AIWorkspace() {
   }
 
   /* ── Send handler with streaming ── */
-  function handleSend(forcedQuery) {
+  async function handleSend(forcedQuery) {
     var userMsg = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
     if (!userMsg || isTyping) return;
     if (typeof forcedQuery !== 'string') setInput('');
     setMessages(function(prev) { return prev.concat([{ role: 'user', content: userMsg }]); });
     setIsTyping(true);
-    var thinkingTime = 400 + Math.random() * 400;
-    setTimeout(function() {
-      var fullResponse = generateResponse(userMsg);
-      var words = fullResponse.split(' ');
-      var currentText = '';
-      var wordIndex = 0;
-      setMessages(function(prev) { return prev.concat([{ role: 'assistant', content: '' }]); });
-      var streamInterval = setInterval(function() {
-        if (wordIndex < words.length) {
-          currentText += (wordIndex === 0 ? '' : ' ') + words[wordIndex];
-          setMessages(function(prev) { var n = prev.slice(); n[n.length - 1] = { role: 'assistant', content: currentText }; return n; });
-          wordIndex++;
-          if (messagesEndRef.current && typeof messagesEndRef.current.scrollIntoView === 'function') messagesEndRef.current.scrollIntoView({ behavior: 'auto' });
-        } else { clearInterval(streamInterval); setIsTyping(false); }
-      }, 35);
-    }, thinkingTime);
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userMsg, lang: language })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Server error');
+      }
+      const reply = data.reply || data.text || data.message || 'No response received.';
+      setMessages(function(prev) {
+        return prev.concat([{ role: 'assistant', content: reply }]);
+      });
+    } catch (err) {
+      console.error('Chat error:', err);
+      const errorMsg = language === 'hi'
+        ? "पारिस्थितिकी ज्ञानकोष से जुड़ने में त्रुटि हुई। कृपया पुनः प्रयास करें।"
+        : language === 'mr'
+        ? "पर्यावरण ज्ञानकोषाशी जोडणी करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."
+        : "I'm having trouble connecting to the ecological assistant backend. Please try again.";
+      setMessages(function(prev) {
+        return prev.concat([{ role: 'assistant', content: errorMsg }]);
+      });
+    } finally {
+      setIsTyping(false);
+    }
   }
 
   function handleKeyDown(e) {
@@ -4062,7 +3853,7 @@ function AIWorkspace() {
             ),
             isUser
               ? React.createElement("div", {
-                  className: "rounded-[20px] px-5 py-3.5 text-sm sm:text-base leading-relaxed bg-earth-900/20 backdrop-blur-md text-white border border-earth-400 rounded-br-sm shadow-[0_4px_15px_rgba(0,0,0,0.1)]",
+                  className: "rounded-2xl rounded-br-sm px-5 py-3.5 text-sm sm:text-base leading-relaxed bg-emerald-600 text-white shadow-md",
                   style: { whiteSpace: 'pre-line' }
                 }, msg.content)
               : React.createElement("div", {
@@ -4355,7 +4146,9 @@ function App() {
       },
         React.createElement(Contact, null)
       )
-    )
+    ),
+    /* Floating Modern Chat Assistant */
+    React.createElement(GreenAssistant, null)
     )
   );
 }

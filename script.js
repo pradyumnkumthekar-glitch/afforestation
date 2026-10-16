@@ -2461,26 +2461,26 @@ function GreenAssistant() {
 
       if (!res.ok) {
         const errorText = await res.text();
-        console.error("Assistant Fetch Error (HTTP " + res.status + "):", errorText);
-        let errorData = null;
-        try { errorData = JSON.parse(errorText); } catch(e) {}
-        throw new Error((errorData && (errorData.error || errorData.message || errorData.details)) || ("Server returned HTTP " + res.status));
+        console.error("Backend Error (HTTP " + res.status + "):", errorText);
+        setMessages(function(prev) {
+          return prev.concat([{
+            role: 'assistant',
+            content: errorText || ("HTTP " + res.status + " " + res.statusText)
+          }]);
+        });
+        return;
       }
 
       const data = await res.json();
-      const reply = data.reply || data.text || data.message || 'No response received.';
+      const reply = data.reply || data.text || data.message || data.response || 'No response received from server.';
       setMessages(function(prev) {
         return prev.concat([{ role: 'assistant', content: reply }]);
       });
     } catch (err) {
       console.error('Chat error:', err);
-      const errorMsg = currentLang === 'hi'
-        ? "पारिस्थितिकी ज्ञानकोष से जुड़ने में त्रुटि हुई। कृपया पुनः प्रयास करें।"
-        : currentLang === 'mr'
-        ? "पर्यावरण ज्ञानकोषाशी जोडणी करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."
-        : "I'm having trouble connecting to the ecological server. Please check your network or try again.";
+      const rawError = err && err.message ? err.message : String(err);
       setMessages(function(prev) {
-        return prev.concat([{ role: 'assistant', content: errorMsg }]);
+        return prev.concat([{ role: 'assistant', content: rawError }]);
       });
     } finally {
       setIsTyping(false);
@@ -3770,26 +3770,26 @@ function AIWorkspace() {
 
       if (!res.ok) {
         const errorText = await res.text();
-        console.error("Assistant Fetch Error (HTTP " + res.status + "):", errorText);
-        let errorData = null;
-        try { errorData = JSON.parse(errorText); } catch(e) {}
-        throw new Error((errorData && (errorData.error || errorData.message || errorData.details)) || ("Server returned HTTP " + res.status));
+        console.error("Backend Error (HTTP " + res.status + "):", errorText);
+        setMessages(function(prev) {
+          return prev.concat([{
+            role: 'assistant',
+            content: errorText || ("HTTP " + res.status + " " + res.statusText)
+          }]);
+        });
+        return;
       }
 
       const data = await res.json();
-      const reply = data.reply || data.text || data.message || 'No response received.';
+      const reply = data.reply || data.text || data.message || data.response || 'No response received from server.';
       setMessages(function(prev) {
         return prev.concat([{ role: 'assistant', content: reply }]);
       });
     } catch (err) {
       console.error('Chat error:', err);
-      const errorMsg = language === 'hi'
-        ? "पारिस्थितिकी ज्ञानकोष से जुड़ने में त्रुटि हुई। कृपया पुनः प्रयास करें।"
-        : language === 'mr'
-        ? "पर्यावरण ज्ञानकोषाशी जोडणी करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा."
-        : "I'm having trouble connecting to the ecological assistant backend. Please try again.";
+      const rawError = err && err.message ? err.message : String(err);
       setMessages(function(prev) {
-        return prev.concat([{ role: 'assistant', content: errorMsg }]);
+        return prev.concat([{ role: 'assistant', content: rawError }]);
       });
     } finally {
       setIsTyping(false);

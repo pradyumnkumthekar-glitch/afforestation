@@ -11,7 +11,11 @@ if (!process.env.GEMINI_API_KEY) {
 
 const chatHandler = require('./api/chat.js');
 
-const PORT = process.env.PORT || 3000;
+let PORT = process.env.PORT || 3000;
+const pIndex = process.argv.indexOf('-p') !== -1 ? process.argv.indexOf('-p') : process.argv.indexOf('--port');
+if (pIndex !== -1 && process.argv[pIndex + 1]) {
+  PORT = parseInt(process.argv[pIndex + 1], 10) || PORT;
+}
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',

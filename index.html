@@ -2,6 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    if (typeof window !== 'undefined' && window.location.protocol !== 'file:') {
+      const base = document.createElement('base');
+      base.href = '/';
+      document.head.prepend(base);
+    }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
   <title>afforestation</title>
   <meta name="description" content="Arbor Dynamics helps land developers and construction planners design with nature. Calculate canopy area, root spread, and thermal impact for sustainable site planning." />

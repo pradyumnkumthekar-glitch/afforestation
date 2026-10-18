@@ -2,7 +2,7 @@
   "name": "afforestation",
   "version": "1.0.0",
   "scripts": {
-    "build": "node build.js",
+    "build": "echo 'Build ready'",
     "start": "node server.js",
     "dev": "node server.js"
   },

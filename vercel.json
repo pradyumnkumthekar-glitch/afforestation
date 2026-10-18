@@ -1,38 +1,8 @@
 {
-  "version": 2,
   "cleanUrls": true,
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.(?:png|jpe?g|webp|svg|ico))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
-        }
-      ]
-    },
-    {
-      "source": "/(.*\\.(?:css|js))",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=86400, stale-while-revalidate=604800"
-        }
-      ]
-    }
-  ],
   "rewrites": [
     {
-      "source": "/((?!api/|assets/|images/|public/|.*\\.(?:ico|png|jpe?g|gif|svg|webp|css|js|json|woff2?|ttf|eot)).*)",
+      "source": "/((?!api/.*).*)",
       "destination": "/index.html"
     }
   ]

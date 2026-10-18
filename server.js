@@ -106,7 +106,11 @@ const server = http.createServer((req, res) => {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         return res.end('500 Internal Server Error');
       }
-      res.writeHead(200, { 'Content-Type': contentType });
+      const headers = { 'Content-Type': contentType };
+      if (safePath.startsWith('assets/')) {
+        headers['Cache-Control'] = 'public, max-age=86400';
+      }
+      res.writeHead(200, headers);
       res.end(content);
     });
   });

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+  <title>afforestation</title>
+  <meta name="description" content="Arbor Dynamics helps land developers and construction planners design with nature. Calculate canopy area, root spread, and thermal impact for sustainable site planning." />
+
+  <!-- Tailwind CSS v3 via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Outfit + Lora -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- React 18 via CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Marked for markdown parsing -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              50: '#f0f7f1',
+              100: '#d9eadb',
+              200: '#b4d6b9',
+              300: '#84ba8c',
+              400: '#5a9a63',
+              500: '#3d7d47',
+              600: '#2d6337',
+              700: '#254f2d',
+              800: '#1e3f25',
+              900: '#19331f',
+              950: '#0c1e11',
+            },
+            earth: {
+              50: '#fdf8f0',
+              100: '#f8edd9',
+              200: '#f0d8b0',
+              300: '#e6bd7e',
+              400: '#dca050',
+              500: '#d48a35',
+              600: '#c0712a',
+              700: '#a05825',
+              800: '#834724',
+              900: '#6c3b21',
+              950: '#3a1d0f',
+            },
+            cream: {
+              50: '#fefdf8',
+              100: '#fdf9ed',
+              200: '#faf3db',
+              300: '#f5e9c0',
+            },
+          },
+          fontFamily: {
+            sans: ['Outfit', '"Noto Sans Devanagari"', 'system-ui', 'sans-serif'],
+            serif: ['Lora', 'Georgia', 'serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <link rel="stylesheet" href="./style.css?v=3" />
+</head>
+<body class="bg-forest-950 text-cream-100 font-sans antialiased">
+  <div id="root"></div>
+  <script src="./script.js?v=3"></script>
+</body>
+</html>

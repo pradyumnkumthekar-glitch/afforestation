@@ -506,6 +506,50 @@ body.modal-open { overflow: hidden !important; touch-action: none; }
   object-fit: contain;   /* Ensures the logo is fully visible and centered within its block */
 }
 
+/* Brand Logo Styling */
+.brand-logo-img {
+  width: 2.25rem;
+  height: 2.25rem;
+  object-fit: contain;
+  border-radius: 9999px;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.45));
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+}
+@media (min-width: 640px) {
+  .brand-logo-img {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+}
+.brand-logo-img:hover {
+  transform: scale(1.08) rotate(2deg);
+}
+
+/* iOS Safe Area & Mobile Bottom Navigation */
+.safe-area-bottom {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+}
+
+/* Hide scrollbar for clean horizontal pill scrolling on mobile */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Prevent accidental horizontal overflow on mobile viewports */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+}
+
 
 /* Hardware Acceleration & Performance Optimizations */
 * {

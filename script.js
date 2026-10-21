@@ -1551,8 +1551,17 @@ function Navbar() {
   const { language, setLanguage } = React.useContext(LanguageContext);
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener('scroll', onScroll);
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setScrolled(window.scrollY > 40);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -2523,8 +2532,8 @@ function GreenAssistant() {
     }
   }, [isOpen]);
 
-  // Backend submission handler using native fetch to /api/chat
-  async function handleSend(forcedQuery) {
+  // Client-Side Intelligent Knowledge Engine Handler
+  function handleSend(forcedQuery) {
     const userMessage = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
     if (!userMessage || isTyping) return;
     if (typeof forcedQuery !== 'string') {
@@ -2532,48 +2541,28 @@ function GreenAssistant() {
     }
 
     const lang = currentLang || "en";
-    const nextMessages = messages.concat([{ role: "user", content: userMessage }]);
-    setMessages(nextMessages);
+    setMessages(function(prev) {
+      return prev.concat([{ role: "user", content: userMessage }]);
+    });
     setIsTyping(true);
 
-    try {
-      const siteContext = typeof getCleanSiteContext === 'function' ? getCleanSiteContext(lang) : {};
-      const res = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: nextMessages,
-          language: lang,
-          siteContext: siteContext
-        })
-      });
-
-      if (!res.ok) {
-        let errData = null;
-        try { errData = await res.json(); } catch(e) {}
-        throw new Error((errData && (errData.error || errData.details)) || ("HTTP " + res.status));
+    setTimeout(function() {
+      try {
+        const reply = typeof queryArborKnowledgeEngine === 'function'
+          ? queryArborKnowledgeEngine(userMessage, lang, null)
+          : (lang === 'hi' ? 'विश्लेषण पूर्ण हुआ।' : lang === 'mr' ? 'विश्लेषण पूर्ण झाले.' : 'Analysis completed.');
+        setMessages(function(prev) {
+          return prev.concat([{ role: "assistant", content: reply }]);
+        });
+      } catch (err) {
+        console.error("Assistant error:", err);
+        setMessages(function(prev) {
+          return prev.concat([{ role: "assistant", content: "Error processing query." }]);
+        });
+      } finally {
+        setIsTyping(false);
       }
-
-      const data = await res.json();
-      const reply = data.reply || data.text || data.message || "No response received.";
-      setMessages((prev) => [...prev, {
-        role: "assistant",
-        content: reply,
-        sources: Array.isArray(data.sources) ? data.sources : []
-      }]);
-    } catch (err) {
-      console.warn("Floating assistant /api/chat fallback:", err);
-      setMessages((prev) => [...prev, {
-        role: "assistant",
-        content: lang === 'hi'
-          ? "सत्र उपलब्ध नहीं है। कृपया Vercel Environment Variables में GEMINI_API_KEY कॉन्फ़िगर करें।"
-          : lang === 'mr'
-          ? "सत्र उपलब्ध नाही. कृपया Vercel Environment Variables मध्ये GEMINI_API_KEY कॉन्फिगर करा."
-          : "Session offline. Please verify GEMINI_API_KEY is configured in Vercel Environment Variables."
-      }]);
-    } finally {
-      setIsTyping(false);
-    }
+    }, 200);
   }
 
   function handleKeyDown(e) {
@@ -3657,6 +3646,11 @@ function TreeDatabase() {
     return enName.includes(q) || hiName.includes(q) || mrName.includes(q);
   });
 
+  const [displayLimit, setDisplayLimit] = useState(12);
+  const visibleTrees = (searchTerm.trim() || activeFilter !== "all") 
+    ? filteredTrees 
+    : filteredTrees.slice(0, displayLimit);
+
   return React.createElement(React.Fragment, null, /*#__PURE__*/_jsxDEV("section", {
     id: "tree-database",
     className: "py-10 md:py-16 md:py-24 relative overflow-hidden",
@@ -3717,20 +3711,21 @@ function TreeDatabase() {
             className: "text-center py-16 text-cream-100/60 font-medium",
             children: t.catalog.noResults
           }, void 0, false) :
-          /*#__PURE__*/_jsxDEV("div", {
-            className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:p-6 md:gap-5 md:p-8",
-            children: filteredTrees.map(function(tree) {
-              const displayName = getLocalizedTreeName(tree, language);
-              const subtitleName = getLocalizedTreeSubtitle(tree, language);
-              const waterText = getLocalizedWater(tree.water, language);
-              const canopyText = getLocalizedDistance(tree.canopy, language);
-              const bldgDist = getLocalizedDistance(tree.safeBldg, language);
-              const roadDist = getLocalizedDistance(tree.safeRoad, language);
+          /*#__PURE__*/_jsxDEV(React.Fragment, null, [
+            /*#__PURE__*/_jsxDEV("div", {
+              className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:p-6 md:gap-5 md:p-8",
+              children: visibleTrees.map(function(tree) {
+                const displayName = getLocalizedTreeName(tree, language);
+                const subtitleName = getLocalizedTreeSubtitle(tree, language);
+                const waterText = getLocalizedWater(tree.water, language);
+                const canopyText = getLocalizedDistance(tree.canopy, language);
+                const bldgDist = getLocalizedDistance(tree.safeBldg, language);
+                const roadDist = getLocalizedDistance(tree.safeRoad, language);
 
-              return /*#__PURE__*/_jsxDEV("div", {
-                key: tree.rank,
-                className: "group bg-forest-900/40 backdrop-blur-lg border border-white/10 rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden cursor-pointer hover:-translate-y-2 hover:shadow-[0_8px_40px_rgb(0,0,0,0.2)] transition-all duration-300",
-                onClick: function() { setSelectedTree(tree); },
+                return /*#__PURE__*/_jsxDEV("div", {
+                  key: tree.rank,
+                  className: "tree-card-item group bg-forest-900/40 backdrop-blur-lg border border-white/10 rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden cursor-pointer hover:-translate-y-2 hover:shadow-[0_8px_40px_rgb(0,0,0,0.2)] transition-all duration-300",
+                  onClick: function() { setSelectedTree(tree); },
                 children: [
                   /*#__PURE__*/_jsxDEV("div", {
                     className: "h-48 overflow-hidden relative",
@@ -3764,7 +3759,20 @@ function TreeDatabase() {
                 ]
               }, tree.rank, true);
             })
+          }, void 0, false),
+          filteredTrees.length > visibleTrees.length && /*#__PURE__*/_jsxDEV("div", {
+            className: "text-center mt-8 pb-4",
+            children: /*#__PURE__*/_jsxDEV("button", {
+              type: "button",
+              onClick: function() { setDisplayLimit(filteredTrees.length); },
+              className: "inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-forest-900/80 hover:bg-forest-800 text-earth-400 border border-earth-500/30 font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-earth-500/20 hover:scale-105 active:scale-95 cursor-pointer",
+              children: [
+                /*#__PURE__*/_jsxDEV(LucideIcon, { name: "chevron-down", size: 18, className: "animate-bounce" }, void 0, false),
+                /*#__PURE__*/_jsxDEV("span", { children: language === 'hi' ? 'सभी ' + filteredTrees.length + ' प्रजातियां देखें' : language === 'mr' ? 'सर्व ' + filteredTrees.length + ' प्रजाती पहा' : 'View All ' + filteredTrees.length + ' Native Species' }, void 0, false)
+              ]
+            }, void 0, true)
           }, void 0, false)
+        ])
         ]
       }, void 0, true)
     ] }, void 0, true),
@@ -4652,15 +4660,19 @@ function EcoCalculator() {
 }
 
 
+var TOTAL_SPECIES_CACHE = TREE_DATA.length;
+var TOTAL_CO2_CACHE = TREE_DATA.reduce(function(s, t) { return s + (t.c || 0); }, 0);
+var TOTAL_O2_CACHE = TREE_DATA.reduce(function(s, t) { return s + (t.o || 0); }, 0);
+
 function PersistentHeader() {
   var context = React.useContext(LanguageContext);
   var language = (context && context.language) || 'en';
   var setLanguage = (context && context.setLanguage) || function() {};
   var t = (context && context.t) || TRANSLATIONS[language] || TRANSLATIONS.en;
 
-  var totalSpecies = TREE_DATA.length;
-  var totalCO2 = TREE_DATA.reduce(function(s, t) { return s + t.c; }, 0);
-  var totalO2 = TREE_DATA.reduce(function(s, t) { return s + t.o; }, 0);
+  var totalSpecies = TOTAL_SPECIES_CACHE;
+  var totalCO2 = TOTAL_CO2_CACHE;
+  var totalO2 = TOTAL_O2_CACHE;
 
   var languages = [
     { code: 'en', label: 'English', short: 'EN' },
@@ -4776,26 +4788,31 @@ function TabNavigation(props) {
         })
       )
     ),
-    /* Mobile: fixed bottom dock */
+    /* Mobile: ergonomic fixed bottom app dock */
     React.createElement("div", {
-      className: "md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-white/10 safe-area-bottom"
+      className: "md:hidden fixed bottom-0 left-0 right-0 z-50 bg-forest-950/95 backdrop-blur-xl border-t border-white/10 safe-area-bottom shadow-[0_-8px_24px_rgba(0,0,0,0.5)]"
     },
       React.createElement("div", {
-        className: "flex items-center justify-between px-2 py-2 gap-0.5 sm:gap-1 max-w-md mx-auto"
+        className: "flex items-center justify-around px-1 py-1 max-w-lg mx-auto"
       },
         tabs.map(function(tab) {
           var isActive = activeTab === tab.key;
           return React.createElement("button", {
             key: tab.key,
             onClick: function() { setActiveTab(tab.key); },
-            className: "flex items-center justify-center gap-2 h-12 rounded-2xl transition-all duration-300 overflow-hidden " +
+            className: "flex-1 flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-200 " +
               (isActive
-                ? "bg-earth-500/20 text-earth-400 px-5 flex-shrink-0"
-                : "text-cream-100/50 active:bg-white/5 px-4")
+                ? "text-earth-400 bg-earth-500/15 font-semibold"
+                : "text-cream-100/60 hover:text-cream-100/80 active:bg-white/5")
           },
-            React.createElement(LucideIcon, { name: tab.icon, size: 22, className: isActive ? "" : "opacity-80" }),
-            isActive && React.createElement("span", {
-              className: "text-[12px] font-bold tracking-wide animate-fade-in leading-normal"
+            React.createElement(LucideIcon, {
+              name: tab.icon,
+              size: 20,
+              className: isActive ? "text-earth-400 transform scale-110 transition-transform" : "opacity-75"
+            }),
+            React.createElement("span", {
+              className: "text-[10px] sm:text-[11px] tracking-tight mt-0.5 truncate max-w-full text-center leading-none " +
+                (isActive ? "font-bold text-earth-400" : "font-normal")
             }, tab.mobileLabel)
           );
         })
@@ -4807,60 +4824,492 @@ function TabNavigation(props) {
 /* ──────────────────────────────────────────────
    AI Workspace — Full-page console
 ────────────────────────────────────────────── */
-/* ──────────────────────────────────────────────
-   getCleanSiteContext — Prepares lightweight platform context
-   Extracts text/numeric catalog data without heavy base64 images
-────────────────────────────────────────────── */
-function getCleanSiteContext(lang) {
-  var enTrans = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.en) ? TRANSLATIONS.en : {};
-  var cleanTrees = (typeof TREE_DATA !== 'undefined' && Array.isArray(TREE_DATA))
-    ? TREE_DATA.map(function(t) {
-        return {
-          rank: t.rank,
-          category: t.category,
-          name: t.name,
-          hindi: t.hindi,
-          marathi: t.marathi,
-          c: t.c, // CO2 kg/yr
-          o: t.o, // O2 kg/yr
-          height: t.height,
-          canopy: t.canopy,
-          safeBldg: t.safeBldg,
-          safeRoad: t.safeRoad,
-          water: t.water,
-          growth: t.growth
-        };
-      })
-    : [];
 
-  return {
-    platform: "Afforestation & Sustainable Land Planning",
-    totalSpeciesInCatalog: cleanTrees.length,
-    speciesCatalog: cleanTrees,
-    canopyKPIs: (enTrans.about && enTrans.about.canopy) ? {
-      title: enTrans.about.canopy.title,
-      avgCanopySpread: enTrans.about.canopy.avgSpreadVal,
-      projectedShadeArea: enTrans.about.canopy.projShadeVal,
-      annualCO2SequestrationPerM2: enTrans.about.canopy.annualCO2Val
-    } : {},
-    rootKPIs: (enTrans.about && enTrans.about.root) ? {
-      title: enTrans.about.root.title,
-      soilBindingScore: enTrans.about.root.soilBindingVal,
-      waterTableImpact: enTrans.about.root.waterTableVal || "High Infiltration"
-    } : {},
-    miyawakiMethodology: (enTrans.methodology) ? {
-      title: enTrans.methodology.title,
-      description: enTrans.methodology.desc,
-      benefits: enTrans.methodology.benefits,
-      principles: enTrans.methodology.principles,
-      steps: enTrans.methodology.steps
-    } : {}
+/* ──────────────────────────────────────────────
+   Arbor Engineer Pro — Autonomous Environmental Engineering Engine
+   100% Client-Side • No External API Required • Full Platform Depth
+────────────────────────────────────────────── */
+
+var TREE_ALIASES = [
+  { rank: 1, aliases: ['indian siris', 'siris tree', 'siris', 'albizia', 'lebbeck', 'shirish', 'सिरिस', 'शिरीष'] },
+  { rank: 2, aliases: ['tamarind', 'imli', 'chinch', 'tamarindus', 'indica', 'इमली', 'चिंच'] },
+  { rank: 3, aliases: ['may flower', 'gulmohar', 'gul mohar', 'delonix', 'regia', 'flamboyant', 'गुलमोहर'] },
+  { rank: 4, aliases: ['yellow flame', 'peela gulmohar', 'sonmohar', 'peltophorum', 'pterocarpum', 'पीला गुलमोहर', 'सोनमोहर'] },
+  { rank: 5, aliases: ['sacred fig', 'peepal', 'peepul', 'pipalke', 'pipalko', 'ficus religiosa', 'pimpal', 'bodhi', 'पीपल', 'पिंपळ'] },
+  { rank: 6, aliases: ['river tamarind', 'subabul', 'subabhul', 'leucaena', 'leucocephala', 'सुबबूल', 'सुबाभूळ'] },
+  { rank: 7, aliases: ['kanak champa', 'muchkund', 'pterospermum', 'acerifolium', 'कनक चम्पा', 'मुचकुंद'] },
+  { rank: 8, aliases: ['neem', 'azadirachta', 'indica', 'kadulimb', 'nimba', 'नीम', 'कडुनिंब'] },
+  { rank: 9, aliases: ['indian cork', 'neem chameli', 'buch', 'millingtonia', 'hortensis', 'नीम चमेली', 'बुच'] },
+  { rank: 10, aliases: ['gooseberry', 'amla', 'aonla', 'awala', 'phyllanthus', 'emblica', 'आंवला', 'आंवलऎ', 'आवळा'] },
+  { rank: 11, aliases: ['earleaf acacia', 'pahari babul', 'australi babhul', 'acacia auriculiformis', 'पहाड़ी बबूल', 'ऑस्ट्रेलियन बाभूळ'] },
+  { rank: 12, aliases: ['cluster fig', 'gular', 'umber', 'ficus racemosa', 'गूलर', 'उंबर'] },
+  { rank: 13, aliases: ['jamun tree', 'jamun', 'jambhul', 'java plum', 'syzygium', 'cumini', 'जामून', 'जांभूळ'] },
+  { rank: 14, aliases: ['golden shower', 'amaltas', 'bahawa', 'cassia fistula', 'अमलतास', 'बहावा'] },
+  { rank: 15, aliases: ['weeping fig', 'chilkan', 'nandruk', 'ficus benjamina', 'चिलकन', 'नांदृक'] },
+  { rank: 16, aliases: ['teak', 'sagwan', 'tectona grandis', 'सागवान'] },
+  { rank: 17, aliases: ['pungam tree', 'pungam', 'karanj', 'pongamia pinnata', 'millettia pinnata', 'करंज'] },
+  { rank: 18, aliases: ['spanish cherry', 'maulsari', 'bakul', 'mimusops elengi', 'मौलसिरी', 'बकुळ'] },
+  { rank: 19, aliases: ['paradise tree', 'lakshmi taru', 'simarouba glauca', 'लक्ष्मी तरु', 'लक्ष्मीतरू'] },
+  { rank: 20, aliases: ['wild almond', 'jangli badam', 'ranbadam', 'sterculia foetida', 'जंगली बादाम', 'रानबदाम'] },
+  { rank: 21, aliases: ['wood apple', 'kaitha', 'kavath', 'limonia acidissima', 'bael', 'कैथा', 'कवठ'] },
+  { rank: 22, aliases: ['mulberry tree', 'mulberry', 'shahtoot', 'tuti', 'morus', 'शहतूत', 'तुती'] },
+  { rank: 23, aliases: ['guava tree', 'guava', 'amrud', 'peru', 'psidium guajava', 'अमरूद', 'पेरू'] },
+  { rank: 24, aliases: ['casuarina', 'jhau', 'suru', 'equisetifolia', 'beefwood', 'झाऊ', 'सुरू'] },
+  { rank: 25, aliases: ['bibhitaki', 'baheda', 'behada', 'terminalia bellirica', 'बहेड़ा', 'बेहडा'] },
+  { rank: 26, aliases: ['purple bauhinia', 'kachnar', 'rakta kanchan', 'bauhinia purpurea', 'कचनार', 'रक्त कांचन'] },
+  { rank: 27, aliases: ['butter tree', 'mahua', 'moh', 'madhuca longifolia', 'महुआ', 'मोह'] },
+  { rank: 28, aliases: ['indian mulberry', 'aal', 'noni', 'morinda citrifolia', 'आल', 'नोनो', 'नोनी'] },
+  { rank: 29, aliases: ['geranium tree', 'lal lasora', 'kanchan', 'cordia sebestena', 'scarlet cordia', 'लाल लसोड़ा', 'कांचन'] },
+  { rank: 30, aliases: ['yellow bells', 'pili chameli', 'tecoma', 'stans', 'yellow elder', 'पीली चमेली', 'पिवळी कण्हेर'] },
+  { rank: 31, aliases: ['mango tree', 'mango', 'aam', 'amba', 'mangifera indica', 'आम', 'आंबा'] },
+  { rank: 32, aliases: ['indian almond', 'desi badam', 'deshi badam', 'terminalia catappa', 'देसी बादाम', 'देशी बादाम'] },
+  { rank: 33, aliases: ['false ashoka', 'ashoka', 'ashok', 'polyalthia longifolia', 'अशोक'] },
+  { rank: 34, aliases: ['curry leaf', 'kadi patta', 'kadipatta', 'murraya koenigii', 'कड़ी पत्ता', 'कढीपत्ता'] },
+  { rank: 35, aliases: ['quick stick', 'giripushpa', 'gliricidia', 'sepium', 'undirmari', 'गिरिपुष्प', 'उंदीरमारी'] },
+  { rank: 36, aliases: ['arjuna tree', 'arjuna', 'arjun', 'terminalia arjuna', 'अर्जुन'] },
+  { rank: 37, aliases: ['parijat', 'harsingar', 'parijatak', 'nyctanthes', 'night jasmine', 'हरसिंगार', 'पारिजातक'] },
+  { rank: 38, aliases: ['bamboo', 'bans', 'bambu', 'bambusa', 'bambusoideae', 'बांस', 'बांबू'] }
+];
+
+/* Helper to find tree by name or alias */
+function findTreeByAlias(nameOrAlias) {
+  if (!nameOrAlias || typeof nameOrAlias !== 'string') return null;
+  var term = nameOrAlias.toLowerCase().trim();
+  for (var i = 0; i < TREE_ALIASES.length; i++) {
+    var entry = TREE_ALIASES[i];
+    for (var j = 0; j < entry.aliases.length; j++) {
+      var alias = entry.aliases[j];
+      if (term === alias || term.includes(alias) || alias.includes(term)) {
+        return TREE_DATA.find(function(t) { return t.rank === entry.rank; });
+      }
+    }
+  }
+  return null;
+}
+
+/* Helper to parse species and quantities from natural language queries */
+function parseTreeQuantities(text) {
+  var clean = text.toLowerCase();
+  var numberWords = {
+    'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+    'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+    'twenty': 20, 'thirty': 30, 'fifty': 50, 'hundred': 100,
+    'एक': 1, 'दो': 2, 'तीन': 3, 'चार': 4, 'पांच': 5, 'पाच': 5,
+    'दोन': 2, 'सहा': 6, 'सात': 7, 'आठ': 8, 'नऊ': 9, 'दहा': 10
   };
+
+  for (var w in numberWords) {
+    clean = clean.replace(new RegExp('\\b' + w + '\\b', 'g'), numberWords[w]);
+  }
+
+  var results = [];
+  var seenRanks = new Set();
+
+  for (var i = 0; i < TREE_ALIASES.length; i++) {
+    var entry = TREE_ALIASES[i];
+    var tree = TREE_DATA.find(function(t) { return t.rank === entry.rank; });
+    if (!tree) continue;
+
+    for (var j = 0; j < entry.aliases.length; j++) {
+      var alias = entry.aliases[j];
+      var idx = clean.indexOf(alias);
+      if (idx !== -1 && !seenRanks.has(tree.rank)) {
+        var before = clean.substring(Math.max(0, idx - 25), idx);
+        var after = clean.substring(idx + alias.length, Math.min(clean.length, idx + alias.length + 25));
+
+        var mBefore = before.match(/(\\d+)\\s*(?:nos|no|trees|tree|plants|plant|saplings|sapling|के पेड़|पेड़|वृक्ष|झाडे|झाड)?\\s*$/);
+        var mAfter = after.match(/^\\s*(?:trees|tree|plants|plant|saplings|sapling|के पेड़|पेड़|वृक्ष|झाडे|झाड)?\\s*[:=-]?\\s*(\\d+)/);
+
+        var qty = 1;
+        if (mBefore) {
+          qty = parseInt(mBefore[1], 10);
+        } else if (mAfter) {
+          qty = parseInt(mAfter[1], 10);
+        }
+
+        if (mBefore || mAfter || clean.includes('calculate') || clean.includes('impact') || clean.includes('trees') || clean.includes('झाडे') || clean.includes('पेड़')) {
+          results.push({ tree: tree, quantity: qty });
+          seenRanks.add(tree.rank);
+          break;
+        }
+      }
+    }
+  }
+
+  return results;
+}
+
+/* Helper to get localized field strings */
+function getLocalizedField(val, lang) {
+  if (!val) return '';
+  if (lang === 'hi') {
+    if (val === 'Low') return 'कम';
+    if (val === 'Medium') return 'मध्यम';
+    if (val === 'High') return 'अधिक';
+    if (val === 'Low-Medium') return 'कम-मध्यम';
+    if (val === 'Med-High') return 'मध्यम-अधिक';
+    if (val === 'Fast') return 'तेज';
+    if (val === 'Very Fast') return 'बहुत तेज';
+    if (val === 'Medium-Fast') return 'मध्यम-तेज';
+    if (val === 'Slow') return 'धीमी';
+    if (val === 'Slow-Medium') return 'धीमी-मध्यम';
+  }
+  if (lang === 'mr') {
+    if (val === 'Low') return 'कमी';
+    if (val === 'Medium') return 'मध्यम';
+    if (val === 'High') return 'जास्त';
+    if (val === 'Low-Medium') return 'कमी-मध्यम';
+    if (val === 'Med-High') return 'मध्यम-जास्त';
+    if (val === 'Fast') return 'जलद';
+    if (val === 'Very Fast') return 'अतिशय जलद';
+    if (val === 'Medium-Fast') return 'मध्यम-जलद';
+    if (val === 'Slow') return 'हळू';
+    if (val === 'Slow-Medium') return 'हळू-मध्यम';
+  }
+  return val;
+}
+
+/* 1. Eco Calculation Report Generator */
+function generateEcoCalculationReport(items, lang) {
+  var totalTrees = 0;
+  var totalCO2 = 0;
+  var totalO2 = 0;
+  var totalCanopyArea = 0;
+
+  var rows = items.map(function(item) {
+    var tr = item.tree;
+    var q = item.quantity;
+    var co2 = tr.c * q;
+    var o2 = tr.o * q;
+    totalTrees += q;
+    totalCO2 += co2;
+    totalO2 += o2;
+
+    var canopyNum = parseFloat((tr.canopy || '10').split('-')[1] || (tr.canopy || '10').split('-')[0] || 10);
+    var singleArea = Math.PI * Math.pow(canopyNum / 2, 2);
+    totalCanopyArea += singleArea * q;
+
+    var name = getLocalizedTreeName(tr, lang);
+    var sub = getLocalizedTreeSubtitle(tr, lang);
+    var water = getLocalizedField(tr.water, lang);
+    var bldg = getLocalizedDistance(tr.safeBldg, lang);
+    var road = getLocalizedDistance(tr.safeRoad, lang);
+
+    return '| **' + name + '** (' + sub + ') | ' + q + ' | **' + co2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' kg** (' + (co2/1000).toFixed(2) + ' t) | **' + o2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' kg** | ' + tr.height + ' | ' + tr.canopy + ' | ' + bldg + ' / ' + road + ' | ' + water + ' |';
+  }).join('\n');
+
+  var carDays = getCarEquivalent(totalCO2);
+  var peopleO2 = getPeopleO2(totalO2);
+  var lifetimeCO2 = ((totalCO2 * 25) / 1000).toFixed(1);
+
+  if (lang === 'hi') {
+    return '### 📊 पारिस्थितिक प्रभाव एवं कार्बन अवशोषण गणना\n\nआपके द्वारा चुने गए वृक्षों के लिए आधिकारिक डेटाबेस से निकाली गई सटीक गणना:\n\n| प्रजाति | संख्या | वार्षिक CO₂ अवशोषण | वार्षिक O₂ उत्पादन | परिपक्व ऊंचाई | कैनोपी फैलाव | सुरक्षित दूरी (भवन/सड़क) | जल आवश्यकता |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n' + rows + '\n\n#### 🌿 प्रमुख समग्र निष्कर्ष एवं परिणाम:\n* 🏆 **कुल वार्षिक CO₂ अवशोषण:** **' + totalCO2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' किग्रा/वर्ष** (~' + (totalCO2 / 1000).toFixed(2) + ' मीट्रिक टन/वर्ष)\n* 🌬️ **कुल वार्षिक ऑक्सीजन उत्पादन:** **' + totalO2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' किग्रा/वर्ष** (~' + (totalO2 / 1000).toFixed(2) + ' मीट्रिक टन/वर्ष)\n* 🚗 **कार उत्सर्जन प्रतिपूर्ति:** प्रति वर्ष एक मानक यात्री कार के **' + carDays + ' दिनों** के उत्सर्जन को पूरी तरह संतुलित करता है!\n* 👥 **मानव ऑक्सीजन आपूर्ति:** प्रति वर्ष **' + peopleO2 + ' वयस्कों** के लिए 100% शुद्ध सांस लेने योग्य ऑक्सीजन प्रदान करता है!\n* 🌳 **25-वर्षीय आजीवन कार्बन सिंक:** 25 वर्षों में ये ' + totalTrees + ' वृक्ष लगभग **' + lifetimeCO2 + ' मीट्रिक टन CO₂** को स्थायी रूप से अवशोषित करेंगे!\n* 📐 **प्रक्षेपित हरित कैनोपी आच्छादन:** लगभग **' + Math.round(totalCanopyArea) + ' वर्ग मीटर** का छाया क्षेत्र।\n\n#### 💡 आर्बर इंजीनियरिंग सिफारिश:\n* यदि आप मियावाकी या एग्रोफोरेस्ट्री मॉडल में वृक्षारोपण कर रहे हैं, तो उच्च अवशोषक प्रजातियों को मध्यम स्तरों के साथ मिलाएं ताकि पोषक तत्वों का संतुलन बना रहे।\n* भवन की नींव से न्यूनतम सुरक्षित दूरी का कड़ाई से पालन करें।';
+  }
+
+  if (lang === 'mr') {
+    return '### 📊 पर्यावरणीय प्रभाव व कार्बन शोषण गणना\n\nआपण निवडलेल्या झाडांसाठी अधिकृत डेटाबेसवर आधारित अचूक विश्लेषण:\n\n| प्रजाती | संख्या | वार्षिक CO₂ शोषण | वार्षिक O₂ निर्मिती | पूर्ण उंची | कॅनोपी विस्तार | सुरक्षित अंतर (इमारत/रस्ता) | पाण्याची गरज |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n' + rows + '\n\n#### 🌿 एकत्रित प्रमुख निष्कर्ष व आकडेवारी:\n* 🏆 **एकूण वार्षिक CO₂ शोषण:** **' + totalCO2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' किलो/वर्ष** (~' + (totalCO2 / 1000).toFixed(2) + ' मेट्रिक टन/वर्ष)\n* 🌬️ **एकूण वार्षिक ऑक्सिजन निर्मिती:** **' + totalO2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' किलो/वर्ष** (~' + (totalO2 / 1000).toFixed(2) + ' मेट्रिक टन/वर्ष)\n* 🚗 **कार उत्सर्जन भरपाई:** दरवर्षी एका सामान्य कारच्या **' + carDays + ' दिवसांच्या** उत्सर्जनाची पूर्ण भरपाई करते!\n* 👥 **मानवी ऑक्सिजन पुरवठा:** दरवर्षी **' + peopleO2 + ' प्रौढ व्यक्तींना** लागणारा संपूर्ण ऑक्सिजन पुरवतो!\n* 🌳 **२५ वर्षांचे एकूण कार्बन संचयन:** पुढील २५ वर्षांत ही ' + totalTrees + ' झाडे सुमारे **' + lifetimeCO2 + ' मेट्रिक टन CO₂** शोषून घेतील!\n* 📐 **कॅनोपी सावली क्षेत्र:** सुमारे **' + Math.round(totalCanopyArea) + ' चौरस मीटर** चा विस्तीर्ण सावली परिसर.\n\n#### 💡 पर्यावरण अभियांत्रिकी सल्ला:\n* मियावाकी किंवा घनवन पद्धतीमध्ये वृक्षारोपण करताना जलद वाढणारी आणि कमी पाणी लागणारी झाडे योग्य प्रमाणात एकत्र लावा.\n* इमारतीच्या पायापासून सुरक्षित अंतराचे काटेकोर पालन करा.';
+  }
+
+  return '### 📊 Quantified Eco Impact & Carbon Sequestration Report\n\nHere is the exact quantified environmental impact calculation for your requested planting configuration based on the platform native species database:\n\n| Tree Species | Qty | CO₂ Absorbed / yr | O₂ Released / yr | Mature Height | Canopy Spread | Safe Distance (Bldg / Road) | Water Req. |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n' + rows + '\n\n#### 🌿 Key Cumulative Findings & Metrics:\n* 🏆 **Total CO₂ Sequestration**: **' + totalCO2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' kg/year** (~' + (totalCO2 / 1000).toFixed(2) + ' metric tonnes/year)\n* 🌬️ **Total O₂ Generation**: **' + totalO2.toLocaleString(undefined, {maximumFractionDigits: 1}) + ' kg/year** (~' + (totalO2 / 1000).toFixed(2) + ' metric tonnes/year)\n* 🚗 **Passenger Car Emissions Offset**: Offsets **' + carDays + ' days** of typical passenger vehicle driving emissions every year!\n* 👥 **Human Oxygen Provision**: Supplies 100% of the clean annual breathing oxygen required for **' + peopleO2 + ' adults**!\n* 🌳 **25-Year Cumulative Carbon Sink**: Over 25 years of mature life, these ' + totalTrees + ' trees will lock away **~' + lifetimeCO2 + ' metric tonnes of CO₂**!\n* 📐 **Projected Canopy Ground Coverage**: Approximately **' + Math.round(totalCanopyArea) + ' m²** of contiguous cooling shade footprint.\n\n#### 💡 Arbor Engineering Recommendation:\n* In a Miyawaki or layered multi-species layout, combine high-efficiency species with drought-tolerant varieties for optimal root depth distribution and vertical stratification.\n* Adhere strictly to the recommended minimum structural foundation setbacks.';
+}
+
+/* 2. Miyawaki Methodology & Land Area Sizing Report */
+function generateMiyawakiReport(query, lang) {
+  var q = query.toLowerCase();
+  var areaMatch = q.match(/(\\d+(?:\\.\\d+)?)\\s*(?:sq\\s*m|sqm|square\\s*meters?|वर्ग\\s*मीटर|चौरस\\s*मीटर|चौ\\.?\\s*मी|m2)/i);
+  var sqftMatch = q.match(/(\\d+(?:\\.\\d+)?)\\s*(?:sq\\s*ft|sqft|square\\s*feet|वर्ग\\s*फुट|चौरस\\s*फूट)/i);
+  var gunteMatch = q.match(/(\\d+(?:\\.\\d+)?)\\s*(?:guntha|gunte|गुंठे)/i);
+
+  var areaSqm = 0;
+  if (areaMatch) {
+    areaSqm = parseFloat(areaMatch[1]);
+  } else if (sqftMatch) {
+    areaSqm = Math.round(parseFloat(sqftMatch[1]) * 0.092903);
+  } else if (gunteMatch) {
+    areaSqm = Math.round(parseFloat(gunteMatch[1]) * 101.17);
+  }
+
+  var saplingMin = areaSqm ? Math.round(areaSqm * 3) : 300;
+  var saplingMax = areaSqm ? Math.round(areaSqm * 5) : 500;
+  var displayArea = areaSqm ? areaSqm + ' m²' : (lang === 'hi' ? '100 वर्ग मीटर (उदाहरण)' : lang === 'mr' ? '100 चौ.मी. (उदाहरण)' : '100 m² (Standard Benchmark)');
+
+  if (lang === 'hi') {
+    return '### 🌱 मियावाकी सघन वनीकरण पद्धति (Miyawaki Methodology)\n\nमियावाकी पद्धति एक उन्नत जापानी वनीकरण तकनीक है जो स्थानीय देशी प्रजातियों का उपयोग करके अति-सघन, बहुस्तरीय वन तैयार करती है।\n\n#### 📐 साइट योजना एवं रोपण घनत्व (' + displayArea + '):\n* **अनुशंसित पौधे:** प्रति वर्ग मीटर **3 से 5 पौधे** (कुल: **' + saplingMin + ' से ' + saplingMax + ' पौधे**)\n* **विकास दर:** पारंपरिक वनीकरण की तुलना में **10 गुना तेजी से विकास**\n* **सघनता:** **30 गुना अधिक सघन** और जैव-विविधता से भरपूर\n* **रखरखाव:** 3 वर्ष बाद **पूर्णतः आत्मनिर्भर एवं रखरखाव-मुक्त**\n\n#### 🌲 4-स्तरीय मियावाकी कैनोपी संरचना:\n1. **कैनोपी परत (Canopy Layer - 20-30%):** सिरिस (Siris #1), इमली (Tamarind #2), पीपल (Peepal #5), सागवान (Teak #16) — ऊंचाई > 15 मी.\n2. **वृक्ष परत (Tree Layer - 40%):** नीम (Neem #8), जामुन (Jamun #13), करंज (Karanj #17), अमलतास (Golden Shower #14), गुलमोहर (Gulmohar #3) — ऊंचाई 8-15 मी.\n3. **उप-वृक्ष परत (Sub-Tree Layer - 20-30%):** आंवला (Gooseberry #10), कैथा (Wood Apple #21), अमरूद (Guava #23), कचनार (Kachnar #26) — ऊंचाई 4-8 मी.\n4. **झाड़ी परत (Shrub Layer - 10-20%):** कड़ी पत्ता (Curry Leaf #34), पीली चमेली (Yellow Bells #30), पारिजात (Parijat #37), बांस (Bamboo #38) — ऊंचाई < 4 मी.\n\n#### 📋 6-चरणीय आधिकारिक कार्यान्वयन प्रक्रिया:\n1. **मृदा तैयारी (Soil Preparation):** 1-2 फीट गहरी जुताई करें। वातन के लिए बायोमास (धान की भूसी/खोई), नमी बनाए रखने के लिए कोकोपीट, और देशी खाद मिलाएं।\n2. **देशी प्रजाति चयन (Species Selection):** केवल स्थानीय कृषि-जलवायु क्षेत्र के अनुकूल देशी वृक्षों का चयन करें।\n3. **पौध सामग्री (Seedling):** 60-80 सेमी ऊंचे, गमले में तैयार स्वस्थ पौधे चुनें जिनकी जड़ें सुरक्षित हों।\n4. **रोपण तकनीक (Planting):** जिग-जॉग ग्रिड में लगाएं; एक ही प्रजाति के दो पौधे कभी भी अगल-बगल न लगाएं।\n5. **सघन मल्चिंग (Mulching):** मिट्टी पर 15-20 सेमी मोटी सूखी घास या पुआल की परत बिछाएं। यह नमी बनाए रखती है और खरपतवार रोकती है।\n6. **देखभाल एवं सिंचाई (Maintenance):** प्रथम वर्ष में नियमित ड्रिप सिंचाई दें और सहारा लगाएं। किसी भी प्रकार की छंटाई (pruning) न करें।';
+  }
+
+  if (lang === 'mr') {
+    return '### 🌱 मियावाकी सघन वनीकरण पद्धत (Miyawaki Methodology)\n\nमियावाकी पद्धत हे स्थानिक देशी प्रजातींचा वापर करून अत्यंत दाट, बहुस्तरीय जंगले निर्माण करण्याचे प्रगत पर्यावरण तंत्रज्ञान आहे.\n\n#### 📐 प्रकल्प नियोजन व रोपांची संख्या (' + displayArea + '):\n* **रोपांची घनता:** प्रति चौरस मीटर **3 ते 5 रोपे** (एकूण: **' + saplingMin + ' ते ' + saplingMax + ' रोपे**)\n* **वाढीचा वेग:** पारंपारिक लागवडीपेक्षा **10 पट जलद वाढ**\n* **घनता:** **30 पट अधिक दाट** आणि जैवविविधतेने परिपूर्ण\n* **देखभाल:** 3 वर्षांनंतर **100% स्वावलंबी व देखभाल-मुक्त**\n\n#### 🌲 4-स्तरीय मियावाकी रचना:\n1. **कॅनोपी स्तर (Canopy Layer - 20-30%):** शिरीष (Siris #1), चिंच (Tamarind #2), पिंपळ (Peepal #5), सागवान (Teak #16) — उंची > 15 मी.\n2. **वृक्ष स्तर (Tree Layer - 40%):** कडुनिंब (Neem #8), जांभूळ (Jamun #13), करंज (Karanj #17), बहावा (Amaltas #14), गुलमोहर (Gulmohar #3) — उंची 8-15 मी.\n3. **उप-वृक्ष स्तर (Sub-Tree Layer - 20-30%):** आवळा (Gooseberry #10), कवठ (Wood Apple #21), पेरू (Guava #23), कांचन (Kachnar #26) — उंची 4-8 मी.\n4. **झुडूप स्तर (Shrub Layer - 10-20%):** कढीपत्ता (Curry Leaf #34), पिवळी कण्हेर (Yellow Bells #30), पारिजातक (Parijat #37), बांबू (Bamboo #38) — उंची < 4 मी.\n\n#### 📋 6-टप्प्यांची शास्त्रोक्त कार्यपद्धती:\n1. **मातीची मशागत (Soil Preparation):** 1 ते 2 फूट खोल नांगरणी करा. सेंद्रिय घटक (भाताचा भुसा/उसाची चिपाडे), ओलावा टिकवण्यासाठी कोकोपीट आणि शेणखत मिसळा.\n2. **स्थानिक प्रजाती निवड (Species Selection):** स्थानिक परिसंस्थेतील देशी प्रजातींचीच निवड करा.\n3. **रोपांची निवड (Seedling):** पिशवीतील 60-80 सेमी उंचीची, मजबूत मुळे असलेली रोपे वापरा.\n4. **लागवड तंत्रज्ञान (Planting):** विविध स्तरांतील रोपे एकमेकांच्या शेजारी जिग-जॅग पद्धतीने लावा; एकाच जातीची दोन झाडे शेजारी लावू नका.\n5. **मल्चिंग (Mulching):** जमिनीवर 15-20 सेमी जाडीचा पालापाचोळा किंवा गवताचा थर द्या.\n6. **पाणी व देखभाल (Maintenance):** पहिल्या वर्षी नियमित ठिबक सिंचन द्या आणि रोपांना काठीचा आधार द्या. छाटणी करू नका.';
+  }
+
+  return '### 🌱 Miyawaki Afforestation Methodology & Site Sizing\n\nThe Miyawaki Method is a pioneering afforestation methodology developed to restore degraded lands by engineering multi-layered, hyper-dense native mini-forests.\n\n#### 📐 Site Planning & Planting Density (' + displayArea + '):\n* **Planting Density**: **3 to 5 saplings per m²** (Total Required: **' + saplingMin + ' to ' + saplingMax + ' saplings**)\n* **Growth Acceleration**: Grows **10x faster** than conventional plantations due to upward phototropic competition.\n* **Biodiversity Density**: **30x denser**, creating a rich micro-ecosystem within 24-36 months.\n* **Self-Sufficiency**: **100% maintenance-free** after 3 years; zero weeding, fertilizer, or regular irrigation required thereafter.\n\n#### 🌲 4-Tier Miyawaki Canopy Stratification:\n1. **Canopy Layer (20-30%)**: Indian Siris (#1), Tamarind (#2), Sacred Fig / Peepal (#5), Teak (#16) — Height > 15 m.\n2. **Tree Layer (40%)**: Neem (#8), Jamun (#13), Karanj (#17), Golden Shower (#14), Gulmohar (#3) — Height 8-15 m.\n3. **Sub-Tree Layer (20-30%)**: Gooseberry / Amla (#10), Wood Apple (#21), Guava (#23), Purple Bauhinia (#26) — Height 4-8 m.\n4. **Shrub Layer (10-20%)**: Curry Leaf (#34), Yellow Bells (#30), Parijat (#37), Bamboo (#38) — Height < 4 m.\n\n#### 📋 The 6-Step Implementation Protocol:\n1. **Soil Preparation**: Excavate/plough 1-2 feet deep. Incorporate biomass for aeration (rice husk/bagasse), water-retention materials (coco peat), vermicompost, and well-rotted manure.\n2. **Species Selection**: Strictly select indigenous species adapted to local soil and agro-climatic zones.\n3. **Seedling Standards**: Utilize potted saplings 60-80 cm tall with intact root balls.\n4. **Multi-Species Grid**: Plant saplings randomly so no two identical species touch.\n5. **Dense Mulching**: Apply a 15-20 cm deep layer of organic straw or leaves to suppress weeds, retain moisture, and stimulate soil mycorrhizal fungi.\n6. **Irrigation & Stabilization**: Daily watering for year 1, support staking against high winds, zero pruning, and zero synthetic chemical inputs.';
+}
+
+/* 3. Subterranean Root Mechanics & Foundation Safety Report */
+function generateRootMechanicsReport(query, lang, contextTree) {
+  var targetTree = contextTree || findTreeByAlias(query) || TREE_DATA.find(function(t) { return t.rank === 8; }); // default Neem
+
+  var name = getLocalizedTreeName(targetTree, lang);
+  var sub = getLocalizedTreeSubtitle(targetTree, lang);
+  var bldg = getLocalizedDistance(targetTree.safeBldg, lang);
+  var road = getLocalizedDistance(targetTree.safeRoad, lang);
+
+  if (lang === 'hi') {
+    return '### 📐 भूमिगत जड़ यांत्रिकी एवं संरचनात्मक सुरक्षा विश्लेषण (Subterranean Root Mechanics)\n\nवृक्षारोपण करते समय संरचनात्मक सुरक्षा (भवन, नींव, भूमिगत पाइपलाइन) सबसे महत्वपूर्ण घटक है।\n\n#### 🌳 चयनित प्रजाति विश्लेषण: **' + name + '** (' + sub + ')\n* 📏 **भवन से न्यूनतम सुरक्षित दूरी:** **' + bldg + '**\n* 🛣️ **सड़क/फुटपाथ से सुरक्षित दूरी:** **' + road + '**\n* 🌿 **परिपक्व ऊंचाई:** ' + targetTree.height + ' | **कैनोपी फैलाव:** ' + targetTree.canopy + '\n* 🔬 **जड़ प्रणाली प्रकार:** गहरी मूसला जड़ (Deep Taproot with lateral anchoring)\n\n#### 📊 प्रमुख प्रजातियों का नींव सुरक्षा मैट्रिक्स:\n\n| प्रजाति | परिपक्व ऊंचाई | कैनोपी फैलाव | सुरक्षित भवन दूरी | सुरक्षित सड़क दूरी | जड़ संरचना एवं जोखिम |\n| :--- | :---: | :---: | :---: | :---: | :--- |\n| **पीपल (Peepal)** | 20-30 m | 15-25 m | **15-20 m** | 8-10 m | आक्रामक जड़ें, नींव के लिए उच्च जोखिम |\n| **इमली (Tamarind)** | 20-25 m | 12-18 m | **10-12 m** | 6-8 m | गहरी मूसला जड़, मध्यम-उच्च जोखिम |\n| **सिरिस (Siris)** | 15-25 m | 12-18 m | **8-10 m** | 5-6 m | संतुलित पार्श्व जड़ें, मध्यम जोखिम |\n| **नीम (Neem)** | 15-20 m | 10-15 m | **6-8 m** | 3-4 m | गहरी मूसला जड़, कम-मध्यम जोखिम |\n| **आंवला (Amla)** | 8-12 m | 5-8 m | **4-5 m** | 3 m | सीमित जड़ फैलाव, सुरक्षित विकल्प |\n| **बांस (Bamboo)** | 10-20 m | 4-6 m | **4-5 m** | 2-3 m | रेशेदार प्रकंद जड़ें, मृदा बांधने में अव्वल |\n\n#### 🏗️ सिविल एवं भू-तकनीकी सिफारिशें:\n* **मृदा बंधन स्कोर:** **8.5 / 10** (Subterranean Soil Binding Score)\n* **जड़ अवरोधक (Root Barrier):** यदि किसी बड़े वृक्ष को भवन से 6-8 मीटर के भीतर लगाना आवश्यक हो, तो नींव के किनारे **1.2 मीटर गहरा HDPE रूट बैरियर** स्थापित करें।\n* **जल निकासी एवं सीवर:** आक्रामक जड़ों वाले वृक्षों (जैसे पीपल, गूलर) को भूमिगत सीवर पाइप से कम से कम 10 मीटर दूर रखें।';
+  }
+
+  if (lang === 'mr') {
+    return '### 📐 भूगर्भीय मूळ यांत्रिकी व संरचनात्मक सुरक्षा विश्लेषण (Subterranean Root Mechanics)\n\nवृक्षारोपण करताना इमारतीचा पाया, रस्ते आणि भूमिगत पाईपलाईन यांचे मूळ-विस्तारापासून रक्षण करणे अत्यंत आवश्यक आहे.\n\n#### 🌳 निवडक प्रजाती विश्लेषण: **' + name + '** (' + sub + ')\n* 📏 **इमारतीपासून किमान सुरक्षित अंतर:** **' + bldg + '**\n* 🛣️ **रस्त्यापासून सुरक्षित अंतर:** **' + road + '**\n* 🌿 **पूर्ण उंची:** ' + targetTree.height + ' | **कॅनोपी विस्तार:** ' + targetTree.canopy + '\n* 🔬 **मूळ प्रणाली:** खोल सोटमूळ (Deep Taproot with lateral anchoring)\n\n#### 📊 प्रमुख प्रजातींचा पाया सुरक्षा मॅट्रिक्स:\n\n| प्रजाती | पूर्ण उंची | कॅनोपी विस्तार | सुरक्षित इमारत अंतर | सुरक्षित रस्ता अंतर | मूळ रचना व जोखीम |\n| :--- | :---: | :---: | :---: | :---: | :--- |\n| **पिंपळ (Peepal)** | 20-30 m | 15-25 m | **15-20 m** | 8-10 m | आक्रमक मुळे, इमारतीसाठी उच्च जोखीम |\n| **चिंच (Tamarind)** | 20-25 m | 12-18 m | **10-12 m** | 6-8 m | खोल सोटमूळ, मध्यम-उच्च जोखीम |\n| **शिरीष (Siris)** | 15-25 m | 12-18 m | **8-10 m** | 5-6 m | संतुलित बाजूची मुळे, मध्यम जोखीम |\n| **कडुनिंब (Neem)** | 15-20 m | 10-15 m | **6-8 m** | 3-4 m | खोल सोटमूळ, कमी-मध्यम जोखीम |\n| **आवळा (Amla)** | 8-12 m | 5-8 m | **4-5 m** | 3 m | मर्यादित मूळ विस्तार, सुरक्षित पर्याय |\n| **बांबू (Bamboo)** | 10-20 m | 4-6 m | **4-5 m** | 2-3 m | तंतुमय मुळे, माती घट्ट धरण्यासाठी अव्वल |\n\n#### 🏗️ अभियांत्रिकी मार्गदर्शक तत्त्वे:\n* **माती घट्ट धरून ठेवण्याचा निर्देशांक:** **8.5 / 10**\n* **रूट बॅरियर (Root Barrier):** जर वृक्ष इमारतीजवळ लावणे अपरिहार्य असेल तर इमारतीच्या पायाजवळ **1.2 मीटर खोल HDPE रूट बॅरियर** बसवावा.\n* **ड्रेनेज सुरक्षा:** पिंपळ किंवा उंबर यांसारखी झाडे ड्रेनेज पाईपपासून किमान 10 मीटर दूर लावावीत.';
+  }
+
+  return '### 📐 Subterranean Root Mechanics & Structural Safety Matrix\n\nRoot architecture analysis is critical to ensuring urban trees thrive without compromising foundations, retaining walls, pavements, and subterranean utilities.\n\n#### 🌳 Selected Species Analysis: **' + name + '** (' + sub + ')\n* 📏 **Minimum Safe Building Setback**: **' + bldg + '**\n* 🛣️ **Minimum Safe Road/Pavement Setback**: **' + road + '**\n* 🌿 **Mature Dimensions**: Height ' + targetTree.height + ' | Canopy Diameter ' + targetTree.canopy + '\n* 🔬 **Root Architecture**: Deep central taproot supplemented by lateral anchoring radicles.\n\n#### 📊 Comprehensive Structural Setback Matrix:\n\n| Species | Mature Height | Canopy Spread | Safe Building Dist. | Safe Road Dist. | Root System & Risk Profile |\n| :--- | :---: | :---: | :---: | :---: | :--- |\n| **Sacred Fig (Peepal)** | 20-30 m | 15-25 m | **15-20 m** | 8-10 m | Aggressive lateral spread; high foundation heave risk |\n| **Tamarind (Imli)** | 20-25 m | 12-18 m | **10-12 m** | 6-8 m | Deep taproot with massive lateral anchorage; moderate-high risk |\n| **Indian Siris** | 15-25 m | 12-18 m | **8-10 m** | 5-6 m | Wide root plate; excellent wind resistance; moderate risk |\n| **Neem** | 15-20 m | 10-15 m | **6-8 m** | 3-4 m | Deep taproot; low-to-moderate risk to structures |\n| **Gooseberry (Amla)** | 8-12 m | 5-8 m | **4-5 m** | 3 m | Compact root spread; ideal for tight urban setbacks |\n| **Bamboo** | 10-20 m | 4-6 m | **4-5 m** | 2-3 m | Dense fibrous rhizome network; unmatched soil erosion control |\n\n#### 🏗️ Geotechnical & Engineering Recommendations:\n* **Subterranean Soil Binding Score**: **8.5 / 10** — Roots interlock soil particles, mitigating shear failure on slopes.\n* **Vertical HDPE Root Barrier**: For trees planted within 5-8 meters of shallow foundations, install a **1.2 m deep continuous HDPE root barrier** with gravel trench drainage.\n* **Utility Clearance**: Maintain at least 8-10 meters from underground sewer pipes and stormwater conduits for high-moisture seeking species.';
+}
+
+/* 4. Canopy Projection & Thermal Matrix Report */
+function generateThermalMatrixReport(query, lang, contextTree) {
+  if (lang === 'hi') {
+    return '### 🌡️ कैनोपी थर्मल मॉडलिंग एवं हीट आइलैंड न्यूनीकरण मैट्रिक्स\n\nकैनोपी प्रोजेक्शन प्लेटफॉर्म का उन्नत विश्लेषणात्मक उपकरण है, जो सौर विकिरण को रोककर और वाष्पोत्सर्जन (Evapotranspiration) द्वारा स्थानीय तापमान को कम करता है।\n\n#### 📈 प्लेटफॉर्म प्रमुख प्रदर्शन संकेतक (Platform KPIs):\n* 🌳 **औसत कैनोपी फैलाव:** **25 वर्ग मीटर** प्रति परिपक्व वृक्ष\n* ☀️ **प्रक्षेपित कुल छाया क्षेत्र:** **15.5 हेक्टेयर**\n* 🌿 **वार्षिक CO₂ अवशोषण दर:** **1.2 किग्रा / वर्ग मीटर**\n* ❄️ **स्थानीय तापमान में कमी:** **2.5°C से 4.8°C** तक शीतलन\n\n#### 📊 कैनोपी थर्मल प्रभाव मैट्रिक्स (Top Shade Species):\n\n| प्रजाति | कैनोपी फैलाव | छाया आच्छादन | सौर अवरोध दर | शीतलन क्षमता | सर्वोत्तम रोपण क्षेत्र |\n| :--- | :---: | :---: | :---: | :---: | :--- |\n| **सिरिस (Siris #1)** | 12-18 m | ~175 m² | **85%** | **4.5°C कमी** | चौड़ी सड़कें, पार्क, औद्योगिक परिसर |\n| **इमली (Tamarind #2)** | 12-18 m | ~175 m² | **85%** | **4.2°C कमी** | राजमार्ग, खुले परिसर, परिसर सीमा |\n| **गुलमोहर (May flower #3)** | 10-15 m | ~120 m² | **80%** | **3.8°C कमी** | छतरीनुमा छाया, आवासीय मार्ग |\n| **पीपल (Peepal #5)** | 15-25 m | ~310 m² | **90%** | **4.8°C कमी** | बड़े पार्क, धार्मिक एवं सामुदायिक स्थल |\n| **नीम (Neem #8)** | 10-15 m | ~120 m² | **78%** | **3.6°C कमी** | आवासीय क्षेत्र, स्कूल, अस्पताल |\n\n#### 🔬 तापीय भौतिकी सिद्धांत:\n* एक परिपक्व वृक्ष प्रतिदिन सैकड़ों लीटर पानी का वाष्पोत्सर्जन करता है, जो लगातार 10 एयर कंडीशनरों के चलने के बराबर प्राकृतिक शीतलन प्रदान करता है।\n* सघन कैनोपी डामर और कंक्रीट को गर्म होने से रोकती है, जिससे शहरी हीट आइलैंड प्रभाव पूरी तरह समाप्त हो जाता है।';
+  }
+
+  if (lang === 'mr') {
+    return '### 🌡️ कॅनोपी थर्मल मॉडेलिंग व तापमान नियंत्रण मॅट्रिक्स\n\nकॅनोपी प्रोजेक्शन हे झाडांच्या छायेद्वारे आणि बाष्पोत्सर्जनाद्वारे (Evapotranspiration) जमिनीचे व हवेचे तापमान नियंत्रित करण्याचे तंत्रज्ञान आहे.\n\n#### 📈 मुख्य कार्यक्षमता निर्देशांक (KPIs):\n* 🌳 **सरासरी कॅनोपी विस्तार:** **25 चौ.मी.** प्रति झाड\n* ☀️ **प्रक्षेपित सावली क्षेत्र:** **15.5 हेक्टर**\n* 🌿 **वार्षिक CO₂ शोषण दर:** **1.2 किलो / चौ.मी.**\n* ❄️ **तापमानात घट:** झाडाखाली **2.5°C ते 4.8°C** पर्यंत थंडावा\n\n#### 📊 कॅनोपी थर्मल मॅट्रिक्स (अव्वल सावली देणारी झाडे):\n\n| प्रजाती | कॅनोपी विस्तार | सावली क्षेत्र | सूर्यप्रकाश अडवणूक | शीतलन क्षमता | योग्य ठिकाण |\n| :--- | :---: | :---: | :---: | :---: | :--- |\n| **शिरीष (Siris #1)** | 12-18 m | ~175 m² | **85%** | **4.5°C घट** | मुख्य रस्ते, उद्याने, एमआयडीसी |\n| **चिंच (Tamarind #2)** | 12-18 m | ~175 m² | **85%** | **4.2°C घट** | महामार्ग, मोकळी मैदाने, कुंपण |\n| **गुलमोहर (Gulmohar #3)** | 10-15 m | ~120 m² | **80%** | **3.8°C घट** | छत्र्यासारखी सावली, वसाहतीतील रस्ते |\n| **पिंपळ (Peepal #5)** | 15-25 m | ~310 m² | **90%** | **4.8°C घट** | मोठी उद्याने, सामाजिक जागा |\n| **कडुनिंब (Neem #8)** | 10-15 m | ~120 m² | **78%** | **3.6°C घट** | निवासी परिसर, शाळा, रुग्णालये |\n\n#### 🔬 तापीय नियम:\n* पूर्ण वाढ झालेले एक झाड दररोज शेकडो लिटर पाणी हवेत सोडते, ज्यामुळे 10 एसी इतकी नैसर्गिक थंडावा निर्माण होतो.\n* दाट कॅनोपीमुळे काँक्रीट आणि डांबरी रस्ते तापत नाहीत, परिणामी अर्बन हीट आयलंडचा धोका टळतो.';
+  }
+
+  return '### 🌡️ Canopy Thermal Modeling & Urban Heat Island (UHI) Matrix\n\nCanopy Projection models the micro-meteorological benefits of strategic tree placement, quantifying solar radiation attenuation and evapotranspiration cooling.\n\n#### 📈 Official Platform Key Performance Indicators (KPIs):\n* 🌳 **Average Canopy Spread**: **25 m²** per mature tree\n* ☀️ **Projected Shade Footprint**: **15.5 Hectares**\n* 🌿 **Annual CO₂ Sequestration Density**: **1.2 kg CO₂ / m²**\n* ❄️ **Localized Microclimate Cooling**: **2.5°C to 4.8°C ambient temperature reduction**\n\n#### 📊 Thermal Impact Matrix (High Canopy Density Species):\n\n| Species | Canopy Diameter | Shade Footprint | Solar Attenuation | Cooling Vector | Optimal Site Placement |\n| :--- | :---: | :---: | :---: | :---: | :--- |\n| **Indian Siris (#1)** | 12-18 m | ~175 m² | **85%** | **4.5°C drop** | Arterial boulevards, industrial campuses, parks |\n| **Tamarind (#2)** | 12-18 m | ~175 m² | **85%** | **4.2°C drop** | Highways, boundary buffers, wide setbacks |\n| **Gulmohar (#3)** | 10-15 m | ~120 m² | **80%** | **3.8°C drop** | Umbrella shade canopy, internal residential roads |\n| **Sacred Fig / Peepal (#5)** | 15-25 m | ~310 m² | **90%** | **4.8°C drop** | Civic plazas, regional parks, campus centers |\n| **Neem (#8)** | 10-15 m | ~120 m² | **78%** | **3.6°C drop** | Residential setbacks, schools, hospital grounds |\n\n#### 🔬 Evapotranspirative Physics:\n* A single mature tree transpires up to 400 liters of water daily, functioning equivalent to **10 room-sized air conditioners operating continuously**.\n* Intercepting solar irradiance before it strikes asphalt prevents thermal mass absorption, permanently mitigating Urban Heat Island formation.';
+}
+
+/* 5. Soil Compatibility & Bio-Engineering Report */
+function generateSoilReport(query, lang) {
+  if (lang === 'hi') {
+    return '### 🧪 मृदा अनुकूलता एवं भू-जैविक विश्लेषण (Soil Compatibility Analysis)\n\nमृदा का प्रकार और जड़ यांत्रिकी सीधे वन की वृद्धि और स्थिरता को निर्धारित करते हैं।\n\n* 📊 **सबटेरेनियन मृदा बंधन स्कोर (Soil Binding Score):** **8.5 / 10**\n\n#### 🌾 मृदा प्रकार अनुसार अनुशंसित देशी प्रजातियां:\n1. **दोमट मृदा (Loamy Soil - सर्वोत्तम):**\n   * उपयुक्त: **नीम, जामुन, सिरिस, सागवान, इमली, पीपल, आंवला**\n   * लाभ: संतुलित जल धारण और पोषक तत्वों का सुगम अवशोषण।\n2. **काली / भारी चिकनी मिट्टी (Black / Clay Soil):**\n   * उपयुक्त: **अर्जुन (Arjuna #36), करंज (Karanj #17), जामुन (Jamun #13), बांस (Bamboo #38)**\n   * लाभ: जलभराव और भारी मिट्टी में सड़न प्रतिरोधी।\n3. **रेतीली / शुष्क मृदा (Sandy / Arid Soil):**\n   * उपयुक्त: **सुरू/झाऊ (Casuarina #24), इमली (Tamarind #2), सुबबूल (Subabul #6), कैथा (Wood Apple #21)**\n   * लाभ: गहरी जड़ें जो अत्यधिक सूखे में भी नीचे से नमी खींचती हैं।\n4. **पथरीली / ढलान वाली भूमि (Rocky / Sloped Terrain):**\n   * उपयुक्त: **करंज (Karanj #17), सुबबूल (Subabul #6), सिरिस (Siris #1), जंगली बादाम (Wild Almond #20)**\n   * लाभ: तीव्र कटाव रोकने में प्रभावी और चट्टानी दरारों में मजबूत पकड़।\n\n#### ⚡ प्राकृतिक नाइट्रोजन स्थिरीकरण (Bio-Fertilization):\n* **सिरिस (Siris), सुबबूल (Subabul), करंज (Karanj), और गिरिपुष्प (Quick Stick)** लेग्यूम कुल के वृक्ष हैं। इनकी जड़ें वायुमंडलीय नाइट्रोजन को प्राकृतिक रूप से मिट्टी में स्थिर करती हैं, जिससे रासायनिक उर्वरकों की कोई आवश्यकता नहीं होती।';
+  }
+
+  if (lang === 'mr') {
+    return '### 🧪 माती सुसंगतता व भू-पर्यावरण विश्लेषण (Soil Compatibility Analysis)\n\nमातीचा प्रकार आणि झाडांची मुळे यांच्यातील ताळमेळ जंगलाच्या जलद वाढीसाठी अत्यंत महत्त्वाचा असतो.\n\n* 📊 **माती घट्ट धरून ठेवण्याचा निर्देशांक (Soil Binding Score):** **8.5 / 10**\n\n#### 🌾 मातीच्या प्रकारानुसार योग्य देशी प्रजाती:\n1. **गाळाची / पोयटा माती (Loamy Soil - सर्वोत्तम):**\n   * झाडे: **कडुनिंब, जांभूळ, शिरीष, सागवान, चिंच, पिंपळ, आवळा**\n   * वैशिष्ट्य: उत्तम पाण्याचा निचरा आणि भरपूर पोषणमूल्ये.\n2. **काळी / चिकणमाती (Black / Clay Soil):**\n   * झाडे: **अर्जुन (Arjuna #36), करंज (Karanj #17), जांभूळ (Jamun #13), बांबू (Bamboo #38)**\n   * वैशिष्ट्य: पाणी साचून राहणाऱ्या जमिनीतही उत्तम वाढ.\n3. **रेताड / कोरडी जमीन (Sandy / Arid Soil):**\n   * झाडे: **सुरू (Casuarina #24), चिंच (Tamarind #2), सुबाभूळ (Subabul #6), कवठ (Wood Apple #21)**\n   * वैशिष्ट्य: दुष्काळी भागात खोलवर पाणी शोधणारी मुळे.\n4. **मुरमाड / उताराची जमीन (Rocky / Sloped Terrain):**\n   * झाडे: **करंज (Karanj #17), सुबाभूळ (Subabul #6), शिरीष (Siris #1), रानबदाम (Wild Almond #20)**\n   * वैशिष्ट्य: जमिनीची धूप थांबवण्यासाठी अत्यंत प्रभावी.\n\n#### ⚡ नैसर्गिक नायट्रोजन स्थिरीकरण:\n* **शिरीष, सुबाभूळ, करंज आणि गिरिपुष्प** ही झाडे हवेतील नायट्रोजन थेट मातीमध्ये स्थिर करतात, ज्यामुळे जमिनीची सुपीकता नैसर्गिकरीत्या वाढते.';
+  }
+
+  return '### 🧪 Soil Compatibility & Bio-Engineering Analysis\n\nSoil horizon composition determines subterranean hydraulic conductivity, root anchoring shear strength, and nutrient bioavailability.\n\n* 📊 **Subterranean Soil Binding Score**: **8.5 / 10**\n\n#### 🌾 Native Species Pairing by Edaphic / Soil Profile:\n1. **Loamy Alluvial Soil (Optimal Matrix)**:\n   * Preferred: **Neem, Jamun, Indian Siris, Teak, Tamarind, Sacred Fig, Gooseberry**\n   * Dynamics: Optimum pore distribution supporting high nutrient exchange capacity.\n2. **Heavy Vertisol / Clay Soil (High Moisture Retention)**:\n   * Preferred: **Arjuna (#36), Karanj (#17), Jamun (#13), Bamboo (#38)**\n   * Dynamics: Exceptional resistance to root rot under periodic waterlogging; mitigates shrink-swell foundation settlement.\n3. **Sandy / Porous Arid Soil**:\n   * Preferred: **Casuarina (#24), Tamarind (#2), Subabul (#6), Wood Apple (#21)**\n   * Dynamics: Deep vertical geotropic taproots that exploit deep aquifers during prolonged dry spells.\n4. **Rocky / Weathered Lithic Slopes**:\n   * Preferred: **Karanj (#17), Subabul (#6), Indian Siris (#1), Wild Almond (#20)**\n   * Dynamics: Penetrating wedge-root mechanics that bind fractured bedrock and prevent slope mass movement.\n\n#### ⚡ Bio-Fertilization via Symbiotic Nitrogen Fixation:\n* **Indian Siris (*Albizia lebbeck*), Subabul (*Leucaena*), Karanj (*Pongamia*), and Quick Stick (*Gliricidia*)** host symbiotic rhizobia, continuously converting atmospheric $N_2$ into bioavailable soil nitrates, completely eliminating synthetic chemical fertilizer requirements.';
+}
+
+/* 6. Multi-Tree Comparison Report */
+function generateComparisonReport(trees, lang) {
+  var rows = trees.map(function(tr) {
+    var name = getLocalizedTreeName(tr, lang);
+    var sub = getLocalizedTreeSubtitle(tr, lang);
+    var water = getLocalizedField(tr.water, lang);
+    var growth = getLocalizedField(tr.growth, lang);
+    var bldg = getLocalizedDistance(tr.safeBldg, lang);
+    var road = getLocalizedDistance(tr.safeRoad, lang);
+    return '| **' + name + '** (' + sub + ') | #' + tr.rank + ' | **' + tr.c.toLocaleString() + ' kg** | **' + tr.o.toLocaleString() + ' kg** | ' + tr.height + ' | ' + tr.canopy + ' | ' + bldg + ' / ' + road + ' | ' + water + ' | ' + growth + ' |';
+  }).join('\n');
+
+  var sortedCO2 = trees.slice().sort(function(a, b) { return b.c - a.c; });
+  var bestCO2 = sortedCO2[0];
+
+  if (lang === 'hi') {
+    return '### ⚖️ तुलनात्मक प्रजाति विश्लेषण (Comparative Analysis)\n\nचयनित प्रजातियों का संपूर्ण तुलनात्मक विवरण:\n\n| प्रजाति | डेटाबेस रैंक | वार्षिक CO₂ | वार्षिक O₂ | परिपक्व ऊंचाई | कैनोपी फैलाव | सुरक्षित दूरी (भवन/सड़क) | जल आवश्यकता | विकास दर |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n' + rows + '\n\n#### 🏆 इंजीनियरिंग निष्कर्ष:\n* **कार्बन अवशोषण में अग्रणी:** **' + getLocalizedTreeName(bestCO2, lang) + '** (' + bestCO2.c.toLocaleString() + ' किग्रा/वर्ष)\n* **साइट पर सिफारिश:** बड़े छायादार वृक्षों को पर्याप्त स्थान दें तथा छोटे वृक्षों को भवन के समीप रोपित करें।';
+  }
+
+  if (lang === 'mr') {
+    return '### ⚖️ तुलनात्मक प्रजाती विश्लेषण (Comparative Analysis)\n\nनिवडलेल्या झाडांची सविस्तर तुलना:\n\n| प्रजाती | डेटाबेस रँक | वार्षिक CO₂ | वार्षिक O₂ | पूर्ण उंची | कॅनोपी विस्तार | सुरक्षित अंतर (इमारत/रस्ता) | पाण्याची गरज | वाढीचा वेग |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n' + rows + '\n\n#### 🏆 अभियांत्रिकी निष्कर्ष:\n* **सर्वाधिक CO₂ शोषण:** **' + getLocalizedTreeName(bestCO2, lang) + '** (' + bestCO2.c.toLocaleString() + ' किलो/वर्ष)\n* **सल्ला:** जास्त विस्तार असणारी झाडे इमारतीपासून दूर आणि लहान झाडे इमारतीजवळ लावावीत.';
+  }
+
+  return '### ⚖️ Multi-Species Comparative Engineering Matrix\n\nSide-by-side parametric comparison across ecological, structural, and silvicultural performance indicators:\n\n| Species | Database Rank | CO₂ Absorbed / yr | O₂ Released / yr | Mature Height | Canopy Spread | Safe Distance (Bldg / Road) | Water Req. | Growth Rate |\n| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |\n' + rows + '\n\n#### 🏆 Engineering Verdict:\n* **Highest Carbon Sequestration**: **' + bestCO2.name + '** (**' + bestCO2.c.toLocaleString() + ' kg CO₂/yr**).\n* **Spatial Recommendation**: Prioritize high-canopy spread trees for wide perimeter setbacks; reserve compact low-water varieties for tighter structural envelopes.';
+}
+
+/* 7. Single Species Deep Dive Report */
+function generateSpeciesDetailReport(tr, lang) {
+  var name = getLocalizedTreeName(tr, lang);
+  var sub = getLocalizedTreeSubtitle(tr, lang);
+  var water = getLocalizedField(tr.water, lang);
+  var growth = getLocalizedField(tr.growth, lang);
+  var bldg = getLocalizedDistance(tr.safeBldg, lang);
+  var road = getLocalizedDistance(tr.safeRoad, lang);
+  var carDays = getCarEquivalent(tr.c);
+  var peopleO2 = getPeopleO2(tr.o);
+
+  if (lang === 'hi') {
+    return '### 🌳 **' + name + '** (' + sub + ') — संपूर्ण इंजीनियरिंग प्रोफाइल\n\n* 🏆 **डेटाबेस रैंक:** #' + tr.rank + ' (38 देशी प्रजातियों में से)\n* 🏷️ **श्रेणी:** ' + tr.category.toUpperCase() + '\n\n#### 🌿 1. पारिस्थितिक एवं कार्बन डेटा:\n* 🌿 **वार्षिक CO₂ अवशोषण:** **' + tr.c.toLocaleString() + ' किग्रा/वर्ष** (' + (tr.c/1000).toFixed(2) + ' टन/वर्ष)\n* 🌬️ **वार्षिक O₂ उत्सर्जन:** **' + tr.o.toLocaleString() + ' किग्रा/वर्ष** (' + (tr.o/1000).toFixed(2) + ' टन/वर्ष)\n* 🚗 **कार उत्सर्जन भरपाई:** प्रति वर्ष **' + carDays + ' दिनों** का कार प्रदूषण समाप्त करता है\n* 👥 **मानव ऑक्सीजन आपूर्ति:** प्रति वर्ष **' + peopleO2 + ' व्यक्तियों** के लिए पर्याप्त ऑक्सीजन\n\n#### 📐 2. संरचनात्मक एवं स्थानिक विनिर्देश (Structural Safety):\n* 📏 **परिपक्व ऊंचाई:** **' + tr.height + '**\n* 🌳 **परिपक्व कैनोपी फैलाव:** **' + tr.canopy + '**\n* 🏠 **भवन से न्यूनतम सुरक्षित दूरी:** **' + bldg + '**\n* 🛣️ **सड़क/फुटपाथ से सुरक्षित दूरी:** **' + road + '**\n\n#### 💧 3. वन संवर्धन एवं रोपण दिशानिर्देश:\n* 💧 **जल आवश्यकता:** **' + water + '**\n* 📈 **वृद्धि दर:** **' + growth + '**\n* 🌲 **मियावाकी स्तर:** ' + (tr.c > 300 ? 'कैनोपी परत (Canopy Layer)' : tr.height.includes('20') || tr.height.includes('15') ? 'वृक्ष परत (Tree Layer)' : 'उप-वृक्ष परत (Sub-Tree Layer)');
+  }
+
+  if (lang === 'mr') {
+    return '### 🌳 **' + name + '** (' + sub + ') — संपूर्ण तांत्रिक प्रोफाइल\n\n* 🏆 **डेटाबेस रँक:** #' + tr.rank + ' (38 स्थानिक प्रजातींपैकी)\n* 🏷️ **वर्ग:** ' + tr.category.toUpperCase() + '\n\n#### 🌿 1. पर्यावरणीय व कार्बन आकडेवारी:\n* 🌿 **वार्षिक CO₂ शोषण:** **' + tr.c.toLocaleString() + ' किलो/वर्ष** (' + (tr.c/1000).toFixed(2) + ' टन/वर्ष)\n* 🌬️ **वार्षिक O₂ निर्मिती:** **' + tr.o.toLocaleString() + ' किलो/वर्ष** (' + (tr.o/1000).toFixed(2) + ' टन/वर्ष)\n* 🚗 **कार प्रदूषण भरपाई:** दरवर्षी **' + carDays + ' दिवसांच्या** कार उत्सर्जनाची भरपाई\n* 👥 **मानवी ऑक्सिजन पुरवठा:** दरवर्षी **' + peopleO2 + ' व्यक्तींना** लागणारा संपूर्ण ऑक्सिजन\n\n#### 📐 2. संरचनात्मक व जागेची सुरक्षितता (Safety Distances):\n* 📏 **पूर्ण वाढ झालेली उंची:** **' + tr.height + '**\n* 🌳 **कॅनोपी विस्तार:** **' + tr.canopy + '**\n* 🏠 **इमारतीपासून किमान सुरक्षित अंतर:** **' + bldg + '**\n* 🛣️ **रस्त्यापासून सुरक्षित अंतर:** **' + road + '**\n\n#### 💧 3. वाढ व संगोपन मार्गदर्शक तत्त्वे:\n* 💧 **पाण्याची गरज:** **' + water + '**\n* 📈 **वाढीचा वेग:** **' + growth + '**\n* 🌲 **मियावाकी स्तर:** ' + (tr.c > 300 ? 'कॅनोपी स्तर (Canopy Layer)' : tr.height.includes('20') || tr.height.includes('15') ? 'वृक्ष स्तर (Tree Layer)' : 'उप-वृक्ष स्तर (Sub-Tree Layer)');
+  }
+
+  return '### 🌳 **' + tr.name + '** (*' + tr.hindi + '*) — Engineering Technical Profile\n\n* 🏆 **Database Rank**: #' + tr.rank + ' of 38 native Indian species\n* 🏷️ **Category**: ' + tr.category.toUpperCase() + '\n\n#### 🌿 1. Ecological & Carbon Sequestration Metrics:\n* 🌿 **Annual CO₂ Absorption**: **' + tr.c.toLocaleString() + ' kg/year** (' + (tr.c/1000).toFixed(2) + ' metric tonnes/yr)\n* 🌬️ **Annual O₂ Generation**: **' + tr.o.toLocaleString() + ' kg/year** (' + (tr.o/1000).toFixed(2) + ' metric tonnes/yr)\n* 🚗 **Vehicle Offset**: Neutralizes **' + carDays + ' days** of passenger car driving emissions annually.\n* 👥 **Human Oxygen Provision**: Generates 100% of the annual oxygen demand for **' + peopleO2 + ' people**.\n\n#### 📐 2. Structural Dimensions & Safety Setbacks:\n* 📏 **Mature Height**: **' + tr.height + '**\n* 🌳 **Mature Canopy Spread**: **' + tr.canopy + '**\n* 🏠 **Minimum Safe Building Setback**: **' + bldg + '**\n* 🛣️ **Minimum Safe Road/Pavement Setback**: **' + road + '**\n\n#### 💧 3. Silvicultural & Planting Guidelines:\n* 💧 **Water Demand**: **' + water + '**\n* 📈 **Growth Velocity**: **' + growth + '**\n* 🌲 **Miyawaki Layer**: ' + (tr.c > 300 ? 'Canopy Layer (>15m)' : tr.height.includes('20') || tr.height.includes('15') ? 'Tree Layer (8-15m)' : 'Sub-Tree Layer (4-8m)');
+}
+
+/* 8. Filter / Category Report Generator */
+function generateFilterReport(type, lang) {
+  if (type === 'co2') {
+    var sorted = TREE_DATA.slice().sort(function(a, b) { return b.c - a.c; }).slice(0, 8);
+    var rows = sorted.map(function(t, idx) {
+      return '| #' + (idx + 1) + ' | **' + getLocalizedTreeName(t, lang) + '** | **' + t.c.toLocaleString() + ' kg/yr** | ' + t.o.toLocaleString() + ' kg/yr | ' + getLocalizedField(t.water, lang) + ' | ' + getLocalizedField(t.growth, lang) + ' |';
+    }).join('\n');
+
+    if (lang === 'hi') {
+      return '### 🏆 शीर्ष CO₂ अवशोषक वृक्ष (Top Carbon Absorbing Trees)\n\nडेटाबेस के अनुसार सर्वोच्च कार्बन अवशोषण दर वाले प्रमुख देशी वृक्ष:\n\n| रैंक | प्रजाति | वार्षिक CO₂ अवशोषण | वार्षिक O₂ उत्पादन | जल आवश्यकता | विकास दर |\n| :---: | :--- | :---: | :---: | :---: | :---: |\n' + rows;
+    }
+    if (lang === 'mr') {
+      return '### 🏆 अव्वल CO₂ शोषक झाडे (Top Carbon Absorbing Trees)\n\nडेटाबेसमधील सर्वाधिक कार्बन शोषून घेणारी प्रमुख स्थानिक झाडे:\n\n| रँक | प्रजाती | वार्षिक CO₂ शोषण | वार्षिक O₂ निर्मिती | पाण्याची गरज | वाढीचा वेग |\n| :---: | :--- | :---: | :---: | :---: | :---: |\n' + rows;
+    }
+    return '### 🏆 Top CO₂ Absorbing Trees (Ranked by kg/year)\n\nThe top native Indian species ranked by empirical carbon sequestration rates:\n\n| Rank | Species | CO₂ Absorbed / yr | O₂ Released / yr | Water Demand | Growth Velocity |\n| :---: | :--- | :---: | :---: | :---: | :---: |\n' + rows;
+  }
+
+  if (type === 'water') {
+    var lowWater = TREE_DATA.filter(function(t) { return t.water && t.water.includes('Low'); }).slice(0, 8);
+    var rows = lowWater.map(function(t) {
+      return '| **' + getLocalizedTreeName(t, lang) + '** | #' + t.rank + ' | ' + t.c.toLocaleString() + ' kg/yr | ' + getLocalizedField(t.water, lang) + ' | ' + getLocalizedField(t.growth, lang) + ' | ' + getLocalizedDistance(t.safeBldg, lang) + ' |';
+    }).join('\n');
+
+    if (lang === 'hi') {
+      return '### 🌵 कम पानी वाले वृक्ष (Drought-Tolerant Native Trees)\n\nशुष्क या सूखा-प्रवण क्षेत्रों के लिए सर्वोत्तम कम जल आवश्यकता वाले वृक्ष:\n\n| प्रजाति | डेटाबेस रैंक | वार्षिक CO₂ | जल आवश्यकता | विकास दर | सुरक्षित भवन दूरी |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n' + rows;
+    }
+    if (lang === 'mr') {
+      return '### 🌵 कमी पाणी लागणारी झाडे (Drought-Tolerant Trees)\n\nकमी पाऊस किंवा कोरड्या हवामानासाठी अत्यंत योग्य असणारी देशी झाडे:\n\n| प्रजाती | डेटाबेस रँक | वार्षिक CO₂ | पाण्याची गरज | वाढीचा वेग | सुरक्षित इमारत अंतर |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n' + rows;
+    }
+    return '### 🌵 Low Water Requirement Trees (Drought Resilient Native Species)\n\nOptimal species for arid zones, low-irrigation layouts, and sustainable conservation:\n\n| Species | Rank | Annual CO₂ | Water Demand | Growth Rate | Safe Building Dist. |\n| :--- | :---: | :---: | :---: | :---: | :---: |\n' + rows;
+  }
+
+  if (type === 'growth') {
+    var fast = TREE_DATA.filter(function(t) { return t.growth && (t.growth.includes('Fast') || t.growth.includes('Very Fast')); }).slice(0, 8);
+    var rows = fast.map(function(t) {
+      return '| **' + getLocalizedTreeName(t, lang) + '** | #' + t.rank + ' | ' + getLocalizedField(t.growth, lang) + ' | ' + t.height + ' | ' + t.c.toLocaleString() + ' kg/yr |';
+    }).join('\n');
+
+    if (lang === 'hi') {
+      return '### 🚀 सबसे तेजी से बढ़ने वाले वृक्ष (Fastest Growing Trees)\n\nत्वरित कैनोपी निर्माण और तीव्र हरितीकरण के लिए उत्कृष्ट प्रजातियां:\n\n| प्रजाति | रैंक | विकास दर | परिपक्व ऊंचाई | वार्षिक CO₂ अवशोषण |\n| :--- | :---: | :---: | :---: | :---: |\n' + rows;
+    }
+    if (lang === 'mr') {
+      return '### 🚀 सर्वात वेगाने वाढणारी झाडे (Fastest Growing Trees)\n\nकमी कालावधीत दाट सावली आणि जलद वाढीसाठी सर्वोत्तम प्रजाती:\n\n| प्रजाती | रँक | वाढीचा वेग | पूर्ण उंची | वार्षिक CO₂ शोषण |\n| :--- | :---: | :---: | :---: | :---: |\n' + rows;
+    }
+    return '### 🚀 Fastest Growing Native Trees\n\nOptimal species for rapid canopy closure, windbreak establishment, and fast biomass production:\n\n| Species | Rank | Growth Velocity | Mature Height | Annual CO₂ Absorption |\n| :--- | :---: | :---: | :---: | :---: |\n' + rows;
+  }
+
+  return '';
 }
 
 /* ──────────────────────────────────────────────
+   Master Knowledge Engine Dispatcher
+────────────────────────────────────────────── */
+function queryArborKnowledgeEngine(query, language, contextTree, setContextTree) {
+  var q = (query || '').toLowerCase().trim();
+  var lang = language || 'en';
+
+  // 1. Natural Language Eco Calculator (e.g. "3 mango trees or 5 gooseberry trees", "10 tamarind and 20 neem")
+  var treeQuantities = parseTreeQuantities(q);
+  if (treeQuantities.length > 0) {
+    if (treeQuantities.length === 1 && typeof setContextTree === 'function') {
+      setContextTree(treeQuantities[0].tree);
+    }
+    return generateEcoCalculationReport(treeQuantities, lang);
+  }
+
+  // 2. Multi-Tree Comparison (e.g. "compare neem and peepal", "siris vs tamarind")
+  if (q.includes('compare') || q.includes('vs') || q.includes('versus') || q.includes('difference') || q.includes('तुलना') || q.includes('फरक')) {
+    var matchedTrees = [];
+    for (var i = 0; i < TREE_ALIASES.length; i++) {
+      var entry = TREE_ALIASES[i];
+      for (var j = 0; j < entry.aliases.length; j++) {
+        if (q.includes(entry.aliases[j])) {
+          var t = TREE_DATA.find(function(tr) { return tr.rank === entry.rank; });
+          if (t && !matchedTrees.some(function(m) { return m.rank === t.rank; })) {
+            matchedTrees.push(t);
+          }
+          break;
+        }
+      }
+    }
+    if (matchedTrees.length >= 2) {
+      return generateComparisonReport(matchedTrees, lang);
+    }
+  }
+
+  // 3. Root Mechanics & Foundation Safety (Prompt Chip: "Predict Root Load")
+  if (q.includes('root') || q.includes('foundation') || q.includes('setback') || q.includes('जड़') || q.includes('मूळ') || q.includes('नींव') || q.includes('पाया') || q.includes('load')) {
+    return generateRootMechanicsReport(q, lang, contextTree);
+  }
+
+  // 4. Canopy Projection & Thermal Matrix (Prompt Chip: "Thermal Matrix")
+  if (q.includes('thermal') || q.includes('shade') || q.includes('canopy') || q.includes('heat') || q.includes('temperature') || q.includes('छांव') || q.includes('सावली') || q.includes('तापमान')) {
+    return generateThermalMatrixReport(q, lang, contextTree);
+  }
+
+  // 5. Soil Compatibility & Bio-Engineering (Prompt Chip: "Analyze Soil")
+  if (q.includes('soil') || q.includes('loam') || q.includes('clay') || q.includes('sand') || q.includes('rock') || q.includes('मिट्टी') || q.includes('माती') || q.includes('जमीन')) {
+    return generateSoilReport(q, lang);
+  }
+
+  // 6. Miyawaki Afforestation Methodology & Land Sizing
+  if (q.includes('miyawaki') || q.includes('method') || q.includes('afforest') || q.includes('dense forest') || q.includes('land') || q.includes('sqm') || q.includes('sqft') || q.includes('acre') || q.includes('guntha') || q.includes('मियावाकी') || q.includes('वनीकरण')) {
+    return generateMiyawakiReport(q, lang);
+  }
+
+  // 7. Cost & Timeline
+  if (q.includes('cost') || q.includes('price') || q.includes('time') || q.includes('budget') || q.includes('लागत') || q.includes('खर्च') || q.includes('वेळ')) {
+    if (lang === 'hi') {
+      return '### 💰 मियावाकी वन: लागत एवं समयरेखा विश्लेषण\n\n* 💵 **अनुमानित लागत:** **₹1,200 से ₹1,800 प्रति वर्ग मीटर** (मृदा सुधार, बायोमास, देशी पौधे, सघन मल्चिंग और ड्रिप सिंचाई शामिल)।\n* ⏱️ **विकास समयरेखा:**\n  * **माह 1-12:** दैनिक सिंचाई, सहारा देना, तीव्र upward विकास (1-2 मीटर)।\n  * **माह 13-24:** बहुस्तरीय कैनोपी का आपस में जुड़ना, खरपतवार की रोकथाम।\n  * **माह 25-36:** वन पूर्णतः आत्मनिर्भर एवं रखरखाव-मुक्त बन जाता है!\n  * **वर्ष 10-15:** 15-25 मीटर ऊंचाई का परिपक्व पारिस्थितिकी तंत्र।';
+    }
+    if (lang === 'mr') {
+      return '### 💰 मियावाकी वन: खर्च व कालावधी अंदाज\n\n* 💵 **अंदाजे खर्च:** **₹1,200 ते ₹1,800 प्रति चौरस मीटर** (माती मशागत, सेंद्रिय खते, रोपे, मल्चिंग आणि ठिबक सिंचनासह).\n* ⏱️ **वाढीचा कालावधी:**\n  * **महिने 1-12:** नियमित पाणी, आधार देणे, जलद वाढ (1-2 मीटर).\n  * **महिने 13-24:** झाडांची कॅनोपी एकमेकांत मिसळणे, गवत नष्ट होणे.\n  * **महिने 25-36:** जंगल 100% स्वावलंबी व देखभाल-मुक्त होते!\n  * **वर्ष 10-15:** 15-25 मीटर उंचीचे परिपक्व नैसर्गिक जंगल.';
+    }
+    return '### 💰 Miyawaki Forest: Cost & Timeline Engineering Specs\n\n* 💵 **Estimated Unit Cost**: **₹1,200 to ₹1,800 per m²** (Turnkey: deep trenching, soil conditioners, rice husk/coco peat, indigenous saplings, 20cm mulching, and micro-drip irrigation).\n* ⏱️ **Growth Horizon**:\n  * **Months 1-12**: Initial stabilization, rapid upward phototropic growth (1.5-2.5 meters/yr).\n  * **Months 13-24**: Canopy intertwines, natural leaf litter initiates soil biology; weed suppression is 100% complete.\n  * **Months 25-36**: Forest achieves complete self-sustainability; external watering and manual maintenance cease.\n  * **Years 10-15**: Attains full ecological climax maturity equivalent to a 100-year-old native woodland.';
+  }
+
+  // 8. Filters: CO2, Water, Growth
+  if (q.includes('co2') || q.includes('carbon') || q.includes('absorb') || q.includes('कार्बन') || q.includes('अवशोष')) {
+    return generateFilterReport('co2', lang);
+  }
+  if (q.includes('water') || q.includes('drought') || q.includes('dry') || q.includes('पानी') || q.includes('जल') || q.includes('पाणी')) {
+    return generateFilterReport('water', lang);
+  }
+  if (q.includes('fast') || q.includes('quick') || q.includes('rapid') || q.includes('grow') || q.includes('बढ़ने') || q.includes('वाढ') || q.includes('जलद')) {
+    return generateFilterReport('growth', lang);
+  }
+
+  // 9. Specific Single Species Query
+  var matchedTree = findTreeByAlias(q);
+  if (!matchedTree && contextTree) {
+    if (q.includes('safe') || q.includes('distance') || q.includes('height') || q.includes('canopy') || q.includes('water') || q.includes('दूरी') || q.includes('उंची') || q.includes('अंतर')) {
+      matchedTree = contextTree;
+    }
+  }
+
+  if (matchedTree) {
+    if (typeof setContextTree === 'function') {
+      setContextTree(matchedTree);
+    }
+    return generateSpeciesDetailReport(matchedTree, lang);
+  }
+
+  // 10. Greetings
+  if (/^(hi|hello|hey|namaste|namaskar|good\s*(morning|afternoon|evening)|नमस्ते|नमस्कार|प्रणाम)/i.test(q)) {
+    if (lang === 'hi') return 'साइट पर आपका स्वागत है। मैं आपका वरिष्ठ पर्यावरण एवं आर्बर इंजीनियर हूँ।\n\nमैं आपकी सहायता निम्न में कर सकता हूँ:\n* 📊 **पारिस्थितिक प्रभाव गणना:** "3 आम के पेड़ और 5 आंवला"\n* 📐 **जड़ एवं नींव सुरक्षा:** "नीम के लिए सुरक्षित दूरी"\n* 🌱 **मियावाकी योजना:** "500 वर्ग मीटर में वन कैसे बनाएं"\n* 🌡️ **कैनोपी एवं छाया मैट्रिक्स:** "कैनोपी थर्मल प्रभाव मैट्रिक्स"\n* 🏆 **प्रजाति विवरण:** "पीपल के बारे में बताएं"';
+    if (lang === 'mr') return 'प्रकल्पावर आपले स्वागत आहे. मी आपला वरिष्ठ पर्यावरण अभियंता आहे.\n\nमी खालील बाबींमध्ये मदत करू शकतो:\n* 📊 **पर्यावरण प्रभाव गणना:** "3 आंबा आणि 5 आवळा झाडे"\n* 📐 **पाया व सुरक्षित अंतर:** "कडुनिंबासाठी सुरक्षित अंतर"\n* 🌱 **मियावाकी नियोजन:** "500 चौ.मी. मध्ये जंगल कसे तयार करावे"\n* 🌡️ **कॅनोपी व सावली मॅट्रिक्स:** "थर्मल प्रभाव मॅट्रिक्स"\n* 🏆 **झाडांची माहिती:** "पिंपळाबद्दल माहिती सांगा"';
+    return 'Welcome on-site. I am your Senior Arbor & Environmental Safety Engineer.\n\nHere are some analytical queries I can run for you:\n* 📊 **Eco Sequestration Calculation**: *"3 mango trees or 5 gooseberry trees"*\n* 📐 **Subterranean Setback Analysis**: *"Predict root spread load for Neem"*\n* 🌱 **Miyawaki Land Planning**: *"How to plan a forest for 500 sq meters?"*\n* 🌡️ **Thermal Canopy Modeling**: *"Generate thermal impact matrix"*\n* 🏆 **Species Deep Dive**: *"Tell me about Indian Siris"*';
+  }
+
+  // 11. Thanks
+  if (/\b(thanks|thank\s*you|thx|dhanyavaad|shukriya|धन्यवाद|आभार|खूप छान)\b/i.test(q)) {
+    if (lang === 'hi') return 'स्वागत है। प्रत्येक देशी प्रजाति का समावेश स्थल की दीर्घकालिक स्थिरता को मजबूत करता है। आपके अगले प्रश्न की प्रतीक्षा में हूँ।';
+    if (lang === 'mr') return 'धन्यवाद. प्रत्येक स्थानिक प्रजातीचा समावेश प्रकल्पाची दीर्घकालीन स्थिरता मजबूत करतो. आपल्या पुढील प्रश्नासाठी सज्ज आहे.';
+    return "Acknowledged. Every native species integration strengthens the site's long-term ecological balance and structural stability. Standing by for your next query.";
+  }
+
+  // 12. Default Comprehensive Guide
+  if (lang === 'hi') {
+    return 'मैं आपकी सहायता के लिए तैयार हूँ! आप मुझसे सीधे पूछ सकते हैं:\n\n* **सटीक प्रभाव गणना:** "10 इमली और 5 नीम के पेड़ का प्रभाव बताएं"\n* **मियावाकी वनीकरण:** "मियावाकी पद्धति क्या है?" या "200 वर्ग मीटर के लिए योजना"\n* **संरचनात्मक सुरक्षा:** "भवन से सुरक्षित दूरी" या "जड़ फैलाव लोड"\n* **शीर्ष प्रजातियां:** "सबसे अधिक CO₂ कौन सा पेड़ सोखता है?" या "कम पानी वाले पेड़"\n* **प्रजाति विवरण:** "जामुन के पेड़ के बारे में बताएं"';
+  }
+  if (lang === 'mr') {
+    return 'मी आपल्या मदतीसाठी सज्ज आहे! आपण खालीलपैकी काहीही विचारू शकता:\n\n* **थेट प्रभाव गणना:** "10 चिंच आणि 5 कडुनिंब झाडांचे ऑक्सिजन व कार्बन"\n* **मियावाकी पद्धत:** "मियावाकी पद्धत काय आहे?" किंवा "200 चौ.मी. साठी नियोजन"\n* **पाया सुरक्षा अंतर:** "इमारतीपासून सुरक्षित अंतर"\n* **अव्वल झाडे:** "सर्वात जास्त CO₂ शोषून घेणारी झाडे" किंवा "कमी पाणी लागणारी झाडे"\n* **झाडांची माहिती:** "जांभळाच्या झाडाबद्दल सांगा"';
+  }
+  return "I'm ready to run on-site environmental engineering analytics! You can ask about:\n\n* **Quantitative Impact**: *\"How much oxygen for 3 mango and 5 gooseberry trees?\"*\n* **Miyawaki Planning**: *\"What is the Miyawaki Method?\"* or *\"Plan for 500 sq meters\"*\n* **Structural Safety**: *\"Predict root load\"* or *\"Safe distance from building\"*" +
+    "\n* **Species Deep Dive**: *\"Tell me about Sacred Fig / Peepal\"*\n* **Rankings**: *\"Top CO2 trees\"* or *\"Low water trees\"*" ;
+}
+
+
+/* ──────────────────────────────────────────────
    AI Workspace — Arbor Engineer Pro Full Console
-   Powered by Gemini 2.5 Flash via /api/chat with Search Grounding
+   100% Client-Side Autonomous Engineering Engine
 ────────────────────────────────────────────── */
 function AIWorkspace() {
   var context = React.useContext(LanguageContext);
@@ -4919,85 +5368,8 @@ function AIWorkspace() {
     }
   }, []);
 
-  /* ── Local Multilingual Keyword Fallback Generator (for offline / network failure) ── */
-  function generateResponse(query) {
-    var q = query.toLowerCase().trim();
-    var currentContext = contextTree;
-    var mentionedTrees = TREE_DATA.filter(function(tr) {
-      var nameMatch = q.includes(tr.name.toLowerCase());
-      var hiName = (tr.hindi || '').split('(')[0].trim().toLowerCase();
-      var mrName = (tr.marathi || '').split('(')[0].trim().toLowerCase();
-      var hiMatch = hiName.length > 2 && q.includes(hiName);
-      var mrMatch = mrName.length > 2 && q.includes(mrName);
-      return nameMatch || hiMatch || mrMatch;
-    });
-
-    if (mentionedTrees.length === 1) { currentContext = mentionedTrees[0]; setContextTree(currentContext); }
-
-    // Multilingual responses
-    if (/^(hi|hello|hey|namaste|namaskar|good\s*(morning|afternoon|evening)|नमस्ते|नमस्कार|प्रणाम)/i.test(q)) {
-      if (language === 'hi') return 'साइट पर आपका स्वागत है। मैं आपका वरिष्ठ पर्यावरण इंजीनियर हूँ। मैं जड़-भार वितरण, मिट्टी अनुकूलता मैट्रिक्स या कैनोपी थर्मल गुणांक पर संरचनात्मक विश्लेषण कर सकता हूँ।\n\nकुछ शुरुआती प्रश्न:\n* "नीम के लिए जड़ फैलाव भार का अनुमान लगाएं"\n* "मिट्टी की अनुकूलता का विश्लेषण करें"\n* "थर्मल प्रभाव मैट्रिक्स तैयार करें"';
-      if (language === 'mr') return 'प्रकल्पावर आपले स्वागत आहे. मी आपला वरिष्ठ पर्यावरण अभियंता आहे. मी मूळ-भार वितरण, माती सुसंगतता मॅट्रिक्स किंवा कॅनोपी थर्मल गुणांकांवर संरचनात्मक विश्लेषण करू शकतो.\n\nकाही मार्गदर्शक प्रश्न:\n* "कडुनिंबासाठी मूळ भार अंदाज काढा"\n* "माती सुसंगतता विश्लेषण करा"\n* "थर्मल प्रभाव मॅट्रिक्स तयार करा"';
-      return 'Good to have you on-site. I can run structural analysis on root-load distributions, soil compatibility matrices, or canopy thermal coefficients.\n\nSome starting points:\n* "Predict root spread load for Neem"\n* "Analyze soil compatibility"\n* "Generate a thermal impact matrix"';
-    }
-
-    if (/\b(thanks|thank\s*you|thx|dhanyavaad|shukriya|धन्यवाद|आभार|खूप छान)\b/i.test(q)) {
-      if (language === 'hi') return 'स्वागत है। प्रत्येक देशी प्रजाति का समावेश स्थल की दीर्घकालिक स्थिरता को मजबूत करता है। आपके अगले प्रश्न की प्रतीक्षा में हूँ।';
-      if (language === 'mr') return 'धन्यवाद. प्रत्येक स्थानिक प्रजातीचा समावेश प्रकल्पाची दीर्घकालीन स्थिरता मजबूत करतो. आपल्या पुढील प्रश्नासाठी सज्ज आहे.';
-      return "Acknowledged. Every species integration strengthens the site's long-term load profile. Standing by for your next query.";
-    }
-
-    if (/\b(fast|fastest|quick|rapid|तेज|जलद|वेगाने)\b/i.test(q) && /\b(grow|growth|बढ़ने|वाढ)\b/i.test(q)) {
-      var fastTrees = TREE_DATA.filter(function(tr) { return tr.growth && (tr.growth.includes('Fast') || tr.growth.includes('Very Fast')); });
-      if (language === 'hi') return '🚀 **सबसे तेजी से बढ़ने वाले वृक्ष:**\n\n' + fastTrees.slice(0, 5).map(function(tr) { return '* **' + getLocalizedTreeName(tr, 'hi') + '** (' + getLocalizedGrowth(tr.growth, 'hi') + ')'; }).join('\n') + '\n\nये त्वरित कैनोपी निर्माण के लिए उत्कृष्ट हैं!';
-      if (language === 'mr') return '🚀 **सर्वात वेगाने वाढणारी झाडे:**\n\n' + fastTrees.slice(0, 5).map(function(tr) { return '* **' + getLocalizedTreeName(tr, 'mr') + '** (' + getLocalizedGrowth(tr.growth, 'mr') + ')'; }).join('\n') + '\n\nहे झाडे जलद कॅनोपी विस्तारासाठी अत्यंत योग्य आहेत!';
-      return '🚀 **Fastest Growing Trees:**\n\n' + fastTrees.slice(0, 5).map(function(tr) { return '* **' + tr.name + '** (' + tr.growth + ')'; }).join('\n') + '\n\nThese are excellent for rapid canopy establishment!';
-    }
-
-    if (/\b(water|irrigation|पानी|जल)\b/i.test(q) && /\b(low|less|little|dry|कम|कमी)\b/i.test(q)) {
-      var lowWater = TREE_DATA.filter(function(tr) { return tr.water && tr.water.includes('Low'); });
-      if (language === 'hi') return '🌵 **कम पानी की आवश्यकता वाले वृक्ष:**\n\n' + lowWater.slice(0, 5).map(function(tr) { return '* **' + getLocalizedTreeName(tr, 'hi') + '**'; }).join('\n') + '\n\nशुष्क या सूखा प्रवण क्षेत्रों के लिए उत्तम विकल्प।';
-      if (language === 'mr') return '🌵 **कमी पाणी लागणारी झाडे:**\n\n' + lowWater.slice(0, 5).map(function(tr) { return '* **' + getLocalizedTreeName(tr, 'mr') + '**'; }).join('\n') + '\n\nकोरड्या किंवा दुष्काळग्रस्त भागासाठी उत्तम पर्याय.';
-      return '🌵 **Low Water Requirement Trees:**\n\n' + lowWater.slice(0, 5).map(function(tr) { return '* **' + tr.name + '**'; }).join('\n') + '\n\nGreat for dry or drought-prone areas.';
-    }
-
-    if (/\b(most|best|highest|top|maximum|greatest|शीर्ष|सर्वोच्च|अव्वल)\b/i.test(q) && /co2|carbon|कार्बन|अवशोष/i.test(q)) {
-      var sorted = TREE_DATA.slice().sort(function(a, b) { return b.c - a.c; });
-      if (language === 'hi') return '🏆 **शीर्ष CO₂ अवशोषक वृक्ष (किग्रा/वर्ष):**\n\n' + sorted.slice(0, 5).map(function(tr) { return '* **' + getLocalizedTreeName(tr, 'hi') + '** — ' + tr.c.toLocaleString() + ' किग्रा/वर्ष'; }).join('\n');
-      if (language === 'mr') return '🏆 **अव्वल CO₂ शोषक झाडे (किलो/वर्ष):**\n\n' + sorted.slice(0, 5).map(function(tr) { return '* **' + getLocalizedTreeName(tr, 'mr') + '** — ' + tr.c.toLocaleString() + ' किलो/वर्ष'; }).join('\n');
-      return '🏆 **Top CO₂ Absorbers (kg/year):**\n\n' + sorted.slice(0, 5).map(function(tr) { return '* **' + tr.name + '** — ' + tr.c.toLocaleString() + ' kg/yr'; }).join('\n');
-    }
-
-    if (/\b(miyawaki|afforestation|मियावाकी|वनीकरण)\b/i.test(q)) {
-      if (language === 'hi') return '🌱 **मियावाकी पद्धति (Miyawaki Method)** एक उन्नत वनीकरण तकनीक है जो देशी प्रजातियों से घने, बहुस्तरीय वन बनाती है।\n\n**प्रमुख सिद्धांत:**\n* **30 गुना अधिक घना**, **10 गुना तेजी से विकास**\n* 3 साल बाद **रखरखाव-मुक्त**\n* **4 स्तरों** का उपयोग (झाड़ियां, उप-वृक्ष, वृक्ष, कैनोपी)\n* प्रति वर्ग मीटर **3-5 पौधे**';
-      if (language === 'mr') return '🌱 **मियावाकी पद्धत (Miyawaki Method)** हे एक प्रगत वनीकरण तंत्रज्ञान आहे जे स्थानिक प्रजातींचा वापर करून दाट, बहुस्तरीय जंगले निर्माण करते.\n\n**मूलभूत तत्त्वे:**\n* **30 पट अधिक दाट**, **10 पट जलद वाढ**\n* 3 वर्षांनंतर **देखभाल-मुक्त**\n* **4 स्तरांचा** वापर (झुडपे, उप-वृक्ष, झाडे, कॅनोपी)\n* प्रति चौरस मीटर **3-5 रोपे**';
-      return '🌱 **The Miyawaki Method** is an advanced afforestation technique that uses native species to create dense, multilayered forests.\n\n**Core Principles:**\n* **30x denser**, grows **10x faster**\n* **Maintenance-free** after 3 years\n* Uses **4 layers** (shrubs, sub-trees, trees, canopy)\n* Requires **3-5 saplings per square meter**';
-    }
-
-    if (mentionedTrees.length === 1) {
-      var tr = mentionedTrees[0];
-      var trName = getLocalizedTreeName(tr, language);
-      var trSub = getLocalizedTreeSubtitle(tr, language);
-      if (language === 'hi') {
-        return '🌳 **' + trName + '** (' + trSub + ')\n\n* 🌿 **CO₂ अवशोषण:** ' + tr.c.toLocaleString() + ' किग्रा/वर्ष\n* 🌬️ **O₂ उत्सर्जन:** ' + tr.o.toLocaleString() + ' किग्रा/वर्ष\n* 💧 **जल आवश्यकता:** ' + getLocalizedWater(tr.water, 'hi') + '\n* 📈 **वृद्धि दर:** ' + getLocalizedGrowth(tr.growth, 'hi') + '\n* 🛡️ **सुरक्षित दूरी:** भवन से ' + getLocalizedDistance(tr.safeBldg, 'hi') + ', सड़क से ' + getLocalizedDistance(tr.safeRoad, 'hi') + '\n* 🚗 प्रति वर्ष कार उत्सर्जन की भरपाई: ' + getCarEquivalent(tr.c) + ' दिन\n* 👥 प्रति वर्ष ऑक्सीजन आपूर्ति: ' + getPeopleO2(tr.o) + ' व्यक्ति';
-      }
-      if (language === 'mr') {
-        return '🌳 **' + trName + '** (' + trSub + ')\n\n* 🌿 **CO₂ शोषण:** ' + tr.c.toLocaleString() + ' किलो/वर्ष\n* 🌬️ **O₂ निर्मिती:** ' + tr.o.toLocaleString() + ' किलो/वर्ष\n* 💧 **पाण्याची गरज:** ' + getLocalizedWater(tr.water, 'mr') + '\n* 📈 **वाढीचा वेग:** ' + getLocalizedGrowth(tr.growth, 'mr') + '\n* 🛡️ **सुरक्षित अंतर:** इमारतीपासून ' + getLocalizedDistance(tr.safeBldg, 'mr') + ', रस्त्यापासून ' + getLocalizedDistance(tr.safeRoad, 'mr') + '\n* 🚗 प्रति वर्ष कार उत्सर्जनाची भरपाई: ' + getCarEquivalent(tr.c) + ' दिवस\n* 👥 प्रति वर्ष ऑक्सिजन पुरवठा: ' + getPeopleO2(tr.o) + ' व्यक्ती';
-      }
-      return '🌳 **' + tr.name + '** (' + tr.hindi + ')\n\n* 🌿 **CO₂ Absorbed:** ' + tr.c.toLocaleString() + ' kg/year\n* 🌬️ **O₂ Released:** ' + tr.o.toLocaleString() + ' kg/year\n* 💧 **Water:** ' + tr.water + '\n* 📈 **Growth:** ' + tr.growth + '\n* 📏 **Safe Distance:** Building ' + tr.safeBldg + ', Road ' + tr.safeRoad + '\n* 🚗 Offsets ' + getCarEquivalent(tr.c) + ' days of car driving/year\n* 👥 Provides O₂ for ' + getPeopleO2(tr.o) + ' people/year';
-    }
-
-    if (language === 'hi') {
-      return 'मैं आपकी सहायता के लिए यहाँ हूँ! 🤔 आप मुझसे पूछ सकते हैं:\n* **वृक्ष प्रजाति डेटा** (उदा. "नीम के बारे में बताएं")\n* **गुणधर्म** (उदा. "कम पानी वाले पेड़ कौन से हैं?")\n* **मियावाकी पद्धति** (उदा. "मियावाकी पद्धति क्या है?")\n* **सर्वोच्च अवशोषक** (उदा. "सबसे अधिक CO₂ कौन सा पेड़ सोखता है?")';
-    }
-    if (language === 'mr') {
-      return 'मी आपल्या मदतीसाठी येथे आहे! 🤔 आपण मला विचारू शकता:\n* **झाडांची माहिती** (उदा. "कडुनिंबाबद्दल सांगा")\n* **गुणधर्म** (उदा. "कमी पाणी लागणारी झाडे कोणती?")\n* **मियावाकी पद्धत** (उदा. "मियावाकी पद्धत काय आहे?")\n* **अव्वल शोषक** (उदा. "सर्वात जास्त CO₂ कोणते झाड शोषून घेते?")';
-    }
-    return "I'm ready to assist with site analysis! 🤔 You can ask about:\n* **Tree species data** (e.g., \"Tell me about Neem\")\n* **Properties** (e.g., \"Which trees need low water?\")\n* **Miyawaki Method**\n* **Carbon absorption** (e.g., \"Which tree absorbs the most CO₂?\")";
-  }
-
-  /* ── Multi-turn live LLM chat via /api/chat with Search Grounding ── */
-  async function handleSend(forcedQuery) {
+  /* ── Client-Side Send Handler using Autonomous Knowledge Engine ── */
+  function handleSend(forcedQuery) {
     var userMsg = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
     if (!userMsg || isTyping) return;
     if (typeof forcedQuery !== 'string') setInput('');
@@ -5006,51 +5378,32 @@ function AIWorkspace() {
     setMessages(nextMessages);
     setIsTyping(true);
 
-    try {
-      var siteContext = getCleanSiteContext(language);
-
-      var res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: nextMessages,
-          language: language,
-          siteContext: siteContext
-        })
-      });
-
-      if (!res.ok) {
-        var errBody = null;
-        try { errBody = await res.json(); } catch(e) {}
-        throw new Error((errBody && (errBody.error || errBody.details)) || ('HTTP ' + res.status));
+    // Realistic micro-delay for smooth rendering transition
+    setTimeout(function() {
+      try {
+        var reply = queryArborKnowledgeEngine(userMsg, language, contextTree, setContextTree);
+        setMessages(function(prev) {
+          return prev.concat([{
+            role: 'assistant',
+            content: reply
+          }]);
+        });
+      } catch (err) {
+        console.error('Engine error:', err);
+        setMessages(function(prev) {
+          return prev.concat([{
+            role: 'assistant',
+            content: language === 'hi'
+              ? 'विश्लेषण में त्रुटि हुई। कृपया पुनः प्रयास करें।'
+              : language === 'mr'
+              ? 'विश्लेषण करताना त्रुटी आली. कृपया पुन्हा प्रयत्न करा.'
+              : 'Error calculating environmental analytics. Please try again.'
+          }]);
+        });
+      } finally {
+        setIsTyping(false);
       }
-
-      var data = await res.json();
-      if (!data || !data.reply) {
-        throw new Error((data && data.error) || 'No reply received from serverless engine.');
-      }
-
-      setMessages(function(prev) {
-        return prev.concat([{
-          role: 'assistant',
-          content: data.reply,
-          sources: Array.isArray(data.sources) ? data.sources : []
-        }]);
-      });
-
-    } catch (err) {
-      console.warn('/api/chat request failed or offline, engaging local engineer fallback:', err);
-      var fallbackReply = generateResponse(userMsg);
-      setMessages(function(prev) {
-        return prev.concat([{
-          role: 'assistant',
-          content: fallbackReply,
-          isOfflineFallback: true
-        }]);
-      });
-    } finally {
-      setIsTyping(false);
-    }
+    }, 250);
   }
 
   function handleKeyDown(e) {
@@ -5076,13 +5429,7 @@ function AIWorkspace() {
       '---\n\n' +
       messages.map(function(m) {
         var speaker = m.role === 'user' ? '👤 ' + (language === 'hi' ? 'साइट योजनाकार' : language === 'mr' ? 'प्रकल्प नियोजक' : 'Site Planner') : '🌱 ' + t.assistant.title + ' ' + t.assistant.pro;
-        var text = '### ' + speaker + '\n\n' + (m.content || '');
-        if (m.sources && m.sources.length > 0) {
-          text += '\n\n**Web Grounding Sources:**\n' + m.sources.map(function(s) {
-            return '- [' + (s.title || s.url) + '](' + s.url + ')';
-          }).join('\n');
-        }
-        return text;
+        return '### ' + speaker + '\n\n' + (m.content || '');
       }).join('\n\n---\n\n');
 
     var blob = new Blob([report], { type: 'text/markdown;charset=utf-8' });
@@ -5095,7 +5442,7 @@ function AIWorkspace() {
 
   /* ── Render ── */
   return React.createElement("div", {
-    className: "h-[calc(100dvh-5rem)] flex flex-col glass-card rounded-2xl md:rounded-3xl overflow-hidden mx-2 md:mx-6 lg:mx-8 shadow-2xl shadow-black/30"
+    className: "h-[calc(100dvh-10.5rem)] md:h-[calc(100dvh-6rem)] flex flex-col glass-card rounded-2xl md:rounded-3xl overflow-hidden mx-2 md:mx-6 lg:mx-8 shadow-2xl shadow-black/30"
   },
     /* Header */
     React.createElement("div", {
@@ -5150,42 +5497,9 @@ function AIWorkspace() {
                   style: { whiteSpace: 'pre-line' }
                 }, msgBody)
               : React.createElement("div", {
-                  className: "rounded-[20px] px-5 sm:px-6 py-3.5 sm:py-4 text-sm sm:text-base leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400 prose-table:my-2 prose-th:px-3 prose-th:py-1.5 prose-td:px-3 prose-td:py-1.5 prose-th:bg-forest-900/80 prose-td:border-white/10"
-                },
-                  React.createElement("div", {
-                    dangerouslySetInnerHTML: { __html: window.marked ? marked.parse(msgBody) : msgBody }
-                  }),
-                  /* Render Google Search Grounding Sources Chips if present */
-                  (msg.sources && msg.sources.length > 0) && React.createElement("div", {
-                    className: "mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-1.5 text-xs text-cream-100/70"
-                  },
-                    React.createElement("span", {
-                      className: "text-[11px] font-semibold text-earth-400 flex items-center gap-1 mr-1"
-                    },
-                      React.createElement(LucideIcon, { name: "search", size: 12 }),
-                      (language === 'hi' ? 'वेब संदर्भ:' : language === 'mr' ? 'वेब संदर्भ:' : 'Web Sources:')
-                    ),
-                    msg.sources.map(function(src, sIdx) {
-                      return React.createElement("a", {
-                        key: sIdx,
-                        href: src.url,
-                        target: "_blank",
-                        rel: "noopener noreferrer",
-                        className: "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-forest-900/70 hover:bg-forest-950 text-[11px] text-earth-300 hover:text-earth-200 border border-earth-400/25 hover:border-earth-400/50 transition-all max-w-[240px] truncate shadow-sm",
-                        title: src.title || src.url
-                      },
-                        React.createElement("span", { className: "truncate" }, src.title || src.url),
-                        React.createElement(LucideIcon, { name: "arrow-up", size: 10, className: "rotate-45 opacity-70 flex-shrink-0" })
-                      );
-                    })
-                  ),
-                  msg.isOfflineFallback && React.createElement("div", {
-                    className: "mt-2 pt-2 border-t border-white/5 text-[10px] text-cream-100/40 italic flex items-center gap-1"
-                  },
-                    React.createElement(LucideIcon, { name: "info", size: 10 }),
-                    (language === 'hi' ? 'ऑफ़लाइन मोड — स्थानीय डेटाबेस से उत्तर दिया गया' : language === 'mr' ? 'ऑफलाइन मोड — स्थानिक डेटाबेसवरून उत्तर दिले' : 'Offline mode — answered using local engineering database')
-                  )
-                )
+                  className: "rounded-[20px] px-5 sm:px-6 py-3.5 sm:py-4 text-sm sm:text-base leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400 prose-table:my-2 prose-th:px-3 prose-th:py-1.5 prose-td:px-3 prose-td:py-1.5 prose-th:bg-forest-900/80 prose-td:border-white/10",
+                  dangerouslySetInnerHTML: { __html: window.marked ? marked.parse(msgBody) : msgBody }
+                })
           )
         );
       }),
@@ -5201,7 +5515,7 @@ function AIWorkspace() {
               React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 animate-bounce", style: { animationDelay: "300ms" } })
             ),
             React.createElement("span", { className: "text-xs text-cream-100/70 font-medium" },
-              language === 'hi' ? 'विश्लेषण और लाइव डेटा खोज जारी है...' : language === 'mr' ? 'विश्लेषण आणि थेट डेटा शोध सुरू आहे...' : 'Analyzing engineering parameters & grounding live data...'
+              language === 'hi' ? 'पर्यावरण विश्लेषण तैयार हो रहा है...' : language === 'mr' ? 'पर्यावरण विश्लेषण तयार होत आहे...' : 'Synthesizing native forestry data...'
             )
           )
         )
@@ -5268,6 +5582,7 @@ function AIWorkspace() {
     )
   );
 }
+
 
 function About() {
   var context = React.useContext(LanguageContext);
@@ -5461,7 +5776,7 @@ function App() {
       /* Assistant / Arbor Engineer Pro Tab */
       React.createElement("div", {
         style: { display: activeTab === 'assistant' ? 'block' : 'none' },
-        className: "pb-24 md:pb-8 tab-fade-in"
+        className: "pb-4 md:pb-8 tab-fade-in"
       },
         React.createElement(AIWorkspace, null)
       ),

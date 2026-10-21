@@ -688,6 +688,36 @@ html, body {
   overflow-x: hidden;
 }
 
+/* Eliminate mobile scroll repaint penalty for fixed background */
+@media (max-width: 768px) {
+  body {
+    background-attachment: scroll !important;
+  }
+}
+
+/* Hardware acceleration for ultra-smooth 60/120fps scrolling */
+.glass-card, .spec-card, .tree-card-item {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Modern offscreen rendering optimization for catalog cards */
+.tree-card-item {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 420px;
+}
+
+/* Momentum smooth scrolling on iOS and Android */
+.chat-messages, .hide-scrollbar, .overflow-y-auto {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Tap highlight prevention */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 @media (max-width: 640px) {
   /* Prevent any horizontal overflow on small mobile screens */
   .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl, .max-w-2xl, .max-w-xl {

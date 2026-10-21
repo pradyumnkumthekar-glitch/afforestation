@@ -2523,7 +2523,7 @@ function GreenAssistant() {
     }
   }, [isOpen]);
 
-  // Direct Client-Side Gemini API Submission Handler
+  // Backend submission handler using native fetch to /api/chat
   async function handleSend(forcedQuery) {
     const userMessage = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
     if (!userMessage || isTyping) return;
@@ -2532,131 +2532,45 @@ function GreenAssistant() {
     }
 
     const lang = currentLang || "en";
-
-    setMessages((prev) => [...prev, { role: "user", content: userMessage, text: userMessage, sender: "user" }]);
+    const nextMessages = messages.concat([{ role: "user", content: userMessage }]);
+    setMessages(nextMessages);
     setIsTyping(true);
 
     try {
-      // Direct Google Gemini API Call
-      const API_KEY = "AQ.Ab8RN6Ksdw3MQ75vhsbMFxbmP8WLFMsPGf9uT3n9hycfu-6_cw"; 
-      
-      // Multi-model cascade: gemini-3.5-flash, gemini-3.5-flash-lite, gemini-2.5-flash
-      const candidateModels = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-2.5-flash"];
-      let data = null;
-      let lastErrorMessage = "";
+      const siteContext = typeof getCleanSiteContext === 'function' ? getCleanSiteContext(lang) : {};
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: nextMessages,
+          language: lang,
+          siteContext: siteContext
+        })
+      });
 
-      const systemPrompt = `You are the official Ecological Assistant for the Afforestation Platform.
-
-PRIMARY OPERATING RULES:
-1. SPECIFIC WEBSITE DATABASE QUESTIONS (Priority 1):
-For questions about top CO2 absorbing trees, top oxygen trees, tree rankings, specific trees in the database (Neem, Tamarind, Siris, Peepal, Subabul, Gulmohar, Bamboo, Amla, etc.), low water trees, growth rates, tree comparisons, or Miyawaki method, you MUST answer using the exact figures and rankings from the Afforestation Website Database below.
-Always prefix your response with:
-🌱 **From Afforestation Website Database:** (or in Hindi: 🌱 **अफॉरेस्टेशन वेबसाइट डेटाबेस से:** / in Marathi: 🌱 **अफॉरेस्टेशन वेबसाइट डेटाबेसमधून:**)
-
-AFFORESTATION WEBSITE DATABASE (38 SPECIES RANKED BY CO2 ABSORPTION):
-#1. Indian siris tree (Albizia lebbeck | Hindi: Siris | Marathi: Shirish) - CO2: 1029.56 kg/yr, O2: 2744.81 kg/yr, Water: Medium, Growth: Fast, Height: 15-25m, Canopy: 12-18m
-#2. Tamarind (Tamarindus indica | Hindi: Imli | Marathi: Chinch) - CO2: 808.79 kg/yr, O2: 2156.23 kg/yr, Water: Low, Growth: Slow, Height: 12-20m, Canopy: 10-15m
-#3. May flower tree / Gulmohar (Delonix regia) - CO2: 385.26 kg/yr, O2: 1027.11 kg/yr, Water: Medium, Growth: Fast, Height: 10-15m, Canopy: 8-12m
-#4. Yellow flame tree (Peltophorum pterocarpum | Hindi: Peela Gulmohar | Marathi: Sonmohar) - CO2: 377.16 kg/yr, O2: 1005.52 kg/yr, Water: Medium, Growth: Fast
-#5. Sacred fig (Ficus religiosa | Hindi: Peepal | Marathi: Pimpal) - CO2: 339.82 kg/yr, O2: 905.96 kg/yr, Water: Medium, Growth: Medium, Height: 15-25m, Canopy: 15-20m
-#6. River tamarind (Leucaena leucocephala | Hindi: Subabul | Marathi: Subabhul) - CO2: 313.76 kg/yr, O2: 836.47 kg/yr, Water: Low, Growth: Very Fast
-#7. Kanak Champa (Pterospermum acerifolium | Marathi: Muchkund) - CO2: 310.08 kg/yr, O2: 826.67 kg/yr, Water: Medium, Growth: Medium
-#8. Neem (Azadirachta indica | Hindi: Neem | Marathi: Kadulimb) - CO2: 301.67 kg/yr, O2: 804.25 kg/yr, Water: Low, Growth: Medium-Fast, Height: 12-18m, Canopy: 8-12m
-#9. Indian cork tree (Millingtonia hortensis | Hindi: Neem Chameli | Marathi: Buch) - CO2: 211.29 kg/yr, O2: 563.29 kg/yr, Water: Medium, Growth: Fast
-#10. Gooseberry (Phyllanthus emblica | Hindi: Amla | Marathi: Amla) - CO2: 206.10 kg/yr, O2: 549.46 kg/yr, Water: Low, Growth: Medium
-#11. Earleaf acacia (Pahari Babul) - CO2: 204.44 kg/yr, O2: 545.04 kg/yr, Water: Low, Growth: Fast
-#12. Cluster fig (Gular / Umber) - CO2: 195.29 kg/yr, O2: 520.66 kg/yr, Water: Medium, Growth: Fast
-#13. Jamun tree (Syzygium cumini | Hindi: Jamun | Marathi: Jambhul) - CO2: 190.59 kg/yr, O2: 508.12 kg/yr, Water: Medium, Growth: Medium
-#14. Golden shower (Cassia fistula | Hindi: Amaltas | Marathi: Bahawa) - CO2: 188.51 kg/yr, O2: 502.56 kg/yr, Water: Low-Medium, Growth: Medium
-#15. Weeping fig (Ficus benjamina | Hindi: Chilkan | Marathi: Nandruk) - CO2: 178.05 kg/yr, O2: 474.69 kg/yr, Water: Medium, Growth: Fast
-#16. Teak (Tectona grandis | Hindi: Sagwan | Marathi: Sagwan) - CO2: 149.42 kg/yr, O2: 398.36 kg/yr, Water: Medium, Growth: Fast
-#17. Pungam tree (Pongamia pinnata | Hindi: Karanj | Marathi: Karanj) - CO2: 140.59 kg/yr, O2: 374.81 kg/yr, Water: Low, Growth: Fast
-#18. Spanish Cherry (Mimusops elengi | Hindi: Maulsari | Marathi: Bakul) - CO2: 125.43 kg/yr, O2: 334.38 kg/yr, Water: Medium, Growth: Slow
-#19. Paradise tree (Simarouba glauca | Lakshmi Taru) - CO2: 119.71 kg/yr, O2: 319.15 kg/yr, Water: Low, Growth: Fast
-#20. Wild almond tree (Sterculia foetida | Jangli Badam) - CO2: 116.82 kg/yr, O2: 311.44 kg/yr, Water: Medium, Growth: Fast
-#21. Wood apple (Limonia acidissima | Hindi: Kaitha | Marathi: Kavath) - CO2: 106.71 kg/yr, O2: 284.49 kg/yr, Water: Low, Growth: Slow
-#22. Mulberry tree (Morus | Hindi: Shahtoot | Marathi: Tuti) - CO2: 94.15 kg/yr, O2: 251.00 kg/yr, Water: Medium, Growth: Fast
-#23. Guava tree (Psidium guajava | Hindi: Amrud | Marathi: Peru) - CO2: 85.34 kg/yr, O2: 227.53 kg/yr, Water: Medium, Growth: Medium
-#24. Casuarina (Casuarina equisetifolia | Hindi: Jhau | Marathi: Suru) - CO2: 80.53 kg/yr, O2: 214.70 kg/yr, Water: Low, Growth: Fast
-#25. Bibhitaki tree (Terminalia bellirica | Hindi: Baheda | Marathi: Behada) - CO2: 76.60 kg/yr, O2: 204.21 kg/yr, Water: Medium, Growth: Medium
-#26. Purple bauhinia (Bauhinia purpurea | Hindi: Kachnar | Marathi: Rakta Kanchan) - CO2: 70.08 kg/yr, O2: 186.83 kg/yr, Water: Medium, Growth: Fast
-#27. Butter tree (Madhuca longifolia | Hindi: Mahua | Marathi: Moh) - CO2: 69.43 kg/yr, O2: 185.11 kg/yr, Water: Low-Medium, Growth: Slow-Medium
-#28. Indian mulberry (Morinda citrifolia | Hindi: Aal | Marathi: Noni) - CO2: 68.81 kg/yr, O2: 183.44 kg/yr, Water: High, Growth: Medium
-#29. Geranium tree (Cordia sebestena | Hindi: Lal Lasora | Marathi: Kanchan) - CO2: 57.53 kg/yr, O2: 153.38 kg/yr, Water: Low, Growth: Medium
-#30. Yellow bells (Tecoma stans | Hindi: Pili Chameli | Marathi: Tecoma) - CO2: 50.19 kg/yr, O2: 133.80 kg/yr, Water: Low, Growth: Fast
-#31. Mango tree (Mangifera indica | Hindi: Aam | Marathi: Amba) - CO2: 46.31 kg/yr, O2: 123.45 kg/yr, Water: Medium, Growth: Medium
-#32. Indian almond (Terminalia catappa | Hindi: Desi Badam | Marathi: Deshi Badam) - CO2: 38.34 kg/yr, O2: 102.21 kg/yr, Water: Medium, Growth: Fast
-#33. False Ashoka (Polyalthia longifolia | Ashoka) - CO2: 29.01 kg/yr, O2: 77.34 kg/yr, Water: Medium, Growth: Medium
-#34. Curry leaf (Murraya koenigii | Kadi Patta) - CO2: 26.71 kg/yr, O2: 71.20 kg/yr, Water: Medium, Growth: Medium
-#35. Quick stick (Gliricidia sepium | Giripushpa) - CO2: 21.18 kg/yr, O2: 56.46 kg/yr, Water: Low, Growth: Very Fast
-#36. Arjuna tree (Terminalia arjuna | Arjun) - CO2: 12.75 kg/yr, O2: 33.99 kg/yr, Water: Medium, Growth: Medium
-#37. Parijat (Nyctanthes arbor-tristis | Harsingar | Parijatak) - CO2: 5.85 kg/yr, O2: 15.60 kg/yr, Water: Medium, Growth: Medium
-#38. Bamboo (Bambusoideae | Hindi: Bans | Marathi: Bambu) - CO2: 5.80 kg/yr, O2: 15.46 kg/yr, Water: Med-High, Growth: Very Fast
-
-DATABASE TOTALS: 38 species, Total CO2: ~6,380 kg/yr, Total O2: ~17,015 kg/yr.
-MIYAWAKI METHOD: 4 layers (Shrubs, Sub-trees, Trees, Canopy), 30x denser, 10x faster, self-sustaining in 3 years, 3-5 saplings/sqm.
-LOW WATER TREES IN DATABASE: Tamarind (#2), Subabul (#6), Neem (#8), Amla (#10), Earleaf acacia (#11), Karanj (#17), Paradise tree (#19), Wood apple (#21), Casuarina (#24), Lal Lasora (#29), Yellow bells (#30), Quick stick (#35).
-
-2. GOOGLE / WEB SEARCH FOR UNLISTED TOPICS (Priority 2):
-If the user asks an ecological question whose information is NOT available in the website database above (for example: trees not in the database like Mangroves, Oak, Redwood, Baobab, Eucalyptus, Pine; or general topics like soil biochar, drip irrigation, mycorrhizal fungi, rainwater harvesting, carbon credit trading, global climate summits, etc.), you MUST provide a comprehensive, accurate answer from Google / Web Search knowledge.
-Always prefix your response with:
-🔍 **From Google / Web Search (Not in Website Database):** (or in Hindi: 🔍 **गूगल/वेब खोज से (वेबसाइट डेटाबेस में उपलब्ध नहीं):** / in Marathi: 🔍 **गुगल/वेब सर्चवरून (वेबसाइट डेटाबेसमध्ये उपलब्ध नाही):**)
-
-STRICT ECOLOGICAL CONSTRAINTS:
-- ONLY answer questions related to trees, plants, water conservation, climate resilience, and soil.
-- If the user asks about anything else, politely refuse.
-- ${lang === 'hi' ? 'Respond in clear, natural Hindi (हिंदी).' : lang === 'mr' ? 'Respond in clear, natural Marathi (मराठी).' : 'Respond in English.'}`;
-
-      for (const model of candidateModels) {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              system_instruction: { 
-                parts: [{ text: systemPrompt }] 
-              },
-              contents: [{ role: "user", parts: [{ text: `Language: ${lang}. Query: ${userMessage}` }] }],
-              generationConfig: { temperature: 0.2 }
-            })
-          });
-
-          if (res.ok) {
-            data = await res.json();
-            break;
-          } else {
-            const errBody = await res.json().catch(() => ({}));
-            lastErrorMessage = errBody.error?.message || `HTTP ${res.status}`;
-          }
-        } catch (netErr) {
-          lastErrorMessage = netErr.message || String(netErr);
-        }
+      if (!res.ok) {
+        let errData = null;
+        try { errData = await res.json(); } catch(e) {}
+        throw new Error((errData && (errData.error || errData.details)) || ("HTTP " + res.status));
       }
 
-      // If direct call had any issues, fallback seamlessly to backend /api/chat
-      if (!data) {
-        const fallbackRes = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userMessage, lang: lang })
-        });
-        if (fallbackRes.ok) {
-          const fallbackData = await fallbackRes.json();
-          const reply = fallbackData.reply || fallbackData.text || fallbackData.message;
-          setMessages((prev) => [...prev, { role: "assistant", content: reply, text: reply, sender: "ai" }]);
-          return;
-        }
-        throw new Error(lastErrorMessage || "Failed to connect to Gemini");
-      }
-
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      
-      // Update the chat UI state with the AI's reply here
-      setMessages((prev) => [...prev, { role: "assistant", content: reply, text: reply, sender: "ai" }]);
-
-    } catch (error) {
-      // Print the raw error directly into the chat bubble
-      setMessages((prev) => [...prev, { role: "assistant", content: `🚨 ERROR: ${error.message}`, text: `🚨 ERROR: ${error.message}`, sender: "ai" }]);
+      const data = await res.json();
+      const reply = data.reply || data.text || data.message || "No response received.";
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: reply,
+        sources: Array.isArray(data.sources) ? data.sources : []
+      }]);
+    } catch (err) {
+      console.warn("Floating assistant /api/chat fallback:", err);
+      setMessages((prev) => [...prev, {
+        role: "assistant",
+        content: lang === 'hi'
+          ? "सत्र उपलब्ध नहीं है। कृपया Vercel Environment Variables में GEMINI_API_KEY कॉन्फ़िगर करें।"
+          : lang === 'mr'
+          ? "सत्र उपलब्ध नाही. कृपया Vercel Environment Variables मध्ये GEMINI_API_KEY कॉन्फिगर करा."
+          : "Session offline. Please verify GEMINI_API_KEY is configured in Vercel Environment Variables."
+      }]);
     } finally {
       setIsTyping(false);
     }
@@ -4833,6 +4747,7 @@ function TabNavigation(props) {
     { key: 'about', label: t.tabs.about, mobileLabel: t.tabs.aboutMobile, icon: 'info' },
     { key: 'catalog', label: t.tabs.catalog, mobileLabel: t.tabs.catalogMobile, icon: 'database' },
     { key: 'calculator', label: (t.tabs && t.tabs.calculator) || 'Eco Calculator', mobileLabel: (t.tabs && t.tabs.calculatorMobile) || 'Calculator', icon: 'calculator' },
+    { key: 'assistant', label: (t.tabs && t.tabs.assistant) || 'AI Engineer', mobileLabel: (t.tabs && t.tabs.assistantMobile) || 'AI Eng.', icon: 'bot' },
     { key: 'methodology', label: t.tabs.methodology, mobileLabel: t.tabs.methodologyMobile, icon: 'leaf' },
     { key: 'contact', label: t.tabs.contact, mobileLabel: t.tabs.contactMobile, icon: 'phone' }
   ];
@@ -4892,6 +4807,61 @@ function TabNavigation(props) {
 /* ──────────────────────────────────────────────
    AI Workspace — Full-page console
 ────────────────────────────────────────────── */
+/* ──────────────────────────────────────────────
+   getCleanSiteContext — Prepares lightweight platform context
+   Extracts text/numeric catalog data without heavy base64 images
+────────────────────────────────────────────── */
+function getCleanSiteContext(lang) {
+  var enTrans = (typeof TRANSLATIONS !== 'undefined' && TRANSLATIONS.en) ? TRANSLATIONS.en : {};
+  var cleanTrees = (typeof TREE_DATA !== 'undefined' && Array.isArray(TREE_DATA))
+    ? TREE_DATA.map(function(t) {
+        return {
+          rank: t.rank,
+          category: t.category,
+          name: t.name,
+          hindi: t.hindi,
+          marathi: t.marathi,
+          c: t.c, // CO2 kg/yr
+          o: t.o, // O2 kg/yr
+          height: t.height,
+          canopy: t.canopy,
+          safeBldg: t.safeBldg,
+          safeRoad: t.safeRoad,
+          water: t.water,
+          growth: t.growth
+        };
+      })
+    : [];
+
+  return {
+    platform: "Afforestation & Sustainable Land Planning",
+    totalSpeciesInCatalog: cleanTrees.length,
+    speciesCatalog: cleanTrees,
+    canopyKPIs: (enTrans.about && enTrans.about.canopy) ? {
+      title: enTrans.about.canopy.title,
+      avgCanopySpread: enTrans.about.canopy.avgSpreadVal,
+      projectedShadeArea: enTrans.about.canopy.projShadeVal,
+      annualCO2SequestrationPerM2: enTrans.about.canopy.annualCO2Val
+    } : {},
+    rootKPIs: (enTrans.about && enTrans.about.root) ? {
+      title: enTrans.about.root.title,
+      soilBindingScore: enTrans.about.root.soilBindingVal,
+      waterTableImpact: enTrans.about.root.waterTableVal || "High Infiltration"
+    } : {},
+    miyawakiMethodology: (enTrans.methodology) ? {
+      title: enTrans.methodology.title,
+      description: enTrans.methodology.desc,
+      benefits: enTrans.methodology.benefits,
+      principles: enTrans.methodology.principles,
+      steps: enTrans.methodology.steps
+    } : {}
+  };
+}
+
+/* ──────────────────────────────────────────────
+   AI Workspace — Arbor Engineer Pro Full Console
+   Powered by Gemini 2.5 Flash via /api/chat with Search Grounding
+────────────────────────────────────────────── */
 function AIWorkspace() {
   var context = React.useContext(LanguageContext);
   var language = (context && context.language) || 'en';
@@ -4899,7 +4869,7 @@ function AIWorkspace() {
 
   var _messages = useState(function() {
     try {
-      var saved = sessionStorage.getItem('greenAssistantMessages_' + language);
+      var saved = sessionStorage.getItem('arborEngineerMessages_' + language);
       if (saved) return JSON.parse(saved);
     } catch(e) {}
     return [{ role: 'assistant', content: t.assistant.welcome }];
@@ -4908,8 +4878,17 @@ function AIWorkspace() {
   var setMessages = _messages[1];
 
   useEffect(function() {
-    sessionStorage.setItem('greenAssistantMessages_' + language, JSON.stringify(messages));
+    try {
+      sessionStorage.setItem('arborEngineerMessages_' + language, JSON.stringify(messages));
+    } catch(e) {}
   }, [messages, language]);
+
+  // Sync initial welcome message when language changes if no conversation started
+  useEffect(function() {
+    if (messages.length === 1 && messages[0].role === 'assistant') {
+      setMessages([{ role: 'assistant', content: t.assistant.welcome }]);
+    }
+  }, [language, t.assistant.welcome]);
 
   var _input = useState('');
   var input = _input[0];
@@ -4940,7 +4919,7 @@ function AIWorkspace() {
     }
   }, []);
 
-  /* ── Multilingual response generator ── */
+  /* ── Local Multilingual Keyword Fallback Generator (for offline / network failure) ── */
   function generateResponse(query) {
     var q = query.toLowerCase().trim();
     var currentContext = contextTree;
@@ -4956,7 +4935,7 @@ function AIWorkspace() {
     if (mentionedTrees.length === 1) { currentContext = mentionedTrees[0]; setContextTree(currentContext); }
 
     // Multilingual responses
-    if (/^(hi|hello|hey|namaste|namaskar|good\s*(morning|afternoon|evening)|नमस्ते|नमस्कार|प्रणाम)/i.test(q)) {
+    if (/^(hi|hello|hey|namaste|namaskar|good\s*(morning|afternoon|evening)|नमस्ते|नमस्कार|प्रणाम)/i.test(q)) {
       if (language === 'hi') return 'साइट पर आपका स्वागत है। मैं आपका वरिष्ठ पर्यावरण इंजीनियर हूँ। मैं जड़-भार वितरण, मिट्टी अनुकूलता मैट्रिक्स या कैनोपी थर्मल गुणांक पर संरचनात्मक विश्लेषण कर सकता हूँ।\n\nकुछ शुरुआती प्रश्न:\n* "नीम के लिए जड़ फैलाव भार का अनुमान लगाएं"\n* "मिट्टी की अनुकूलता का विश्लेषण करें"\n* "थर्मल प्रभाव मैट्रिक्स तैयार करें"';
       if (language === 'mr') return 'प्रकल्पावर आपले स्वागत आहे. मी आपला वरिष्ठ पर्यावरण अभियंता आहे. मी मूळ-भार वितरण, माती सुसंगतता मॅट्रिक्स किंवा कॅनोपी थर्मल गुणांकांवर संरचनात्मक विश्लेषण करू शकतो.\n\nकाही मार्गदर्शक प्रश्न:\n* "कडुनिंबासाठी मूळ भार अंदाज काढा"\n* "माती सुसंगतता विश्लेषण करा"\n* "थर्मल प्रभाव मॅट्रिक्स तयार करा"';
       return 'Good to have you on-site. I can run structural analysis on root-load distributions, soil compatibility matrices, or canopy thermal coefficients.\n\nSome starting points:\n* "Predict root spread load for Neem"\n* "Analyze soil compatibility"\n* "Generate a thermal impact matrix"';
@@ -5017,135 +4996,58 @@ function AIWorkspace() {
     return "I'm ready to assist with site analysis! 🤔 You can ask about:\n* **Tree species data** (e.g., \"Tell me about Neem\")\n* **Properties** (e.g., \"Which trees need low water?\")\n* **Miyawaki Method**\n* **Carbon absorption** (e.g., \"Which tree absorbs the most CO₂?\")";
   }
 
-  /* ── Send handler with direct Gemini call ── */
+  /* ── Multi-turn live LLM chat via /api/chat with Search Grounding ── */
   async function handleSend(forcedQuery) {
     var userMsg = (typeof forcedQuery === 'string' ? forcedQuery : input).trim();
     if (!userMsg || isTyping) return;
     if (typeof forcedQuery !== 'string') setInput('');
-    setMessages(function(prev) { return prev.concat([{ role: 'user', content: userMsg, text: userMsg, sender: 'user' }]); });
+
+    var nextMessages = messages.concat([{ role: 'user', content: userMsg }]);
+    setMessages(nextMessages);
     setIsTyping(true);
 
     try {
-      // Direct Google Gemini API Call
-      const API_KEY = "AQ.Ab8RN6Ksdw3MQ75vhsbMFxbmP8WLFMsPGf9uT3n9hycfu-6_cw"; 
-      
-      // Multi-model cascade: gemini-3.5-flash, gemini-3.5-flash-lite, gemini-2.5-flash
-      const candidateModels = ["gemini-3.5-flash-lite", "gemini-3.5-flash", "gemini-2.5-flash"];
-      let data = null;
-      let lastErrorMessage = "";
+      var siteContext = getCleanSiteContext(language);
 
-      const systemPrompt = `You are the official Ecological Assistant for the Afforestation Platform.
+      var res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: nextMessages,
+          language: language,
+          siteContext: siteContext
+        })
+      });
 
-PRIMARY OPERATING RULES:
-1. SPECIFIC WEBSITE DATABASE QUESTIONS (Priority 1):
-For questions about top CO2 absorbing trees, top oxygen trees, tree rankings, specific trees in the database (Neem, Tamarind, Siris, Peepal, Subabul, Gulmohar, Bamboo, Amla, etc.), low water trees, growth rates, tree comparisons, or Miyawaki method, you MUST answer using the exact figures and rankings from the Afforestation Website Database below.
-Always prefix your response with:
-🌱 **From Afforestation Website Database:** (or in Hindi: 🌱 **अफॉरेस्टेशन वेबसाइट डेटाबेस से:** / in Marathi: 🌱 **अफॉरेस्टेशन वेबसाइट डेटाबेसमधून:**)
-
-AFFORESTATION WEBSITE DATABASE (38 SPECIES RANKED BY CO2 ABSORPTION):
-#1. Indian siris tree (Albizia lebbeck | Hindi: Siris | Marathi: Shirish) - CO2: 1029.56 kg/yr, O2: 2744.81 kg/yr, Water: Medium, Growth: Fast, Height: 15-25m, Canopy: 12-18m
-#2. Tamarind (Tamarindus indica | Hindi: Imli | Marathi: Chinch) - CO2: 808.79 kg/yr, O2: 2156.23 kg/yr, Water: Low, Growth: Slow, Height: 12-20m, Canopy: 10-15m
-#3. May flower tree / Gulmohar (Delonix regia) - CO2: 385.26 kg/yr, O2: 1027.11 kg/yr, Water: Medium, Growth: Fast, Height: 10-15m, Canopy: 8-12m
-#4. Yellow flame tree (Peltophorum pterocarpum | Hindi: Peela Gulmohar | Marathi: Sonmohar) - CO2: 377.16 kg/yr, O2: 1005.52 kg/yr, Water: Medium, Growth: Fast
-#5. Sacred fig (Ficus religiosa | Hindi: Peepal | Marathi: Pimpal) - CO2: 339.82 kg/yr, O2: 905.96 kg/yr, Water: Medium, Growth: Medium, Height: 15-25m, Canopy: 15-20m
-#6. River tamarind (Leucaena leucocephala | Hindi: Subabul | Marathi: Subabhul) - CO2: 313.76 kg/yr, O2: 836.47 kg/yr, Water: Low, Growth: Very Fast
-#7. Kanak Champa (Pterospermum acerifolium | Marathi: Muchkund) - CO2: 310.08 kg/yr, O2: 826.67 kg/yr, Water: Medium, Growth: Medium
-#8. Neem (Azadirachta indica | Hindi: Neem | Marathi: Kadulimb) - CO2: 301.67 kg/yr, O2: 804.25 kg/yr, Water: Low, Growth: Medium-Fast, Height: 12-18m, Canopy: 8-12m
-#9. Indian cork tree (Millingtonia hortensis | Hindi: Neem Chameli | Marathi: Buch) - CO2: 211.29 kg/yr, O2: 563.29 kg/yr, Water: Medium, Growth: Fast
-#10. Gooseberry (Phyllanthus emblica | Hindi: Amla | Marathi: Amla) - CO2: 206.10 kg/yr, O2: 549.46 kg/yr, Water: Low, Growth: Medium
-#11. Earleaf acacia (Pahari Babul) - CO2: 204.44 kg/yr, O2: 545.04 kg/yr, Water: Low, Growth: Fast
-#12. Cluster fig (Gular / Umber) - CO2: 195.29 kg/yr, O2: 520.66 kg/yr, Water: Medium, Growth: Fast
-#13. Jamun tree (Syzygium cumini | Hindi: Jamun | Marathi: Jambhul) - CO2: 190.59 kg/yr, O2: 508.12 kg/yr, Water: Medium, Growth: Medium
-#14. Golden shower (Cassia fistula | Hindi: Amaltas | Marathi: Bahawa) - CO2: 188.51 kg/yr, O2: 502.56 kg/yr, Water: Low-Medium, Growth: Medium
-#15. Weeping fig (Ficus benjamina | Hindi: Chilkan | Marathi: Nandruk) - CO2: 178.05 kg/yr, O2: 474.69 kg/yr, Water: Medium, Growth: Fast
-#16. Teak (Tectona grandis | Hindi: Sagwan | Marathi: Sagwan) - CO2: 149.42 kg/yr, O2: 398.36 kg/yr, Water: Medium, Growth: Fast
-#17. Pungam tree (Pongamia pinnata | Hindi: Karanj | Marathi: Karanj) - CO2: 140.59 kg/yr, O2: 374.81 kg/yr, Water: Low, Growth: Fast
-#18. Spanish Cherry (Mimusops elengi | Hindi: Maulsari | Marathi: Bakul) - CO2: 125.43 kg/yr, O2: 334.38 kg/yr, Water: Medium, Growth: Slow
-#19. Paradise tree (Simarouba glauca | Lakshmi Taru) - CO2: 119.71 kg/yr, O2: 319.15 kg/yr, Water: Low, Growth: Fast
-#20. Wild almond tree (Sterculia foetida | Jangli Badam) - CO2: 116.82 kg/yr, O2: 311.44 kg/yr, Water: Medium, Growth: Fast
-#21. Wood apple (Limonia acidissima | Hindi: Kaitha | Marathi: Kavath) - CO2: 106.71 kg/yr, O2: 284.49 kg/yr, Water: Low, Growth: Slow
-#22. Mulberry tree (Morus | Hindi: Shahtoot | Marathi: Tuti) - CO2: 94.15 kg/yr, O2: 251.00 kg/yr, Water: Medium, Growth: Fast
-#23. Guava tree (Psidium guajava | Hindi: Amrud | Marathi: Peru) - CO2: 85.34 kg/yr, O2: 227.53 kg/yr, Water: Medium, Growth: Medium
-#24. Casuarina (Casuarina equisetifolia | Hindi: Jhau | Marathi: Suru) - CO2: 80.53 kg/yr, O2: 214.70 kg/yr, Water: Low, Growth: Fast
-#25. Bibhitaki tree (Terminalia bellirica | Hindi: Baheda | Marathi: Behada) - CO2: 76.60 kg/yr, O2: 204.21 kg/yr, Water: Medium, Growth: Medium
-#26. Purple bauhinia (Bauhinia purpurea | Hindi: Kachnar | Marathi: Rakta Kanchan) - CO2: 70.08 kg/yr, O2: 186.83 kg/yr, Water: Medium, Growth: Fast
-#27. Butter tree (Madhuca longifolia | Hindi: Mahua | Marathi: Moh) - CO2: 69.43 kg/yr, O2: 185.11 kg/yr, Water: Low-Medium, Growth: Slow-Medium
-#28. Indian mulberry (Morinda citrifolia | Hindi: Aal | Marathi: Noni) - CO2: 68.81 kg/yr, O2: 183.44 kg/yr, Water: High, Growth: Medium
-#29. Geranium tree (Cordia sebestena | Hindi: Lal Lasora | Marathi: Kanchan) - CO2: 57.53 kg/yr, O2: 153.38 kg/yr, Water: Low, Growth: Medium
-#30. Yellow bells (Tecoma stans | Hindi: Pili Chameli | Marathi: Tecoma) - CO2: 50.19 kg/yr, O2: 133.80 kg/yr, Water: Low, Growth: Fast
-#31. Mango tree (Mangifera indica | Hindi: Aam | Marathi: Amba) - CO2: 46.31 kg/yr, O2: 123.45 kg/yr, Water: Medium, Growth: Medium
-#32. Indian almond (Terminalia catappa | Hindi: Desi Badam | Marathi: Deshi Badam) - CO2: 38.34 kg/yr, O2: 102.21 kg/yr, Water: Medium, Growth: Fast
-#33. False Ashoka (Polyalthia longifolia | Ashoka) - CO2: 29.01 kg/yr, O2: 77.34 kg/yr, Water: Medium, Growth: Medium
-#34. Curry leaf (Murraya koenigii | Kadi Patta) - CO2: 26.71 kg/yr, O2: 71.20 kg/yr, Water: Medium, Growth: Medium
-#35. Quick stick (Gliricidia sepium | Giripushpa) - CO2: 21.18 kg/yr, O2: 56.46 kg/yr, Water: Low, Growth: Very Fast
-#36. Arjuna tree (Terminalia arjuna | Arjun) - CO2: 12.75 kg/yr, O2: 33.99 kg/yr, Water: Medium, Growth: Medium
-#37. Parijat (Nyctanthes arbor-tristis | Harsingar | Parijatak) - CO2: 5.85 kg/yr, O2: 15.60 kg/yr, Water: Medium, Growth: Medium
-#38. Bamboo (Bambusoideae | Hindi: Bans | Marathi: Bambu) - CO2: 5.80 kg/yr, O2: 15.46 kg/yr, Water: Med-High, Growth: Very Fast
-
-DATABASE TOTALS: 38 species, Total CO2: ~6,380 kg/yr, Total O2: ~17,015 kg/yr.
-MIYAWAKI METHOD: 4 layers (Shrubs, Sub-trees, Trees, Canopy), 30x denser, 10x faster, self-sustaining in 3 years, 3-5 saplings/sqm.
-LOW WATER TREES IN DATABASE: Tamarind (#2), Subabul (#6), Neem (#8), Amla (#10), Earleaf acacia (#11), Karanj (#17), Paradise tree (#19), Wood apple (#21), Casuarina (#24), Lal Lasora (#29), Yellow bells (#30), Quick stick (#35).
-
-2. GOOGLE / WEB SEARCH FOR UNLISTED TOPICS (Priority 2):
-If the user asks an ecological question whose information is NOT available in the website database above (for example: trees not in the database like Mangroves, Oak, Redwood, Baobab, Eucalyptus, Pine; or general topics like soil biochar, drip irrigation, mycorrhizal fungi, rainwater harvesting, carbon credit trading, global climate summits, etc.), you MUST provide a comprehensive, accurate answer from Google / Web Search knowledge.
-Always prefix your response with:
-🔍 **From Google / Web Search (Not in Website Database):** (or in Hindi: 🔍 **गूगल/वेब खोज से (वेबसाइट डेटाबेस में उपलब्ध नहीं):** / in Marathi: 🔍 **गुगल/वेब सर्चवरून (वेबसाइट डेटाबेसमध्ये उपलब्ध नाही):**)
-
-STRICT ECOLOGICAL CONSTRAINTS:
-- ONLY answer questions related to trees, plants, water conservation, climate resilience, and soil.
-- If the user asks about anything else, politely refuse.
-- ${language === 'hi' ? 'Respond in clear, natural Hindi (हिंदी).' : language === 'mr' ? 'Respond in clear, natural Marathi (मराठी).' : 'Respond in English.'}`;
-
-      for (const model of candidateModels) {
-        try {
-          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${API_KEY}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              system_instruction: { 
-                parts: [{ text: systemPrompt }] 
-              },
-              contents: [{ role: "user", parts: [{ text: `Language: ${language}. Query: ${userMsg}` }] }],
-              generationConfig: { temperature: 0.2 }
-            })
-          });
-
-          if (res.ok) {
-            data = await res.json();
-            break;
-          } else {
-            const errBody = await res.json().catch(() => ({}));
-            lastErrorMessage = errBody.error?.message || `HTTP ${res.status}`;
-          }
-        } catch (netErr) {
-          lastErrorMessage = netErr.message || String(netErr);
-        }
+      if (!res.ok) {
+        var errBody = null;
+        try { errBody = await res.json(); } catch(e) {}
+        throw new Error((errBody && (errBody.error || errBody.details)) || ('HTTP ' + res.status));
       }
 
-      // If direct call had any issues, fallback seamlessly to backend /api/chat
-      if (!data) {
-        const fallbackRes = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: userMsg, lang: language })
-        });
-        if (fallbackRes.ok) {
-          const fallbackData = await fallbackRes.json();
-          const reply = fallbackData.reply || fallbackData.text || fallbackData.message;
-          setMessages((prev) => [...prev, { role: "assistant", content: reply, text: reply, sender: "ai" }]);
-          return;
-        }
-        throw new Error(lastErrorMessage || "Failed to connect to Gemini");
+      var data = await res.json();
+      if (!data || !data.reply) {
+        throw new Error((data && data.error) || 'No reply received from serverless engine.');
       }
 
-      const reply = data.candidates?.[0]?.content?.parts?.[0]?.text;
-      
-      // Update the chat UI state with the AI's reply here
-      setMessages((prev) => [...prev, { role: "assistant", content: reply, text: reply, sender: "ai" }]);
+      setMessages(function(prev) {
+        return prev.concat([{
+          role: 'assistant',
+          content: data.reply,
+          sources: Array.isArray(data.sources) ? data.sources : []
+        }]);
+      });
 
-    } catch (error) {
-      // Print the raw error directly into the chat bubble
-      setMessages((prev) => [...prev, { role: "assistant", content: `🚨 ERROR: ${error.message}`, text: `🚨 ERROR: ${error.message}`, sender: "ai" }]);
+    } catch (err) {
+      console.warn('/api/chat request failed or offline, engaging local engineer fallback:', err);
+      var fallbackReply = generateResponse(userMsg);
+      setMessages(function(prev) {
+        return prev.concat([{
+          role: 'assistant',
+          content: fallbackReply,
+          isOfflineFallback: true
+        }]);
+      });
     } finally {
       setIsTyping(false);
     }
@@ -5156,6 +5058,40 @@ STRICT ECOLOGICAL CONSTRAINTS:
   }
 
   var showQuickActions = messages.length === 1;
+
+  // Clear Chat: resets conversation history to t.assistant.welcome
+  function handleClearChat() {
+    setMessages([{ role: 'assistant', content: t.assistant.welcome }]);
+    setContextTree(null);
+  }
+
+  // Export Specs: exports chat/analysis as downloadable markdown report
+  function handleExportSpecs() {
+    var title = language === 'hi' ? 'आर्बर इंजीनियर प्रो — साइट विश्लेषण रिपोर्ट' : language === 'mr' ? 'आर्बर अभियंता प्रो — साइट विश्लेषण अहवाल' : 'Arbor Engineer Pro — Site Analysis Report';
+    var dateStr = new Date().toLocaleString();
+    var report = '# ' + title + '\n\n' +
+      '**Date:** ' + dateStr + '\n' +
+      '**Language:** ' + language.toUpperCase() + '\n' +
+      '**Platform:** Afforestation & Sustainable Land Planning\n\n' +
+      '---\n\n' +
+      messages.map(function(m) {
+        var speaker = m.role === 'user' ? '👤 ' + (language === 'hi' ? 'साइट योजनाकार' : language === 'mr' ? 'प्रकल्प नियोजक' : 'Site Planner') : '🌱 ' + t.assistant.title + ' ' + t.assistant.pro;
+        var text = '### ' + speaker + '\n\n' + (m.content || '');
+        if (m.sources && m.sources.length > 0) {
+          text += '\n\n**Web Grounding Sources:**\n' + m.sources.map(function(s) {
+            return '- [' + (s.title || s.url) + '](' + s.url + ')';
+          }).join('\n');
+        }
+        return text;
+      }).join('\n\n---\n\n');
+
+    var blob = new Blob([report], { type: 'text/markdown;charset=utf-8' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'arbor-engineer-specs-' + new Date().toISOString().slice(0, 10) + '.md';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
 
   /* ── Render ── */
   return React.createElement("div", {
@@ -5180,23 +5116,12 @@ STRICT ECOLOGICAL CONSTRAINTS:
       ),
       React.createElement("div", { className: "flex items-center gap-1.5" },
         React.createElement("button", {
-          onClick: function() {
-            var text = messages.map(function(m) { return (m.role === 'user' ? 'YOU' : 'ENGINEER') + ': ' + m.content; }).join('\n\n');
-            var blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-            var a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = 'arbor-specs-' + new Date().toISOString().slice(0,10) + '.txt';
-            a.click();
-            URL.revokeObjectURL(a.href);
-          },
-          className: "chat-export-btn w-10 h-10 sm:w-11 sm:h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-white/40 hover:text-white transition-all duration-300",
+          onClick: handleExportSpecs,
+          className: "chat-export-btn w-10 h-10 sm:w-11 sm:h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
           title: t.assistant.exportSpecs
         }, React.createElement(LucideIcon, { name: "download", size: 16 })),
         React.createElement("button", {
-          onClick: function() {
-            setMessages([{ role: 'assistant', content: t.assistant.cleared }]);
-            setContextTree(null);
-          },
+          onClick: handleClearChat,
           className: "w-10 h-10 sm:w-11 sm:h-11 min-h-[44px] min-w-[44px] rounded-xl flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-all duration-300",
           title: t.assistant.clearChat
         }, React.createElement(LucideIcon, { name: "rotate-ccw", size: 16 }))
@@ -5211,7 +5136,7 @@ STRICT ECOLOGICAL CONSTRAINTS:
         var isUser = msg.role === 'user' || msg.sender === 'user';
         var msgBody = msg.content || msg.text || '';
         return React.createElement("div", { key: i, className: 'flex animate-fade-in ' + (isUser ? 'justify-end' : 'justify-start') },
-          React.createElement("div", { className: 'flex gap-3 max-w-[88%] lg:max-w-[70%] ' + (isUser ? 'flex-row-reverse' : 'flex-row') },
+          React.createElement("div", { className: 'flex gap-3 max-w-[88%] lg:max-w-[75%] ' + (isUser ? 'flex-row-reverse' : 'flex-row') },
             React.createElement("div", {
               className: 'flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center shadow-sm mt-auto ' +
                 (isUser ? 'bg-earth-500/20 text-earth-300 border border-earth-500/30' : 'bg-gradient-to-br from-earth-400 to-earth-600 text-white shadow-earth-500/30 ring-1 ring-white/20')
@@ -5225,21 +5150,59 @@ STRICT ECOLOGICAL CONSTRAINTS:
                   style: { whiteSpace: 'pre-line' }
                 }, msgBody)
               : React.createElement("div", {
-                  className: "rounded-[20px] px-5 sm:px-6 py-3.5 sm:py-4 text-sm sm:text-base leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400",
-                  dangerouslySetInnerHTML: { __html: window.marked ? marked.parse(msgBody) : msgBody }
-                })
+                  className: "rounded-[20px] px-5 sm:px-6 py-3.5 sm:py-4 text-sm sm:text-base leading-relaxed bg-forest-800 backdrop-blur-xl text-cream-50 border border-white/10 rounded-bl-sm shadow-[0_4px_20px_rgba(0,0,0,0.2)] prose prose-invert prose-sm max-w-none prose-p:my-1.5 prose-ul:my-1.5 prose-li:my-0.5 prose-strong:text-earth-400 prose-table:my-2 prose-th:px-3 prose-th:py-1.5 prose-td:px-3 prose-td:py-1.5 prose-th:bg-forest-900/80 prose-td:border-white/10"
+                },
+                  React.createElement("div", {
+                    dangerouslySetInnerHTML: { __html: window.marked ? marked.parse(msgBody) : msgBody }
+                  }),
+                  /* Render Google Search Grounding Sources Chips if present */
+                  (msg.sources && msg.sources.length > 0) && React.createElement("div", {
+                    className: "mt-3 pt-3 border-t border-white/10 flex flex-wrap items-center gap-1.5 text-xs text-cream-100/70"
+                  },
+                    React.createElement("span", {
+                      className: "text-[11px] font-semibold text-earth-400 flex items-center gap-1 mr-1"
+                    },
+                      React.createElement(LucideIcon, { name: "search", size: 12 }),
+                      (language === 'hi' ? 'वेब संदर्भ:' : language === 'mr' ? 'वेब संदर्भ:' : 'Web Sources:')
+                    ),
+                    msg.sources.map(function(src, sIdx) {
+                      return React.createElement("a", {
+                        key: sIdx,
+                        href: src.url,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                        className: "inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-forest-900/70 hover:bg-forest-950 text-[11px] text-earth-300 hover:text-earth-200 border border-earth-400/25 hover:border-earth-400/50 transition-all max-w-[240px] truncate shadow-sm",
+                        title: src.title || src.url
+                      },
+                        React.createElement("span", { className: "truncate" }, src.title || src.url),
+                        React.createElement(LucideIcon, { name: "arrow-up", size: 10, className: "rotate-45 opacity-70 flex-shrink-0" })
+                      );
+                    })
+                  ),
+                  msg.isOfflineFallback && React.createElement("div", {
+                    className: "mt-2 pt-2 border-t border-white/5 text-[10px] text-cream-100/40 italic flex items-center gap-1"
+                  },
+                    React.createElement(LucideIcon, { name: "info", size: 10 }),
+                    (language === 'hi' ? 'ऑफ़लाइन मोड — स्थानीय डेटाबेस से उत्तर दिया गया' : language === 'mr' ? 'ऑफलाइन मोड — स्थानिक डेटाबेसवरून उत्तर दिले' : 'Offline mode — answered using local engineering database')
+                  )
+                )
           )
         );
       }),
       isTyping && React.createElement("div", { className: "flex justify-start animate-fade-in" },
-        React.createElement("div", { className: "flex gap-3" },
+        React.createElement("div", { className: "flex gap-3 max-w-[85%]" },
           React.createElement("div", { className: "flex-shrink-0 w-8 h-8 mt-auto rounded-full flex items-center justify-center bg-gradient-to-br from-earth-400 to-earth-600 text-white shadow-lg shadow-earth-500/30 ring-1 ring-white/20" },
             React.createElement(TreeAvatarSVG, { size: 16, className: "text-white" })
           ),
-          React.createElement("div", { className: "bg-forest-800 backdrop-blur-xl border border-white/10 rounded-[20px] rounded-bl-sm px-5 py-4 flex items-center gap-2.5 shadow-lg" },
-            React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 typing-dot" }),
-            React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 typing-dot" }),
-            React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 typing-dot" })
+          React.createElement("div", { className: "bg-forest-800/90 backdrop-blur-xl border border-white/10 rounded-[20px] rounded-bl-sm px-5 py-3.5 flex items-center gap-3 shadow-lg" },
+            React.createElement("div", { className: "flex items-center gap-1.5" },
+              React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 animate-bounce", style: { animationDelay: "0ms" } }),
+              React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 animate-bounce", style: { animationDelay: "150ms" } }),
+              React.createElement("span", { className: "w-2 h-2 rounded-full bg-earth-400 animate-bounce", style: { animationDelay: "300ms" } })
+            ),
+            React.createElement("span", { className: "text-xs text-cream-100/70 font-medium" },
+              language === 'hi' ? 'विश्लेषण और लाइव डेटा खोज जारी है...' : language === 'mr' ? 'विश्लेषण आणि थेट डेटा शोध सुरू आहे...' : 'Analyzing engineering parameters & grounding live data...'
+            )
           )
         )
       ),
@@ -5288,7 +5251,7 @@ STRICT ECOLOGICAL CONSTRAINTS:
           })
         ),
         React.createElement("button", {
-          onClick: handleSend,
+          onClick: function() { handleSend(); },
           disabled: !input.trim() || isTyping,
           className: 'w-12 h-12 min-h-[44px] min-w-[44px] rounded-2xl flex items-center justify-center transition-all duration-300 flex-shrink-0 ' +
             (input.trim() && !isTyping
@@ -5305,10 +5268,6 @@ STRICT ECOLOGICAL CONSTRAINTS:
     )
   );
 }
-
-/* ──────────────────────────────────────────────
-   App — 3-Tab Workstation Layout
-────────────────────────────────────────────── */
 
 function About() {
   var context = React.useContext(LanguageContext);
@@ -5497,6 +5456,14 @@ function App() {
         className: "pb-24 md:pb-8 tab-fade-in"
       },
         React.createElement(EcoCalculator, null)
+      ),
+
+      /* Assistant / Arbor Engineer Pro Tab */
+      React.createElement("div", {
+        style: { display: activeTab === 'assistant' ? 'block' : 'none' },
+        className: "pb-24 md:pb-8 tab-fade-in"
+      },
+        React.createElement(AIWorkspace, null)
       ),
 
       /* Methodology Tab */

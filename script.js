@@ -1551,17 +1551,8 @@ function Navbar() {
   const { language, setLanguage } = React.useContext(LanguageContext);
   const t = TRANSLATIONS[language] || TRANSLATIONS.en;
   useEffect(() => {
-    let ticking = false;
-    const onScroll = () => {
-      if (!ticking) {
-        window.requestAnimationFrame(() => {
-          setScrolled(window.scrollY > 40);
-          ticking = false;
-        });
-        ticking = true;
-      }
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
+    const onScroll = () => setScrolled(window.scrollY > 40);
+    window.addEventListener('scroll', onScroll);
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -3646,11 +3637,6 @@ function TreeDatabase() {
     return enName.includes(q) || hiName.includes(q) || mrName.includes(q);
   });
 
-  const [displayLimit, setDisplayLimit] = useState(12);
-  const visibleTrees = (searchTerm.trim() || activeFilter !== "all") 
-    ? filteredTrees 
-    : filteredTrees.slice(0, displayLimit);
-
   return React.createElement(React.Fragment, null, /*#__PURE__*/_jsxDEV("section", {
     id: "tree-database",
     className: "py-10 md:py-16 md:py-24 relative overflow-hidden",
@@ -3711,21 +3697,20 @@ function TreeDatabase() {
             className: "text-center py-16 text-cream-100/60 font-medium",
             children: t.catalog.noResults
           }, void 0, false) :
-          /*#__PURE__*/_jsxDEV(React.Fragment, null, [
-            /*#__PURE__*/_jsxDEV("div", {
-              className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:p-6 md:gap-5 md:p-8",
-              children: visibleTrees.map(function(tree) {
-                const displayName = getLocalizedTreeName(tree, language);
-                const subtitleName = getLocalizedTreeSubtitle(tree, language);
-                const waterText = getLocalizedWater(tree.water, language);
-                const canopyText = getLocalizedDistance(tree.canopy, language);
-                const bldgDist = getLocalizedDistance(tree.safeBldg, language);
-                const roadDist = getLocalizedDistance(tree.safeRoad, language);
+          /*#__PURE__*/_jsxDEV("div", {
+            className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:p-6 md:gap-5 md:p-8",
+            children: filteredTrees.map(function(tree) {
+              const displayName = getLocalizedTreeName(tree, language);
+              const subtitleName = getLocalizedTreeSubtitle(tree, language);
+              const waterText = getLocalizedWater(tree.water, language);
+              const canopyText = getLocalizedDistance(tree.canopy, language);
+              const bldgDist = getLocalizedDistance(tree.safeBldg, language);
+              const roadDist = getLocalizedDistance(tree.safeRoad, language);
 
-                return /*#__PURE__*/_jsxDEV("div", {
-                  key: tree.rank,
-                  className: "tree-card-item group bg-forest-900/40 backdrop-blur-lg border border-white/10 rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden cursor-pointer hover:-translate-y-2 hover:shadow-[0_8px_40px_rgb(0,0,0,0.2)] transition-all duration-300",
-                  onClick: function() { setSelectedTree(tree); },
+              return /*#__PURE__*/_jsxDEV("div", {
+                key: tree.rank,
+                className: "group bg-forest-900/40 backdrop-blur-lg border border-white/10 rounded-2xl md:rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] overflow-hidden cursor-pointer hover:-translate-y-2 hover:shadow-[0_8px_40px_rgb(0,0,0,0.2)] transition-all duration-300",
+                onClick: function() { setSelectedTree(tree); },
                 children: [
                   /*#__PURE__*/_jsxDEV("div", {
                     className: "h-48 overflow-hidden relative",
@@ -3759,20 +3744,7 @@ function TreeDatabase() {
                 ]
               }, tree.rank, true);
             })
-          }, void 0, false),
-          filteredTrees.length > visibleTrees.length && /*#__PURE__*/_jsxDEV("div", {
-            className: "text-center mt-8 pb-4",
-            children: /*#__PURE__*/_jsxDEV("button", {
-              type: "button",
-              onClick: function() { setDisplayLimit(filteredTrees.length); },
-              className: "inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-forest-900/80 hover:bg-forest-800 text-earth-400 border border-earth-500/30 font-semibold text-sm transition-all duration-300 shadow-lg hover:shadow-earth-500/20 hover:scale-105 active:scale-95 cursor-pointer",
-              children: [
-                /*#__PURE__*/_jsxDEV(LucideIcon, { name: "chevron-down", size: 18, className: "animate-bounce" }, void 0, false),
-                /*#__PURE__*/_jsxDEV("span", { children: language === 'hi' ? 'सभी ' + filteredTrees.length + ' प्रजातियां देखें' : language === 'mr' ? 'सर्व ' + filteredTrees.length + ' प्रजाती पहा' : 'View All ' + filteredTrees.length + ' Native Species' }, void 0, false)
-              ]
-            }, void 0, true)
           }, void 0, false)
-        ])
         ]
       }, void 0, true)
     ] }, void 0, true),
@@ -4660,19 +4632,15 @@ function EcoCalculator() {
 }
 
 
-var TOTAL_SPECIES_CACHE = TREE_DATA.length;
-var TOTAL_CO2_CACHE = TREE_DATA.reduce(function(s, t) { return s + (t.c || 0); }, 0);
-var TOTAL_O2_CACHE = TREE_DATA.reduce(function(s, t) { return s + (t.o || 0); }, 0);
-
 function PersistentHeader() {
   var context = React.useContext(LanguageContext);
   var language = (context && context.language) || 'en';
   var setLanguage = (context && context.setLanguage) || function() {};
   var t = (context && context.t) || TRANSLATIONS[language] || TRANSLATIONS.en;
 
-  var totalSpecies = TOTAL_SPECIES_CACHE;
-  var totalCO2 = TOTAL_CO2_CACHE;
-  var totalO2 = TOTAL_O2_CACHE;
+  var totalSpecies = TREE_DATA.length;
+  var totalCO2 = TREE_DATA.reduce(function(s, t) { return s + t.c; }, 0);
+  var totalO2 = TREE_DATA.reduce(function(s, t) { return s + t.o; }, 0);
 
   var languages = [
     { code: 'en', label: 'English', short: 'EN' },
@@ -4788,31 +4756,26 @@ function TabNavigation(props) {
         })
       )
     ),
-    /* Mobile: ergonomic fixed bottom app dock */
+    /* Mobile: fixed bottom dock */
     React.createElement("div", {
-      className: "md:hidden fixed bottom-0 left-0 right-0 z-50 bg-forest-950/95 backdrop-blur-xl border-t border-white/10 safe-area-bottom shadow-[0_-8px_24px_rgba(0,0,0,0.5)]"
+      className: "md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-white/10 safe-area-bottom"
     },
       React.createElement("div", {
-        className: "flex items-center justify-around px-1 py-1 max-w-lg mx-auto"
+        className: "flex items-center justify-between px-2 py-2 gap-0.5 sm:gap-1 max-w-md mx-auto"
       },
         tabs.map(function(tab) {
           var isActive = activeTab === tab.key;
           return React.createElement("button", {
             key: tab.key,
             onClick: function() { setActiveTab(tab.key); },
-            className: "flex-1 flex flex-col items-center justify-center py-1.5 px-0.5 rounded-xl transition-all duration-200 " +
+            className: "flex items-center justify-center gap-2 h-12 rounded-2xl transition-all duration-300 overflow-hidden " +
               (isActive
-                ? "text-earth-400 bg-earth-500/15 font-semibold"
-                : "text-cream-100/60 hover:text-cream-100/80 active:bg-white/5")
+                ? "bg-earth-500/20 text-earth-400 px-5 flex-shrink-0"
+                : "text-cream-100/50 active:bg-white/5 px-4")
           },
-            React.createElement(LucideIcon, {
-              name: tab.icon,
-              size: 20,
-              className: isActive ? "text-earth-400 transform scale-110 transition-transform" : "opacity-75"
-            }),
-            React.createElement("span", {
-              className: "text-[10px] sm:text-[11px] tracking-tight mt-0.5 truncate max-w-full text-center leading-none " +
-                (isActive ? "font-bold text-earth-400" : "font-normal")
+            React.createElement(LucideIcon, { name: tab.icon, size: 22, className: isActive ? "" : "opacity-80" }),
+            isActive && React.createElement("span", {
+              className: "text-[12px] font-bold tracking-wide animate-fade-in leading-normal"
             }, tab.mobileLabel)
           );
         })
@@ -5442,7 +5405,7 @@ function AIWorkspace() {
 
   /* ── Render ── */
   return React.createElement("div", {
-    className: "h-[calc(100dvh-10.5rem)] md:h-[calc(100dvh-6rem)] flex flex-col glass-card rounded-2xl md:rounded-3xl overflow-hidden mx-2 md:mx-6 lg:mx-8 shadow-2xl shadow-black/30"
+    className: "h-[calc(100dvh-5rem)] flex flex-col glass-card rounded-2xl md:rounded-3xl overflow-hidden mx-2 md:mx-6 lg:mx-8 shadow-2xl shadow-black/30"
   },
     /* Header */
     React.createElement("div", {
@@ -5776,7 +5739,7 @@ function App() {
       /* Assistant / Arbor Engineer Pro Tab */
       React.createElement("div", {
         style: { display: activeTab === 'assistant' ? 'block' : 'none' },
-        className: "pb-4 md:pb-8 tab-fade-in"
+        className: "pb-24 md:pb-8 tab-fade-in"
       },
         React.createElement(AIWorkspace, null)
       ),

@@ -1,4 +1,58 @@
 const ICON_PATHS = {
+  'calculator': [{
+    d: 'M16 2H8C6.89543 2 6 2.89543 6 4V20C6 21.1046 6.89543 22 8 22H16C17.1046 22 18 21.1046 18 20V4C18 2.89543 17.1046 2 16 2Z'
+  }, {
+    d: 'M8 6h8'
+  }, {
+    d: 'M16 14v4'
+  }, {
+    d: 'M16 10h.01'
+  }, {
+    d: 'M12 10h.01'
+  }, {
+    d: 'M8 10h.01'
+  }, {
+    d: 'M12 14h.01'
+  }, {
+    d: 'M8 14h.01'
+  }, {
+    d: 'M12 18h.01'
+  }, {
+    d: 'M8 18h.01'
+  }],
+  'plus': [{
+    d: 'M5 12h14'
+  }, {
+    d: 'M12 5v14'
+  }],
+  'minus': [{
+    d: 'M5 12h14'
+  }],
+  'copy': [{
+    d: 'M20 9h-9a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2z'
+  }, {
+    d: 'M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'
+  }],
+  'refresh-cw': [{
+    d: 'M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'
+  }, {
+    d: 'M21 3v5h-5'
+  }, {
+    d: 'M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'
+  }, {
+    d: 'M3 21v-5h5'
+  }],
+  'trash-2': [{
+    d: 'M3 6h18'
+  }, {
+    d: 'M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6'
+  }, {
+    d: 'M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2'
+  }, {
+    d: 'M10 11v6'
+  }, {
+    d: 'M14 11v6'
+  }],
   'more-vertical': [{"circle": {"cx": "12", "cy": "12", "r": "1"}}, {"circle": {"cx": "12", "cy": "5", "r": "1"}}, {"circle": {"cx": "12", "cy": "19", "r": "1"}}],
   'info': [{"d": "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"}, {"d": "M12 16v-4"}, {"d": "M12 8h.01"}],
   'tree-pine': [{
@@ -198,6 +252,8 @@ const TRANSLATIONS = {
       "aboutMobile": "About",
       "catalog": "Species Specs",
       "catalogMobile": "Catalog",
+      "calculator": "Eco Calculator",
+      "calculatorMobile": "Calculator",
       "methodology": "Methodology",
       "methodologyMobile": "Method",
       "assistant": "AI Engineer",
@@ -444,6 +500,8 @@ const TRANSLATIONS = {
       "aboutMobile": "परिचय",
       "catalog": "प्रजाति विवरण",
       "catalogMobile": "कैटलॉग",
+      "calculator": "इको कैलकुलेटर",
+      "calculatorMobile": "कैलकुलेटर",
       "methodology": "कार्यप्रणाली",
       "methodologyMobile": "पद्धति",
       "assistant": "एआई इंजीनियर",
@@ -690,6 +748,8 @@ const TRANSLATIONS = {
       "aboutMobile": "परिचय",
       "catalog": "प्रजाती तपशील",
       "catalogMobile": "कॅटलॉग",
+      "calculator": "इको कॅल्क्युलेटर",
+      "calculatorMobile": "कॅल्क्युलेटर",
       "methodology": "कार्यपद्धती",
       "methodologyMobile": "पद्धती",
       "assistant": "एआय अभियंता",
@@ -3877,6 +3937,807 @@ function TreeDatabase() {
 /* ──────────────────────────────────────────────
    Persistent Header — minimal top bar
 ────────────────────────────────────────────── */
+// EcoCalculator Component
+function EcoCalculator() {
+  const context = React.useContext(LanguageContext);
+  const language = (context && context.language) || 'en';
+  const t = (context && context.t) || TRANSLATIONS[language] || TRANSLATIONS.en;
+
+  // Initialized with the prompt's exact examples: 3 Mango trees and 5 Gooseberry trees!
+  const [plantationList, setPlantationList] = useState(() => {
+    const mango = TREE_DATA.find(t => t.name.toLowerCase().includes('mango')) || TREE_DATA[30];
+    const gooseberry = TREE_DATA.find(t => t.name.toLowerCase().includes('gooseberry')) || TREE_DATA[9];
+    const initial = [];
+    if (mango) initial.push({ tree: mango, quantity: 3 });
+    if (gooseberry) initial.push({ tree: gooseberry, quantity: 5 });
+    return initial;
+  });
+
+  const [selectedTreeRank, setSelectedTreeRank] = useState(() => {
+    const mango = TREE_DATA.find(t => t.name.toLowerCase().includes('mango'));
+    return mango ? mango.rank : TREE_DATA[0].rank;
+  });
+
+  const [inputQty, setInputQty] = useState(3);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [copied, setCopied] = useState(false);
+  const [activeView, setActiveView] = useState('both'); // 'both', 'single', 'multi'
+
+  // Selected tree object for single/dropdown view
+  const currentSelectedTree = useMemo(() => {
+    return TREE_DATA.find(t => t.rank === selectedTreeRank) || TREE_DATA[0];
+  }, [selectedTreeRank]);
+
+  // Filtering trees
+  const filteredTrees = useMemo(() => {
+    return TREE_DATA.filter(tree => {
+      const matchesCategory = categoryFilter === 'all' || tree.category === categoryFilter;
+      const localizedName = language === 'mr' ? tree.marathi : language === 'hi' ? tree.hindi : tree.name;
+      const matchesSearch = !searchTerm || 
+        localizedName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        tree.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (tree.hindi && tree.hindi.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (tree.marathi && tree.marathi.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchesCategory && matchesSearch;
+    });
+  }, [categoryFilter, searchTerm, language]);
+
+  // Preset Handlers
+  const applyPreset = (type) => {
+    const mango = TREE_DATA.find(t => t.name.toLowerCase().includes('mango')) || TREE_DATA[30];
+    const gooseberry = TREE_DATA.find(t => t.name.toLowerCase().includes('gooseberry')) || TREE_DATA[9];
+    const neem = TREE_DATA.find(t => t.name.toLowerCase().includes('neem')) || TREE_DATA[7];
+    const sacredFig = TREE_DATA.find(t => t.name.toLowerCase().includes('sacred fig') || t.name.toLowerCase().includes('peepal')) || TREE_DATA[4];
+    const jamun = TREE_DATA.find(t => t.name.toLowerCase().includes('jamun')) || TREE_DATA[12];
+
+    if (type === 'mango3') {
+      if (mango) {
+        setPlantationList([{ tree: mango, quantity: 3 }]);
+        setSelectedTreeRank(mango.rank);
+        setInputQty(3);
+      }
+    } else if (type === 'gooseberry5') {
+      if (gooseberry) {
+        setPlantationList([{ tree: gooseberry, quantity: 5 }]);
+        setSelectedTreeRank(gooseberry.rank);
+        setInputQty(5);
+      }
+    } else if (type === 'promptCombo') {
+      const list = [];
+      if (mango) list.push({ tree: mango, quantity: 3 });
+      if (gooseberry) list.push({ tree: gooseberry, quantity: 5 });
+      setPlantationList(list);
+    } else if (type === 'urbanMix') {
+      const list = [];
+      if (neem) list.push({ tree: neem, quantity: 5 });
+      if (sacredFig) list.push({ tree: sacredFig, quantity: 3 });
+      if (jamun) list.push({ tree: jamun, quantity: 4 });
+      if (mango) list.push({ tree: mango, quantity: 2 });
+      setPlantationList(list);
+    } else if (type === 'clear') {
+      setPlantationList([]);
+    }
+  };
+
+  // Add tree to plantation
+  const addTreeToPlantation = (treeToAdd, qty) => {
+    const validQty = Math.max(1, parseInt(qty, 10) || 1);
+    setPlantationList(prev => {
+      const existingIndex = prev.findIndex(item => item.tree.rank === treeToAdd.rank);
+      if (existingIndex >= 0) {
+        const updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: updated[existingIndex].quantity + validQty
+        };
+        return updated;
+      } else {
+        return [...prev, { tree: treeToAdd, quantity: validQty }];
+      }
+    });
+  };
+
+  // Update quantity in list
+  const updateTreeQuantity = (rank, newQty) => {
+    if (newQty <= 0) {
+      removeFromPlantation(rank);
+      return;
+    }
+    setPlantationList(prev => prev.map(item => 
+      item.tree.rank === rank ? { ...item, quantity: newQty } : item
+    ));
+  };
+
+  // Remove tree
+  const removeFromPlantation = (rank) => {
+    setPlantationList(prev => prev.filter(item => item.tree.rank !== rank));
+  };
+
+  // Calculations for total plantation
+  const totalTrees = useMemo(() => {
+    return plantationList.reduce((acc, item) => acc + item.quantity, 0);
+  }, [plantationList]);
+
+  const totalCO2 = useMemo(() => {
+    return plantationList.reduce((acc, item) => acc + (item.tree.c || 0) * item.quantity, 0);
+  }, [plantationList]);
+
+  const totalO2 = useMemo(() => {
+    return plantationList.reduce((acc, item) => acc + (item.tree.o || 0) * item.quantity, 0);
+  }, [plantationList]);
+
+  // People supported (an adult human consumes approx 270 kg O2/yr = 0.74 kg/day)
+  const peopleOxygenSupported = useMemo(() => {
+    return (totalO2 / 270).toFixed(1);
+  }, [totalO2]);
+
+  // Car km offset (approx 1 kg CO2 ~ 4.5 km of driving a typical passenger car)
+  const carKmOffset = useMemo(() => {
+    return Math.round(totalCO2 * 4.5);
+  }, [totalCO2]);
+
+  // Daily O2 rate in kg and Liters
+  const dailyO2Kg = useMemo(() => (totalO2 / 365).toFixed(2), [totalO2]);
+  const dailyO2Liters = useMemo(() => Math.round((totalO2 / 365) * 700), [totalO2]);
+
+  // Estimated canopy area
+  const totalCanopyArea = useMemo(() => {
+    return plantationList.reduce((acc, item) => {
+      let radius = 4; // default
+      if (item.tree.canopy) {
+        const nums = item.tree.canopy.match(/\d+(\.\d+)?/g);
+        if (nums && nums.length > 0) {
+          const avgD = nums.reduce((s, n) => s + parseFloat(n), 0) / nums.length;
+          radius = avgD / 2;
+        }
+      }
+      return acc + (Math.PI * radius * radius * item.quantity);
+    }, 0);
+  }, [plantationList]);
+
+  // Single Tree Immediate Calculation
+  const singleTreeCO2 = useMemo(() => {
+    return ((currentSelectedTree.c || 0) * inputQty).toFixed(2);
+  }, [currentSelectedTree, inputQty]);
+
+  const singleTreeO2 = useMemo(() => {
+    return ((currentSelectedTree.o || 0) * inputQty).toFixed(2);
+  }, [currentSelectedTree, inputQty]);
+
+  // Copy report to clipboard
+  const copyReport = () => {
+    const lines = [
+      "🌿 AFFORESTATION - ECOLOGICAL IMPACT REPORT",
+      "------------------------------------------",
+      `Total Trees Planted: ${totalTrees}`,
+      `Total Species: ${plantationList.length}`,
+      "",
+      "🌱 ANNUAL SEQUESTRATION & RELEASE:",
+      `• Total Oxygen (O2) Released: ${totalO2.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})} kg/year (${dailyO2Kg} kg/day)`,
+      `• Human Oxygen Needs Met: Approx. ${peopleOxygenSupported} people supported annually`,
+      `• Total Carbon (CO2) Absorbed: ${totalCO2.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})} kg/year (${(totalCO2 / 1000).toFixed(2)} metric tonnes/yr)`,
+      `• Passenger Car Emissions Offset: ~${carKmOffset.toLocaleString()} km of driving neutralised`,
+      `• Projected 10-Year CO2 Sequestration: ${(totalCO2 * 10 / 1000).toFixed(2)} metric tonnes`,
+      `• Estimated Mature Canopy Coverage: ~${Math.round(totalCanopyArea).toLocaleString()} m²`,
+      "",
+      "📋 SPECIES BREAKDOWN:"
+    ];
+
+    plantationList.forEach(item => {
+      const treeName = language === 'mr' ? item.tree.marathi : language === 'hi' ? item.tree.hindi : item.tree.name;
+      const treeCO2 = (item.tree.c * item.quantity).toFixed(1);
+      const treeO2 = (item.tree.o * item.quantity).toFixed(1);
+      lines.push(`• ${item.quantity}x ${treeName}: +${treeO2} kg O2/yr | -${treeCO2} kg CO2/yr`);
+    });
+
+    lines.push("");
+    lines.push("Generated by Afforestation Eco Calculator");
+
+    const text = lines.join("\n");
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+      });
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    }
+  };
+
+  // Localized texts
+  const tEco = {
+    badge: language === 'hi' ? 'पर्यावरण प्रभाव कैलकुलेटर' : language === 'mr' ? 'पर्यावरण प्रभाव कॅल्क्युलेटर' : 'Ecological Impact Estimator',
+    title: language === 'hi' ? 'इको कैलकुलेटर' : language === 'mr' ? 'इको कॅल्क्युलेटर' : 'Eco Impact Calculator',
+    subtitle: language === 'hi'
+      ? 'जानिए ३ आम के पेड़ या ५ आंवले के पेड़ कितना ऑक्सीजन उत्सर्जित करेंगे और कितना कार्बन डाई-ऑक्साइड सोखेंगे।'
+      : language === 'mr'
+      ? '३ आंब्याची झाडे किंवा ५ आवळ्याची झाडे किती ऑक्सिजन सोडतील आणि किती कार्बन डायऑक्साइड शोषून घेतील ते तपासा.'
+      : 'Calculate exact oxygen released and CO₂ absorbed by 3 mango trees, 5 gooseberry trees, or any combination of native species.',
+    presetsTitle: language === 'hi' ? 'त्वरित उदाहरण (एक क्लिक):' : language === 'mr' ? 'झटपट उदाहरणे (एक क्लिक):' : 'Quick Presets:',
+    mango3Btn: language === 'hi' ? '३ आम के पेड़' : language === 'mr' ? '३ आंब्याची झाडे' : '3 Mango Trees',
+    gooseberry5Btn: language === 'hi' ? '५ आंवले के पेड़' : language === 'mr' ? '५ आवळ्याची झाडे' : '5 Gooseberry (Amla) Trees',
+    comboBtn: language === 'hi' ? 'कॉम्बो: ३ आम + ५ आंवला' : language === 'mr' ? 'कॉम्बो: ३ आंबा + ५ आवळा' : 'Combo: 3 Mango + 5 Gooseberry',
+    urbanMixBtn: language === 'hi' ? 'शहरी वन मिक्स (१० पेड़)' : language === 'mr' ? 'शहरी वन मिक्स (१० झाडे)' : 'Urban Mix (10 Trees)',
+    resetBtn: language === 'hi' ? 'रीसेट करें' : language === 'mr' ? 'रीसेट करा' : 'Clear All',
+    selectTreeTitle: language === 'hi' ? 'पेड़ प्रजाति चुनें' : language === 'mr' ? 'झाडाची प्रजाती निवडा' : 'Select Tree Species',
+    quantity: language === 'hi' ? 'संख्या (पेड़)' : language === 'mr' ? 'संख्या (झाडे)' : 'Quantity (Trees)',
+    addBtn: language === 'hi' ? 'गणना में जोड़ें' : language === 'mr' ? 'गणनेत जोडा' : 'Add to Calculation',
+    singleCalcTitle: language === 'hi' ? 'एकल प्रजाति त्वरित प्रभाव:' : language === 'mr' ? 'एकल प्रजाती झटपट प्रभाव:' : 'Single Species Direct Impact:',
+    plantationTitle: language === 'hi' ? 'आपकी चुनी हुई प्रजातियाँ' : language === 'mr' ? 'तुमच्या निवडलेल्या प्रजाती' : 'Your Custom Plantation Mix',
+    emptyList: language === 'hi' ? 'कोई पेड़ नहीं जोड़ा गया। त्वरित उदाहरण चुनें या ऊपर से जोड़ें।' : language === 'mr' ? 'झाडे जोडली नाहीत. झटपट उदाहरण निवडा किंवा जोडा.' : 'No trees in list yet. Click a preset above or add species below.',
+    totalImpact: language === 'hi' ? 'वार्षिक कुल पर्यावरण प्रभाव' : language === 'mr' ? 'वार्षिक एकूण पर्यावरण प्रभाव' : 'Total Annual Environmental Impact',
+    o2Released: language === 'hi' ? 'ऑक्सीजन उत्सर्जन' : language === 'mr' ? 'ऑक्सिजन उत्सर्जन' : 'Oxygen Released (O₂)',
+    co2Absorbed: language === 'hi' ? 'कार्बन डाई-ऑक्साइड अवशोषण' : language === 'mr' ? 'कार्बन डायऑक्साइड शोषण' : 'Carbon Dioxide Absorbed (CO₂)',
+    peopleEquiv: language === 'hi' ? 'लोगों की वार्षिक ऑक्सीजन आपूर्ति' : language === 'mr' ? 'लोकांची वार्षिक ऑक्सिजन गरज' : 'People\'s Oxygen Demand Met',
+    carEquiv: language === 'hi' ? 'कार उत्सर्जन ऑफसेट' : language === 'mr' ? 'कार उत्सर्जन ऑफसेट' : 'Car Travel Neutralized',
+    canopyCover: language === 'hi' ? 'अनुमानित छाया क्षेत्र' : language === 'mr' ? 'अंदाजे सावली क्षेत्र' : 'Est. Canopy Shade Area',
+    copyBtn: language === 'hi' ? 'प्रभाव रिपोर्ट कॉपी करें' : language === 'mr' ? 'प्रभाव अहवाल कॉपी करा' : 'Copy Impact Report',
+    copiedText: language === 'hi' ? 'कॉपी हो गया!' : language === 'mr' ? 'कॉपी झाले!' : 'Report Copied!'
+  };
+
+  return (
+    /* Main container matching website theme */
+    React.createElement("section", {
+      id: "eco-calculator-section",
+      className: "py-6 sm:py-10 md:py-14 relative overflow-hidden"
+    },
+      React.createElement("div", { className: "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10" },
+        /* Section Header */
+        React.createElement("div", { className: "text-center max-w-3xl mx-auto mb-8 sm:mb-12" },
+          React.createElement("div", {
+            className: "inline-flex items-center gap-2 px-4 py-2 rounded-full bg-forest-900/60 border border-forest-800/80 shadow-lg backdrop-blur-md mb-4"
+          },
+            React.createElement(LucideIcon, { name: "calculator", size: 16, className: "text-earth-400" }),
+            React.createElement("span", { className: "text-xs font-bold text-earth-300 uppercase tracking-widest" }, tEco.badge)
+          ),
+          React.createElement("h1", {
+            className: "text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-cream-50 tracking-tight mb-4"
+          },
+            tEco.title,
+            React.createElement("span", { className: "block text-earth-400 italic text-2xl sm:text-3xl lg:text-4xl font-normal mt-1" },
+              language === 'hi' ? 'ऑक्सीजन व कार्बन प्रभाव विश्लेषण' : language === 'mr' ? 'ऑक्सिजन व कार्बन प्रभाव विश्लेषण' : 'Living Carbon & Oxygen Metrics'
+            )
+          ),
+          React.createElement("p", { className: "text-base sm:text-lg text-cream-100/75 leading-relaxed" },
+            tEco.subtitle
+          )
+        ),
+
+        /* Top Quick Presets Chips Bar */
+        React.createElement("div", {
+          className: "glass-card rounded-2xl p-4 sm:p-5 mb-8 border border-white/10 shadow-xl backdrop-blur-xl"
+        },
+          React.createElement("div", { className: "flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3" },
+            React.createElement("div", { className: "flex items-center gap-2 text-sm font-semibold text-earth-300" },
+              React.createElement(LucideIcon, { name: "sparkles", size: 16, className: "text-earth-400 animate-pulse" }),
+              React.createElement("span", null, tEco.presetsTitle)
+            ),
+            plantationList.length > 0 && React.createElement("button", {
+              onClick: () => applyPreset('clear'),
+              className: "text-xs font-semibold text-cream-100/60 hover:text-red-400 flex items-center gap-1.5 transition-colors"
+            },
+              React.createElement(LucideIcon, { name: "x", size: 14 }),
+              React.createElement("span", null, tEco.resetBtn)
+            )
+          ),
+          React.createElement("div", { className: "flex flex-wrap gap-2.5" },
+            /* Preset 1: 3 Mango Trees */
+            React.createElement("button", {
+              type: "button",
+              onClick: () => applyPreset('mango3'),
+              className: "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all duration-200 border bg-forest-900/60 hover:bg-forest-800 border-earth-500/40 text-cream-100 hover:text-earth-300 hover:scale-[1.02] shadow-sm"
+            },
+              React.createElement("span", { className: "text-base" }, "🥭"),
+              React.createElement("span", null, tEco.mango3Btn)
+            ),
+            /* Preset 2: 5 Gooseberry Trees */
+            React.createElement("button", {
+              type: "button",
+              onClick: () => applyPreset('gooseberry5'),
+              className: "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all duration-200 border bg-forest-900/60 hover:bg-forest-800 border-green-500/40 text-cream-100 hover:text-green-300 hover:scale-[1.02] shadow-sm"
+            },
+              React.createElement("span", { className: "text-base" }, "🟢"),
+              React.createElement("span", null, tEco.gooseberry5Btn)
+            ),
+            /* Preset 3: 3 Mango + 5 Gooseberry (Prompt Combo) */
+            React.createElement("button", {
+              type: "button",
+              onClick: () => applyPreset('promptCombo'),
+              className: "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all duration-200 border bg-earth-500/20 hover:bg-earth-500/30 border-earth-400 text-earth-300 hover:scale-[1.02] shadow-md shadow-earth-500/10"
+            },
+              React.createElement("span", { className: "text-base" }, "🌿"),
+              React.createElement("span", null, tEco.comboBtn)
+            ),
+            /* Preset 4: Urban Mix */
+            React.createElement("button", {
+              type: "button",
+              onClick: () => applyPreset('urbanMix'),
+              className: "px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 transition-all duration-200 border bg-forest-900/60 hover:bg-forest-800 border-forest-700 text-cream-100/80 hover:text-cream-50 hover:scale-[1.02]"
+            },
+              React.createElement("span", { className: "text-base" }, "🌳"),
+              React.createElement("span", null, tEco.urbanMixBtn)
+            )
+          )
+        ),
+
+        /* Main 2-Column Responsive Layout */
+        React.createElement("div", { className: "grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start" },
+
+          /* LEFT COLUMN: Controls, Tree Selection, and Breakdown List (7 Cols) */
+          React.createElement("div", { className: "lg:col-span-7 space-y-6" },
+
+            /* Tree Selector Panel */
+            React.createElement("div", {
+              className: "glass-card rounded-3xl p-5 sm:p-7 border border-white/10 shadow-2xl relative overflow-hidden"
+            },
+              React.createElement("div", { className: "flex items-center justify-between gap-2 mb-5" },
+                React.createElement("div", { className: "flex items-center gap-2.5" },
+                  React.createElement("div", { className: "w-8 h-8 rounded-lg bg-earth-500/20 flex items-center justify-center text-earth-400" },
+                    React.createElement(LucideIcon, { name: "trees", size: 18 })
+                  ),
+                  React.createElement("h2", { className: "text-xl font-bold text-cream-50 tracking-tight" },
+                    tEco.selectTreeTitle
+                  )
+                ),
+                React.createElement("span", { className: "text-xs font-medium px-2.5 py-1 rounded-full bg-forest-900/70 border border-forest-700 text-cream-100/60" },
+                  `${filteredTrees.length} species`
+                )
+              ),
+
+              /* Search & Category Filter */
+              React.createElement("div", { className: "space-y-3 mb-5" },
+                React.createElement("div", { className: "relative" },
+                  React.createElement("input", {
+                    type: "text",
+                    value: searchTerm,
+                    onChange: (e) => setSearchTerm(e.target.value),
+                    placeholder: language === 'hi' ? 'पेड़ खोजें (उदा: आम, आंवला, नीम)...' : language === 'mr' ? 'झाड शोधा (उदा: आंबा, आवळा, कडुलिंब)...' : 'Search tree species (e.g., Mango, Gooseberry, Neem)...',
+                    className: "w-full pl-10 pr-4 py-2.5 rounded-xl bg-forest-950/60 border border-forest-700/60 text-sm text-cream-100 placeholder:text-cream-100/40 focus:outline-none focus:border-earth-400 focus:ring-1 focus:ring-earth-400 transition-all"
+                  }),
+                  React.createElement("div", { className: "absolute left-3.5 top-1/2 -translate-y-1/2 text-cream-100/40 pointer-events-none" },
+                    React.createElement(LucideIcon, { name: "search", size: 16 })
+                  ),
+                  searchTerm && React.createElement("button", {
+                    onClick: () => setSearchTerm(''),
+                    className: "absolute right-3 top-1/2 -translate-y-1/2 text-cream-100/50 hover:text-cream-50"
+                  },
+                    React.createElement(LucideIcon, { name: "x", size: 14 })
+                  )
+                ),
+                /* Category pill tabs */
+                React.createElement("div", { className: "flex gap-1.5 overflow-x-auto pb-1 hide-scrollbar text-xs" },
+                  ['all', 'fruit', 'shade', 'medicinal', 'flower'].map(cat => {
+                    const isCatActive = categoryFilter === cat;
+                    const catLabels = {
+                      all: language === 'hi' ? 'सभी' : language === 'mr' ? 'सर्व' : 'All',
+                      fruit: language === 'hi' ? 'फल' : language === 'mr' ? 'फळे' : 'Fruits',
+                      shade: language === 'hi' ? 'छाया' : language === 'mr' ? 'सावली' : 'Shade',
+                      medicinal: language === 'hi' ? 'औषधीय' : language === 'mr' ? 'औषधी' : 'Medicinal',
+                      flower: language === 'hi' ? 'फूल' : language === 'mr' ? 'फुले' : 'Flowers'
+                    };
+                    return React.createElement("button", {
+                      key: cat,
+                      type: "button",
+                      onClick: () => setCategoryFilter(cat),
+                      className: `px-3 py-1.5 rounded-lg font-medium transition-all duration-200 capitalize whitespace-nowrap ${
+                        isCatActive
+                          ? 'bg-earth-500 text-forest-950 font-bold shadow-sm'
+                          : 'bg-forest-900/40 text-cream-100/60 hover:text-cream-100 hover:bg-forest-800/60'
+                      }`
+                    }, catLabels[cat]);
+                  })
+                )
+              ),
+
+              /* Species Selection Dropdown / Grid */
+              React.createElement("div", { className: "mb-5" },
+                React.createElement("label", { className: "block text-xs font-semibold text-cream-100/70 mb-2 uppercase tracking-wider" },
+                  language === 'hi' ? 'चयनित प्रजाति' : language === 'mr' ? 'निवडलेली प्रजाती' : 'Active Species Selection'
+                ),
+                React.createElement("div", { className: "relative" },
+                  React.createElement("select", {
+                    value: selectedTreeRank,
+                    onChange: (e) => setSelectedTreeRank(parseInt(e.target.value, 10)),
+                    className: "w-full appearance-none px-4 py-3 rounded-xl bg-forest-950/80 border border-forest-700/80 text-cream-50 font-medium text-sm focus:outline-none focus:border-earth-400 focus:ring-1 focus:ring-earth-400 transition-all cursor-pointer pr-10"
+                  },
+                    filteredTrees.map(tree => {
+                      const displayName = language === 'mr' ? tree.marathi : language === 'hi' ? tree.hindi : tree.name;
+                      return React.createElement("option", {
+                        key: tree.rank,
+                        value: tree.rank,
+                        className: "bg-forest-950 text-cream-100 py-2"
+                      }, `${displayName} — (${tree.c} kg CO₂/yr | ${tree.o} kg O₂/yr)`);
+                    })
+                  ),
+                  React.createElement("div", { className: "absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-cream-100/50" },
+                    React.createElement(LucideIcon, { name: "chevron-down", size: 16 })
+                  )
+                )
+              ),
+
+              /* Tree Quick Details Strip */
+              currentSelectedTree && React.createElement("div", {
+                className: "bg-forest-950/40 rounded-2xl p-4 border border-forest-800/60 mb-5 flex items-center gap-4"
+              },
+                currentSelectedTree.img && React.createElement("img", {
+                  src: currentSelectedTree.img,
+                  alt: currentSelectedTree.name,
+                  className: "w-14 h-14 rounded-xl object-cover border border-forest-700/80 flex-shrink-0 shadow-md"
+                }),
+                React.createElement("div", { className: "flex-1 min-w-0" },
+                  React.createElement("div", { className: "flex items-center gap-2 flex-wrap" },
+                    React.createElement("h3", { className: "text-base font-bold text-cream-50 truncate" },
+                      language === 'mr' ? currentSelectedTree.marathi : language === 'hi' ? currentSelectedTree.hindi : currentSelectedTree.name
+                    ),
+                    React.createElement("span", { className: "text-[11px] px-2 py-0.5 rounded-md bg-forest-800 text-earth-300 font-semibold uppercase" },
+                      currentSelectedTree.category
+                    )
+                  ),
+                  React.createElement("p", { className: "text-xs text-cream-100/50 truncate mt-0.5" },
+                    currentSelectedTree.name !== (language === 'mr' ? currentSelectedTree.marathi : currentSelectedTree.hindi) ? currentSelectedTree.name : ''
+                  ),
+                  React.createElement("div", { className: "flex items-center gap-4 mt-2 text-xs font-semibold" },
+                    React.createElement("span", { className: "text-earth-400" },
+                      `CO₂: ${currentSelectedTree.c} kg/yr`
+                    ),
+                    React.createElement("span", { className: "text-green-400" },
+                      `O₂: ${currentSelectedTree.o} kg/yr`
+                    )
+                  )
+                )
+              ),
+
+              /* Quantity Stepper & Add Button */
+              React.createElement("div", { className: "flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2" },
+                React.createElement("div", { className: "flex items-center bg-forest-950/80 rounded-xl border border-forest-700/80 p-1" },
+                  React.createElement("button", {
+                    type: "button",
+                    onClick: () => setInputQty(prev => Math.max(1, prev - 1)),
+                    className: "w-10 h-10 flex items-center justify-center rounded-lg hover:bg-forest-800 text-cream-100 transition-colors"
+                  },
+                    React.createElement(LucideIcon, { name: "minus", size: 16 })
+                  ),
+                  React.createElement("input", {
+                    type: "number",
+                    min: "1",
+                    max: "10000",
+                    value: inputQty,
+                    onChange: (e) => setInputQty(Math.max(1, parseInt(e.target.value, 10) || 1)),
+                    className: "w-16 sm:w-20 text-center bg-transparent font-bold text-base text-cream-50 focus:outline-none"
+                  }),
+                  React.createElement("button", {
+                    type: "button",
+                    onClick: () => setInputQty(prev => prev + 1),
+                    className: "w-10 h-10 flex items-center justify-center rounded-lg hover:bg-forest-800 text-cream-100 transition-colors"
+                  },
+                    React.createElement(LucideIcon, { name: "plus", size: 16 })
+                  )
+                ),
+                /* Quick stepper chips */
+                React.createElement("div", { className: "flex items-center gap-1.5" },
+                  [1, 3, 5, 10].map(n => React.createElement("button", {
+                    key: n,
+                    type: "button",
+                    onClick: () => setInputQty(n),
+                    className: `px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                      inputQty === n ? 'bg-earth-500 text-forest-950 font-bold' : 'bg-forest-900/60 text-cream-100/70 hover:bg-forest-800'
+                    }`
+                  }, `${n}`))
+                ),
+                /* Add Button */
+                React.createElement("button", {
+                  type: "button",
+                  onClick: () => {
+                    addTreeToPlantation(currentSelectedTree, inputQty);
+                  },
+                  className: "sm:ml-auto px-5 py-3 rounded-xl bg-earth-500 hover:bg-earth-400 text-forest-950 font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-earth-500/20 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                },
+                  React.createElement(LucideIcon, { name: "plus", size: 18 }),
+                  React.createElement("span", null, tEco.addBtn)
+                )
+              ),
+
+              /* Single Species Live Preview Banner */
+              React.createElement("div", {
+                className: "mt-4 pt-4 border-t border-forest-800/40 flex items-center justify-between text-xs text-cream-100/70"
+              },
+                React.createElement("span", { className: "font-medium" },
+                  `${inputQty} × ${language === 'mr' ? currentSelectedTree.marathi : language === 'hi' ? currentSelectedTree.hindi : currentSelectedTree.name}:`
+                ),
+                React.createElement("div", { className: "flex items-center gap-3 font-semibold" },
+                  React.createElement("span", { className: "text-green-400" }, `+${singleTreeO2} kg O₂/yr`),
+                  React.createElement("span", { className: "text-earth-400" }, `-${singleTreeCO2} kg CO₂/yr`)
+                )
+              )
+            ),
+
+            /* Selected Species Plantation List (Multi-species breakdown) */
+            React.createElement("div", {
+              className: "glass-card rounded-3xl p-5 sm:p-7 border border-white/10 shadow-2xl"
+            },
+              React.createElement("div", { className: "flex items-center justify-between gap-2 mb-4" },
+                React.createElement("div", { className: "flex items-center gap-2.5" },
+                  React.createElement(LucideIcon, { name: "layers", size: 18, className: "text-earth-400" }),
+                  React.createElement("h2", { className: "text-lg sm:text-xl font-bold text-cream-50 tracking-tight" },
+                    tEco.plantationTitle
+                  )
+                ),
+                React.createElement("span", { className: "text-xs font-semibold px-2.5 py-1 rounded-full bg-forest-900 border border-forest-700 text-earth-300" },
+                  `${plantationList.length} species • ${totalTrees} total trees`
+                )
+              ),
+
+              /* Empty State or List */
+              plantationList.length === 0 ? (
+                React.createElement("div", {
+                  className: "text-center py-10 px-4 rounded-2xl border border-dashed border-forest-800 text-cream-100/50 space-y-3"
+                },
+                  React.createElement(LucideIcon, { name: "trees", size: 36, className: "mx-auto text-forest-700" }),
+                  React.createElement("p", { className: "text-sm" }, tEco.emptyList),
+                  React.createElement("button", {
+                    type: "button",
+                    onClick: () => applyPreset('promptCombo'),
+                    className: "px-4 py-2 rounded-xl bg-earth-500/20 text-earth-300 hover:bg-earth-500/30 font-semibold text-xs transition-colors"
+                  }, "Load 3 Mango + 5 Gooseberry Trees")
+                )
+              ) : (
+                React.createElement("div", { className: "space-y-3 max-h-[420px] overflow-y-auto pr-1 hide-scrollbar" },
+                  plantationList.map(item => {
+                    const itemCO2 = (item.tree.c * item.quantity).toFixed(1);
+                    const itemO2 = (item.tree.o * item.quantity).toFixed(1);
+                    const displayName = language === 'mr' ? item.tree.marathi : language === 'hi' ? item.tree.hindi : item.tree.name;
+
+                    return React.createElement("div", {
+                      key: item.tree.rank,
+                      className: "bg-forest-950/60 rounded-2xl p-3.5 sm:p-4 border border-forest-800/80 hover:border-earth-500/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 group"
+                    },
+                      React.createElement("div", { className: "flex items-center gap-3 min-w-0" },
+                        item.tree.img && React.createElement("img", {
+                          src: item.tree.img,
+                          alt: item.tree.name,
+                          className: "w-12 h-12 rounded-xl object-cover border border-forest-700 flex-shrink-0"
+                        }),
+                        React.createElement("div", { className: "min-w-0" },
+                          React.createElement("div", { className: "flex items-center gap-2" },
+                            React.createElement("h3", { className: "text-sm font-bold text-cream-50 truncate" }, displayName),
+                            React.createElement("span", { className: "text-[10px] px-1.5 py-0.5 rounded bg-forest-800 text-cream-100/60 font-semibold uppercase" },
+                              item.tree.category
+                            )
+                          ),
+                          React.createElement("div", { className: "flex items-center gap-3 text-xs text-cream-100/60 mt-1" },
+                            React.createElement("span", { className: "text-green-400 font-medium" }, `+${itemO2} kg O₂/yr`),
+                            React.createElement("span", null, "•"),
+                            React.createElement("span", { className: "text-earth-400 font-medium" }, `-${itemCO2} kg CO₂/yr`)
+                          )
+                        )
+                      ),
+                      /* Quantity controls & Remove */
+                      React.createElement("div", { className: "flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end pt-2 sm:pt-0 border-t sm:border-t-0 border-forest-800/40" },
+                        React.createElement("div", { className: "flex items-center bg-forest-900/80 rounded-lg border border-forest-700 p-0.5" },
+                          React.createElement("button", {
+                            type: "button",
+                            onClick: () => updateTreeQuantity(item.tree.rank, item.quantity - 1),
+                            className: "w-7 h-7 flex items-center justify-center rounded hover:bg-forest-800 text-cream-100"
+                          },
+                            React.createElement(LucideIcon, { name: "minus", size: 12 })
+                          ),
+                          React.createElement("span", { className: "w-10 text-center font-bold text-xs text-cream-50" },
+                            item.quantity
+                          ),
+                          React.createElement("button", {
+                            type: "button",
+                            onClick: () => updateTreeQuantity(item.tree.rank, item.quantity + 1),
+                            className: "w-7 h-7 flex items-center justify-center rounded hover:bg-forest-800 text-cream-100"
+                          },
+                            React.createElement(LucideIcon, { name: "plus", size: 12 })
+                          )
+                        ),
+                        React.createElement("button", {
+                          type: "button",
+                          onClick: () => removeFromPlantation(item.tree.rank),
+                          className: "text-cream-100/40 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-950/30 transition-colors"
+                        },
+                          React.createElement(LucideIcon, { name: "trash-2", size: 16 })
+                        )
+                      )
+                    );
+                  })
+                )
+              )
+            )
+          ),
+
+          /* RIGHT COLUMN: Living Environmental Impact Dashboard (5 Cols) */
+          React.createElement("div", { className: "lg:col-span-5 space-y-6 lg:sticky lg:top-32" },
+
+            /* Hero Cumulative Impact Card */
+            React.createElement("div", {
+              className: "glass-card rounded-3xl p-6 sm:p-7 border border-earth-500/40 shadow-2xl relative overflow-hidden bg-gradient-to-br from-forest-900/90 via-forest-950/95 to-earth-950/40"
+            },
+              /* Card Header */
+              React.createElement("div", { className: "flex items-center justify-between mb-6" },
+                React.createElement("div", { className: "flex items-center gap-2" },
+                  React.createElement(LucideIcon, { name: "leaf", size: 18, className: "text-earth-400" }),
+                  React.createElement("h2", { className: "text-sm font-bold uppercase tracking-wider text-earth-300" },
+                    tEco.totalImpact
+                  )
+                ),
+                React.createElement("span", { className: "text-xs font-semibold px-2 py-0.5 rounded bg-earth-500/20 text-earth-300 border border-earth-500/30" },
+                  `${totalTrees} Trees Active`
+                )
+              ),
+
+              /* OXYGEN RELEASE SECTION (Vibrant Emerald Glow) */
+              React.createElement("div", {
+                className: "bg-gradient-to-r from-forest-950/80 to-forest-900/60 rounded-2xl p-4 sm:p-5 border border-green-500/30 shadow-lg shadow-green-500/5 mb-4 group hover:border-green-400/60 transition-all"
+              },
+                React.createElement("div", { className: "flex items-center justify-between text-xs text-cream-100/70 mb-1" },
+                  React.createElement("span", { className: "font-semibold flex items-center gap-1.5" },
+                    React.createElement(LucideIcon, { name: "wind", size: 14, className: "text-green-400" }),
+                    tEco.o2Released
+                  ),
+                  React.createElement("span", { className: "text-green-400 font-bold" }, `${dailyO2Kg} kg / day`)
+                ),
+                React.createElement("div", { className: "flex items-baseline gap-2 my-2" },
+                  React.createElement("span", { className: "text-3xl sm:text-4xl font-extrabold text-green-400 tracking-tight" },
+                    totalO2.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+                  ),
+                  React.createElement("span", { className: "text-sm font-semibold text-cream-100/60" }, "kg O₂ / year")
+                ),
+                /* Human Equivalent Pill */
+                React.createElement("div", {
+                  className: "flex items-center gap-2 mt-2 pt-2 border-t border-forest-800/60 text-xs text-cream-100/80"
+                },
+                  React.createElement(LucideIcon, { name: "users", size: 14, className: "text-green-300 flex-shrink-0" }),
+                  React.createElement("span", null,
+                    language === 'hi' 
+                      ? `लगभग ${peopleOxygenSupported} वयस्कों की साल भर की सांस लेने योग्य ऑक्सीजन`
+                      : language === 'mr'
+                      ? `अंदाजे ${peopleOxygenSupported} प्रौढांची वर्षभराची ऑक्सिजन गरज पूर्ण`
+                      : `Sustains 100% breathing oxygen for ~${peopleOxygenSupported} people annually`
+                  )
+                )
+              ),
+
+              /* CARBON DIOXIDE ABSORPTION SECTION (Warm Earth Gold Glow) */
+              React.createElement("div", {
+                className: "bg-gradient-to-r from-forest-950/80 to-forest-900/60 rounded-2xl p-4 sm:p-5 border border-earth-500/30 shadow-lg shadow-earth-500/5 mb-5 group hover:border-earth-400/60 transition-all"
+              },
+                React.createElement("div", { className: "flex items-center justify-between text-xs text-cream-100/70 mb-1" },
+                  React.createElement("span", { className: "font-semibold flex items-center gap-1.5" },
+                    React.createElement(LucideIcon, { name: "leaf", size: 14, className: "text-earth-400" }),
+                    tEco.co2Absorbed
+                  ),
+                  React.createElement("span", { className: "text-earth-300 font-bold" },
+                    `${(totalCO2 / 1000).toFixed(2)} tonnes / yr`
+                  )
+                ),
+                React.createElement("div", { className: "flex items-baseline gap-2 my-2" },
+                  React.createElement("span", { className: "text-3xl sm:text-4xl font-extrabold text-earth-400 tracking-tight" },
+                    totalCO2.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+                  ),
+                  React.createElement("span", { className: "text-sm font-semibold text-cream-100/60" }, "kg CO₂ / year")
+                ),
+                /* Car Equivalent Pill */
+                React.createElement("div", {
+                  className: "flex items-center gap-2 mt-2 pt-2 border-t border-forest-800/60 text-xs text-cream-100/80"
+                },
+                  React.createElement(LucideIcon, { name: "shield", size: 14, className: "text-earth-300 flex-shrink-0" }),
+                  React.createElement("span", null,
+                    language === 'hi'
+                      ? `~${carKmOffset.toLocaleString()} किमी कार यात्रा का कार्बन उत्सर्जन निष्प्रभावी`
+                      : language === 'mr'
+                      ? `~${carKmOffset.toLocaleString()} किमी कार प्रवासाचे कार्बन उत्सर्जन निष्प्रभ`
+                      : `Neutralizes ~${carKmOffset.toLocaleString()} km of passenger car emissions`
+                  )
+                )
+              ),
+
+              /* Co-Benefits Grid (Canopy, 10-Yr Outlook, Water) */
+              React.createElement("div", { className: "grid grid-cols-2 gap-3 mb-6 text-xs" },
+                /* Canopy Shade */
+                React.createElement("div", { className: "bg-forest-950/60 p-3 rounded-xl border border-forest-800/80" },
+                  React.createElement("div", { className: "text-cream-100/50 flex items-center gap-1.5 mb-1" },
+                    React.createElement(LucideIcon, { name: "cloud", size: 13 }),
+                    React.createElement("span", null, tEco.canopyCover)
+                  ),
+                  React.createElement("div", { className: "text-base font-bold text-cream-50" },
+                    `~${Math.round(totalCanopyArea).toLocaleString()} m²`
+                  ),
+                  React.createElement("div", { className: "text-[11px] text-cream-100/50 mt-0.5" },
+                    `~${Math.round(totalCanopyArea * 10.764).toLocaleString()} sq.ft shade`
+                  )
+                ),
+                /* 10-Year Decadal Sequestration */
+                React.createElement("div", { className: "bg-forest-950/60 p-3 rounded-xl border border-forest-800/80" },
+                  React.createElement("div", { className: "text-cream-100/50 flex items-center gap-1.5 mb-1" },
+                    React.createElement(LucideIcon, { name: "trending-up", size: 13 }),
+                    React.createElement("span", null, "10-Year Projection")
+                  ),
+                  React.createElement("div", { className: "text-base font-bold text-earth-300" },
+                    `${(totalCO2 * 10 / 1000).toFixed(1)} T CO₂`
+                  ),
+                  React.createElement("div", { className: "text-[11px] text-green-400 mt-0.5" },
+                    `+${Math.round(totalO2 * 10 / 1000)} T O₂ released`
+                  )
+                )
+              ),
+
+              /* Species Contribution Breakdown Bar (if > 1 species) */
+              plantationList.length > 1 && totalO2 > 0 && React.createElement("div", { className: "mb-6" },
+                React.createElement("div", { className: "flex justify-between text-xs text-cream-100/60 mb-2 font-medium" },
+                  React.createElement("span", null, "Species Impact Share"),
+                  React.createElement("span", null, "By Oxygen Output")
+                ),
+                React.createElement("div", { className: "h-2.5 rounded-full overflow-hidden flex bg-forest-950 border border-forest-800" },
+                  plantationList.map((item, idx) => {
+                    const pct = Math.max(2, Math.round(((item.tree.o * item.quantity) / totalO2) * 100));
+                    const colors = ['bg-green-400', 'bg-earth-400', 'bg-emerald-500', 'bg-amber-500', 'bg-teal-400', 'bg-lime-400'];
+                    return React.createElement("div", {
+                      key: item.tree.rank,
+                      style: { width: `${pct}%` },
+                      className: `${colors[idx % colors.length]} transition-all duration-300`,
+                      title: `${item.tree.name}: ${pct}%`
+                    });
+                  })
+                ),
+                React.createElement("div", { className: "flex flex-wrap gap-x-3 gap-y-1 mt-2 text-[11px] text-cream-100/60" },
+                  plantationList.map((item, idx) => {
+                    const colors = ['text-green-400', 'text-earth-400', 'text-emerald-400', 'text-amber-400', 'text-teal-400'];
+                    const displayName = language === 'mr' ? item.tree.marathi : language === 'hi' ? item.tree.hindi : item.tree.name;
+                    return React.createElement("div", { key: item.tree.rank, className: "flex items-center gap-1" },
+                      React.createElement("span", { className: `w-2 h-2 rounded-full ${colors[idx % colors.length].replace('text-', 'bg-')}` }),
+                      React.createElement("span", null, displayName)
+                    );
+                  })
+                )
+              ),
+
+              /* Action Buttons */
+              React.createElement("div", { className: "flex items-center gap-3 pt-2" },
+                React.createElement("button", {
+                  type: "button",
+                  onClick: copyReport,
+                  className: "flex-1 py-3 px-4 rounded-xl bg-forest-800/80 hover:bg-forest-700/80 border border-white/10 text-cream-50 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.01]"
+                },
+                  React.createElement(LucideIcon, { name: copied ? "check" : "copy", size: 16, className: copied ? "text-green-400" : "" }),
+                  React.createElement("span", null, copied ? tEco.copiedText : tEco.copyBtn)
+                ),
+                React.createElement("button", {
+                  type: "button",
+                  onClick: () => applyPreset('clear'),
+                  className: "py-3 px-4 rounded-xl bg-forest-950/80 hover:bg-red-950/40 border border-forest-800 text-cream-100/60 hover:text-red-400 font-semibold text-xs sm:text-sm transition-colors"
+                },
+                  React.createElement(LucideIcon, { name: "refresh-cw", size: 16 })
+                )
+              )
+            ),
+
+            /* Scientific Note Card */
+            React.createElement("div", {
+              className: "p-4 rounded-2xl bg-forest-900/30 border border-white/5 text-xs text-cream-100/50 leading-relaxed"
+            },
+              React.createElement("p", { className: "font-semibold text-cream-100/70 mb-1" }, "🔬 Scientific Methodology"),
+              React.createElement("p", null,
+                "Carbon sequestration (CO₂) & oxygen production (O₂) metrics are based on mature native Indian tree species bio-modeling across subtropical climate zones. Actual output may vary based on soil aeration, irrigation, and seasonal sunlight."
+              )
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+
 function PersistentHeader() {
   var context = React.useContext(LanguageContext);
   var language = (context && context.language) || 'en';
@@ -3901,9 +4762,13 @@ function PersistentHeader() {
     },
       React.createElement("a", { href: "#", className: "flex items-center gap-2.5 group flex-shrink-0" },
         React.createElement("img", {
-          src: "logo_transparent.png",
+          src: "./logo_transparent.png",
           alt: "Afforestation Logo",
-          className: "h-9 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
+          className: "h-9 sm:h-10 w-auto object-contain transition-transform duration-300 group-hover:scale-105",
+          onError: function(e) {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = "./logo.svg";
+          }
         }),
         React.createElement("span", { className: "text-base sm:text-lg font-semibold tracking-tight text-cream-50" },
           "af", React.createElement("span", { className: "text-earth-400" }, "forestation")
@@ -3967,6 +4832,7 @@ function TabNavigation(props) {
   var tabs = [
     { key: 'about', label: t.tabs.about, mobileLabel: t.tabs.aboutMobile, icon: 'info' },
     { key: 'catalog', label: t.tabs.catalog, mobileLabel: t.tabs.catalogMobile, icon: 'database' },
+    { key: 'calculator', label: (t.tabs && t.tabs.calculator) || 'Eco Calculator', mobileLabel: (t.tabs && t.tabs.calculatorMobile) || 'Calculator', icon: 'calculator' },
     { key: 'methodology', label: t.tabs.methodology, mobileLabel: t.tabs.methodologyMobile, icon: 'leaf' },
     { key: 'contact', label: t.tabs.contact, mobileLabel: t.tabs.contactMobile, icon: 'phone' }
   ];
@@ -4000,7 +4866,7 @@ function TabNavigation(props) {
       className: "md:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-white/10 safe-area-bottom"
     },
       React.createElement("div", {
-        className: "flex items-center justify-between px-3 py-2 gap-1 max-w-sm mx-auto"
+        className: "flex items-center justify-between px-2 py-2 gap-0.5 sm:gap-1 max-w-md mx-auto"
       },
         tabs.map(function(tab) {
           var isActive = activeTab === tab.key;
@@ -4623,6 +5489,14 @@ function App() {
         className: "pb-24 md:pb-8 tab-fade-in"
       },
         React.createElement(TreeDatabase, null)
+      ),
+
+      /* Eco Calculator Tab */
+      React.createElement("div", {
+        style: { display: activeTab === 'calculator' ? 'block' : 'none' },
+        className: "pb-24 md:pb-8 tab-fade-in"
+      },
+        React.createElement(EcoCalculator, null)
       ),
 
       /* Methodology Tab */
